@@ -20,6 +20,7 @@ defmodule Money.Router do
     get "/", PageController, :index
     resources "/users", UserController, only: [:index, :show, :new, :create]
     resources "/sessions", SessionController, only: [:new, :create, :delete]
+    resources "/accounts", AccountController
   end
 
   # Other scopes may use custom stacks.

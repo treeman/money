@@ -1,3 +1,11 @@
+# TODO
+
+User
+├── Budget (expand on later?)
+    ├── Account
+        ├── Expenses
+            └──
+
 # Money
 
 To start your Phoenix app:

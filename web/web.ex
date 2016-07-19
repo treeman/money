@@ -59,6 +59,8 @@ defmodule Money.Web do
   def router do
     quote do
       use Phoenix.Router
+
+      import Money.Auth, only: [authenticate_user: 2]
     end
   end
 

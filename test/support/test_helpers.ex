@@ -12,5 +12,11 @@ defmodule Money.TestHelpers do
   |> Money.User.registration_changeset(changes)
   |> Repo.insert!()
   end
+
+  def insert_account(user, attrs \\ %{}) do
+    user
+    |> Ecto.build_assoc(:accounts, attrs)
+    |> Repo.insert!()
+  end
 end
 
