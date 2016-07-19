@@ -26,6 +26,7 @@ defmodule Money.ConnCase do
       import Ecto.Query
 
       import Money.Router.Helpers
+      import Money.TestHelpers
 
       # The default endpoint for testing
       @endpoint Money.Endpoint

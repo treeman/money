@@ -36,6 +36,7 @@ defmodule Money.Web do
 
       import Money.Router.Helpers
       import Money.Gettext
+      import Money.Auth, only: [authenticate_user: 2]
     end
   end
 

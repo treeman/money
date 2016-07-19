@@ -22,6 +22,7 @@ defmodule Money.ModelCase do
       import Ecto.Changeset
       import Ecto.Query
       import Money.ModelCase
+      import Money.TestHelpers
     end
   end
 
