@@ -66,6 +66,6 @@ defmodule Money.ExpenseController do
 
     conn
     |> put_flash(:info, "Expense deleted successfully.")
-    |> redirect(to: expense_path(conn, :index))
+    |> redirect(to: account_path(conn, :show, expense.account_id))
   end
 end

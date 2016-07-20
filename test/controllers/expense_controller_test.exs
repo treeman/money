@@ -22,7 +22,6 @@ defmodule Money.ExpenseControllerTest do
   test "requries user authentication on all actions", %{conn: conn} do
     Enum.each([
       get(conn, account_path(conn, :new)),
-      get(conn, account_path(conn, :index)),
       get(conn, account_path(conn, :show, "123")),
       get(conn, account_path(conn, :edit, "123")),
       put(conn, account_path(conn, :update, "123", %{})),
@@ -33,11 +32,6 @@ defmodule Money.ExpenseControllerTest do
       assert conn.halted
     end)
   end
-
-  #test "lists all entries on index", %{conn: conn} do
-    #conn = get conn, expense_path(conn, :index)
-    #assert html_response(conn, 200) =~ "Listing expenses"
-  #end
 
   @tag login_as: "max"
   test "renders form for new resources", %{conn: conn, user: _user} do
@@ -91,7 +85,7 @@ defmodule Money.ExpenseControllerTest do
 
   @tag login_as: "max"
   test "updates chosen resource and redirects when data is valid", %{conn: conn, user: user} do
-    account = insert_account(user, %{title: "Mega title"})
+    account = insert_account(user)
     expense = insert_expense(account)
 
     conn = put conn, expense_path(conn, :update, expense), expense: @valid_attrs
@@ -101,7 +95,7 @@ defmodule Money.ExpenseControllerTest do
 
   @tag login_as: "max"
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, user: user} do
-    account = insert_account(user, %{title: "Mega title"})
+    account = insert_account(user)
     expense = insert_expense(account)
 
     conn = put conn, expense_path(conn, :update, expense), expense: @invalid_attrs
@@ -110,11 +104,11 @@ defmodule Money.ExpenseControllerTest do
 
   @tag login_as: "max"
   test "deletes chosen resource", %{conn: conn, user: user} do
-    account = insert_account(user, %{title: "Mega title"})
+    account = insert_account(user)
     expense = insert_expense(account)
 
     conn = delete conn, expense_path(conn, :delete, expense)
-    assert redirected_to(conn) == expense_path(conn, :index)
+    assert redirected_to(conn) == account_path(conn, :show, account.id)
     refute Repo.get(Expense, expense.id)
   end
 end
