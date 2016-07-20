@@ -42,7 +42,7 @@ defmodule Money.ExpenseControllerTest do
   @tag login_as: "max"
   test "creates resource and redirects when data is valid", %{conn: conn, user: user} do
     account = insert_account(user)
-    attrs = Dict.merge(%{ account_id: account.id}, @valid_attrs)
+    attrs = Dict.merge(%{account_id: account.id}, @valid_attrs)
 
     conn = post conn, expense_path(conn, :create), expense: attrs
     assert redirected_to(conn) == account_path(conn, :show, account.id)
@@ -110,6 +110,29 @@ defmodule Money.ExpenseControllerTest do
     conn = delete conn, expense_path(conn, :delete, expense)
     assert redirected_to(conn) == account_path(conn, :show, account.id)
     refute Repo.get(Expense, expense.id)
+  end
+
+  @tag login_as: "max"
+  test "authorizes actions against access by other users", %{conn: conn, user: owner} do
+    account = insert_account(owner)
+    expense = insert_expense(account)
+
+    non_owner = insert_user(username: "alice")
+    conn = assign(conn, :current_user, non_owner)
+
+    assert_error_sent :not_found, fn ->
+      get(conn, expense_path(conn, :show, expense))
+    end
+    assert_error_sent :not_found, fn ->
+      get(conn, expense_path(conn, :edit, expense))
+    end
+    assert_error_sent :not_found, fn ->
+      attrs = Dict.merge(%{account_id: account.id}, @valid_attrs)
+      put(conn, expense_path(conn, :update, expense), expense: attrs)
+    end
+    assert_error_sent :not_found, fn ->
+      delete(conn, expense_path(conn, :delete, expense))
+    end
   end
 end
 

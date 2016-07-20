@@ -112,7 +112,7 @@ defmodule Money.AccountControllerTest do
       get(conn, account_path(conn, :edit, account))
     end
     assert_error_sent :not_found, fn ->
-      put(conn, account_path(conn, :update, account, account: @valid_attrs))
+      put(conn, account_path(conn, :update, account), account: @valid_attrs)
     end
     assert_error_sent :not_found, fn ->
       delete(conn, account_path(conn, :delete, account))
