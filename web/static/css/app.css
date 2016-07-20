@@ -1,1 +1,91 @@
-/* This file is for your main application css. */
+body {
+    padding: 0; margin: 0;
+    font-family: Arial,"Helvetica Neue",Helvetica,sans-serif;
+    font-size: 14px;
+    /*line-height: 1.3em;*/
+}
+
+html {
+    box-sizing: border-box;
+}
+
+*, *::before, *::after {
+    box-sizing: inherit;
+}
+
+/*
+ * Main fixed layout
+ */
+.header {
+    position: absolute;
+    left: 180px; right: 0;
+    height: 92px;
+}
+.sidebar {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 180px;
+}
+.main {
+    position: absolute;
+    left: 180px; top: 92px; right: 0; bottom: 0;
+}
+
+/*
+ * Sidebar
+ */
+.sidebar {
+    font-size: 1.4em;
+    padding: 0.2em;
+    background-color: #2e4272;
+}
+
+.sidebar .bottom-config {
+    font-size: 0.4em;
+    /*font-weight: bold;*/
+    bottom: 0;
+    position: fixed;
+    padding: 0.5em;
+}
+
+.sidebar, .sidebar a {
+    /*color: #FFF0AA;*/
+    /*color: #7887AB;*/
+    /*color: #D49A6A;*/
+    color: #D5DAE7;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    /*padding: 2em 0 2em 0;*/
+    padding: 0.2em 0;
+}
+
+/*
+ * Header
+ */
+.header {
+    background-color: #061639;
+    padding: 0.8em;
+}
+.header, .header a {
+    color: #6C7CA3;
+}
+
+/*
+ * Main
+ */
+.main {
+    padding: 0.5em;
+}
+
+/*
+ * Colors?
+ * http://paletton.com/#uid=33L0u1kllll2NRLc3utuCcdSF35kllll1rWJboviviboWJ1rkllll1rWJboviviboWJ1r
+ */
+

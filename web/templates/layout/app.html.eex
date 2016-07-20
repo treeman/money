@@ -12,9 +12,11 @@
   </head>
 
   <body>
-    <div class="container">
-      <header class="header">
-        <ol class="breadcrumb text-right">
+    <nav class="sidebar">
+      your@mail.com
+      <!---
+      <div class="bottom-config">
+        <ol>
           <%= if @current_user do %>
             <li><%= @current_user.username %></li>
             <li><%= link "My accounts", to: account_path(@conn, :index) %></li>
@@ -27,16 +29,44 @@
             <li><%= link "Log in", to: session_path(@conn, :new) %></li>
           <% end %>
         </ol>
-      </header>
+      </div>
+      -->
+      <ul>
+        <li><%= link "Budget", to: "#" %></li>
+        <li><%= link "All Accounts", to: account_path(@conn, :index) %></li>
+        <li><%= link "Account 1", to: "#" %></li>
+        <li><%= link "Account 2", to: "#" %></li>
+        <li><%= link "Investments", to: "#" %></li>
+      </ul>
+    </nav>
 
-      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+    <header class="header">
+      <ol>
+        <%= if @current_user do %>
+          <li><%= @current_user.username %></li>
+          <li><%= link "My accounts", to: account_path(@conn, :index) %></li>
+          <li>
+            <%= link "Log out", to: session_path(@conn, :delete, @current_user),
+                                method: "delete" %>
+          </li>
+        <% else %>
+          <li><%= link "Register", to: user_path(@conn, :new) %></li>
+          <li><%= link "Log in", to: session_path(@conn, :new) %></li>
+        <% end %>
+      </ol>
+    </header>
 
+    <!---
+    <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+    <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+    -->
+
+    <div class="main">
       <main role="main">
         <%= render @view_module, @view_template, assigns %>
       </main>
+    </div>
 
-    </div> <!-- /container -->
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>
