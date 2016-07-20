@@ -23,7 +23,7 @@ defmodule Money.TestHelpers do
     changes = Dict.merge(%{
       amount: 13,
       when: Ecto.DateTime.utc,
-      where: "Unknown"
+      payee: "Unknown"
     }, attrs)
 
     account

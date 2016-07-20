@@ -1,10 +1,12 @@
 # TODO
 
-User
-├── Budget (expand on later?)
-    ├── Account
-        ├── Expenses
-            └──
+1. Store payees and info about them. Last Category and amount.
+1. JS enabled expense view
+1. Sort expenses
+1. Actual categories instead of just strings.
+1. Create a budget view
+1. Importer/Generator
+1. Add behavior/tests for cascading deletion
 
 # Money
 

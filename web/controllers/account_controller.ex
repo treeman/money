@@ -68,8 +68,6 @@ defmodule Money.AccountController do
   def delete(conn, %{"id" => id}, user) do
     account = Repo.get!(user_accounts(user), id)
 
-    # Here we use delete! (with a bang) because we expect
-    # it to always work (and if it does not, it will raise).
     Repo.delete!(account)
 
     conn

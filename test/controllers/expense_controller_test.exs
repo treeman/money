@@ -6,7 +6,7 @@ defmodule Money.ExpenseControllerTest do
                  category: "some category",
                  description: "some description",
                  when: Ecto.DateTime.utc,
-                 where: "somewhere"}
+                 payee: "somewhere"}
   @invalid_attrs %{amount: nil}
 
   setup %{conn: conn} = config do

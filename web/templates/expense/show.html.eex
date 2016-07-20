@@ -18,8 +18,8 @@
   </li>
 
   <li>
-    <strong>Where:</strong>
-    <%= @expense.where %>
+    <strong>Payee:</strong>
+    <%= @expense.payee %>
   </li>
 
   <li>

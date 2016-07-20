@@ -10,7 +10,7 @@
       <th>Account</th>
       <th>Amount</th>
       <th>When</th>
-      <th>Where</th>
+      <th>Payee</th>
       <th>Category</th>
       <th>Description</th>
 
@@ -23,7 +23,7 @@
       <td><%= expense.account_id %></td>
       <td><%= expense.amount %></td>
       <td><%= expense.when %></td>
-      <td><%= expense.where %></td>
+      <td><%= expense.payee %></td>
       <td><%= expense.category %></td>
       <td><%= expense.description %></td>
 

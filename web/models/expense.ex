@@ -4,7 +4,7 @@ defmodule Money.Expense do
   schema "expenses" do
     field :amount, :integer
     field :when, Ecto.DateTime
-    field :where, :string # TODO rename
+    field :payee, :string
     field :category, :string
     field :description, :string
     belongs_to :account, Money.Account
@@ -12,7 +12,7 @@ defmodule Money.Expense do
     timestamps
   end
 
-  @required_fields [:amount, :when, :where]
+  @required_fields [:amount, :when, :payee]
   @optional_fields [:category, :description]
 
   def changeset(struct, params \\ %{}) do

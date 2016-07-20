@@ -20,9 +20,9 @@
   </div>
 
   <div class="form-group">
-    <%= label f, :where, class: "control-label" %>
-    <%= text_input f, :where, class: "form-control" %>
-    <%= error_tag f, :where %>
+    <%= label f, :payee, class: "control-label" %>
+    <%= text_input f, :payee, class: "form-control" %>
+    <%= error_tag f, :payee %>
   </div>
 
   <div class="form-group">
