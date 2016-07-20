@@ -59,7 +59,7 @@ defmodule Money.AccountControllerTest do
   test "shows chosen resource", %{conn: conn, user: user} do
     account = insert_account(user)
     conn = get conn, account_path(conn, :show, account)
-    assert html_response(conn, 200) =~ "Show account"
+    assert html_response(conn, 200)
   end
 
   @tag login_as: "max"

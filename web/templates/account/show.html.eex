@@ -1,18 +1,12 @@
-<h2>Show account</h2>
-
-<ul>
-
-  <li>
-    <strong>User:</strong>
-    <%= @account.user_id %>
-  </li>
-
-  <li>
-    <strong>Title:</strong>
-    <%= @account.title %>
-  </li>
-
-</ul>
+<h2><%= @account.title %></h2>
 
 <%= link "Edit", to: account_path(@conn, :edit, @account) %>
+
 <%= link "Back", to: account_path(@conn, :index) %>
+
+<ol>
+  <%= for expense <- @account.expenses do %>
+    <li><%= render "expense.html", expense: expense %></li>
+  <% end %>
+</ol>
+

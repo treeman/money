@@ -1,0 +1,10 @@
+<%= @expense.when %> 
+
+<%= @expense.amount %> 
+
+<%= @expense.where %> 
+
+<%= @expense.category %> 
+
+<%= @expense.description %> 
+
