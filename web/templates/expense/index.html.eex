@@ -1,8 +1,4 @@
-<h2><%= @account.title %></h2>
-
-<%= link "Edit", to: account_path(@conn, :edit, @account) %>
-
-<%= link "Back", to: account_path(@conn, :index) %>
+<h2>Listing expenses</h2>
 
 <table class="table">
   <thead>
@@ -18,7 +14,7 @@
     </tr>
   </thead>
   <tbody>
-  <%= for expense <- @account.expenses do %>
+<%= for expense <- @expenses do %>
     <tr>
       <td><%= expense.account_id %></td>
       <td><%= expense.amount %></td>
@@ -33,9 +29,7 @@
         <%= link "Delete", to: expense_path(@conn, :delete, expense), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
       </td>
     </tr>
-  <% end %>
+<% end %>
   </tbody>
 </table>
-
-<%= link "New expense", to: expense_path(@conn, :new, account_id: @account.id) %>
 

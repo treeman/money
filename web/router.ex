@@ -15,16 +15,19 @@ defmodule Money.Router do
   end
 
   scope "/", Money do
-    pipe_through :browser # Use the default browser stack
+    pipe_through :browser
 
     get "/", PageController, :index
     resources "/users", UserController, only: [:index, :show, :new, :create]
     resources "/sessions", SessionController, only: [:new, :create, :delete]
-    resources "/accounts", AccountController
   end
 
-  # Other scopes may use custom stacks.
-  # scope "/api", Money do
-  #   pipe_through :api
-  # end
+  scope "/", Money do
+    pipe_through [:browser, :authenticate_user]
+
+    resources "/accounts", AccountController
+    #resources "/expenses", ExpenseController, only: [:new, :create, :delete, :update]
+    resources "/expenses", ExpenseController
+  end
 end
+

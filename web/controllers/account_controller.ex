@@ -2,8 +2,6 @@ defmodule Money.AccountController do
   use Money.Web, :controller
   alias Money.Account
 
-  plug :authenticate_user
-
   def action(conn, _) do
     apply(__MODULE__, action_name(conn),
      [conn, conn.params, conn.assigns.current_user])

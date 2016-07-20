@@ -18,5 +18,17 @@ defmodule Money.TestHelpers do
     |> Ecto.build_assoc(:accounts, attrs)
     |> Repo.insert!()
   end
+
+  def insert_expense(account, attrs \\ %{}) do
+    changes = Dict.merge(%{
+      amount: 13,
+      when: Ecto.DateTime.utc,
+      where: "Unknown"
+    }, attrs)
+
+    account
+    |> Ecto.build_assoc(:expenses, changes)
+    |> Repo.insert!()
+  end
 end
 
