@@ -7,25 +7,26 @@
 <table class="table">
   <thead>
     <tr>
-      <th>Account</th>
-      <th>Amount</th>
-      <th>When</th>
+      <th></th>
+      <th>Date</th>
       <th>Payee</th>
       <th>Category</th>
-      <th>Description</th>
-
+      <th>Comment</th>
+      <th>Amount</th>
+      <th>Balance</th>
       <th></th>
     </tr>
   </thead>
   <tbody>
-  <%= for expense <- @account.expenses do %>
+  <%= for %{expense: expense, balance: balance} <- @expenses do %>
     <tr>
       <td><%= expense.account_id %></td>
-      <td><%= expense.amount %></td>
-      <td><%= expense.when %></td>
+      <td><%= Ecto.DateTime.to_date(expense.when) %></td>
       <td><%= expense.payee %></td>
       <td><%= expense.category %></td>
       <td><%= expense.description %></td>
+      <td><%= expense.amount %></td>
+      <td><%= balance %></td>
 
       <td class="text-right">
         <%= link "Show", to: expense_path(@conn, :show, expense), class: "btn btn-default btn-xs" %>
@@ -38,4 +39,3 @@
 </table>
 
 <%= link "New expense", to: expense_path(@conn, :new, account_id: @account.id) %>
-

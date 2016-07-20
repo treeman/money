@@ -1,6 +1,7 @@
 defmodule Money.AccountController do
   use Money.Web, :controller
   alias Money.Account
+  alias Money.Expense
 
   def action(conn, _) do
     apply(__MODULE__, action_name(conn),
@@ -38,11 +39,12 @@ defmodule Money.AccountController do
   end
 
   def show(conn, %{"id" => id}, user) do
-    account =
-      Repo.get!(user_accounts(user), id)
-      |> Repo.preload(expenses: from(e in Money.Expense, order_by: e.when))
+    account = Repo.get!(user_accounts(user), id)
+    expenses = Repo.all(rolling_balance(account))
 
-    render(conn, "show.html", account: account)
+    IO.inspect(expenses)
+
+    render(conn, "show.html", account: account, expenses: expenses)
   end
 
   def edit(conn, %{"id" => id}, user) do
@@ -77,6 +79,13 @@ defmodule Money.AccountController do
 
   defp user_accounts(user) do
     assoc(user, :accounts)
+  end
+
+  defp rolling_balance(account) do
+     from e in Expense,
+     select: %{expense: e,
+               balance: fragment("SUM(amount) OVER(ORDER BY \"when\", \"id\")")},
+     where: e.account_id == ^account.id
   end
 end
 

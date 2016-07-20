@@ -83,8 +83,7 @@ defmodule Money.ExpenseController do
     from e in Expense,
     join: a in assoc(e, :account),
     join: u in assoc(a, :user),
-    where: u.id == ^user.id,
-    select: e
+    where: u.id == ^user.id
   end
 end
 
