@@ -40,7 +40,7 @@ defmodule Money.AccountController do
   def show(conn, %{"id" => id}, user) do
     account =
       Repo.get!(user_accounts(user), id)
-      |> Repo.preload(:expenses)
+      |> Repo.preload(expenses: from(e in Money.Expense, order_by: e.when))
 
     render(conn, "show.html", account: account)
   end

@@ -2,7 +2,7 @@
 
 1. Store payees and info about them. Last Category and amount.
 1. JS enabled expense view
-1. Sort expenses
+1. Category groups
 1. Actual categories instead of just strings.
 1. Create a budget view
 1. Importer/Generator
