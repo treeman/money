@@ -7,19 +7,36 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Hello Money!</title>
+    <title>MoneyTracker9000</title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
   </head>
 
   <body>
-    <nav class="sidebar">
-      your@mail.com
-      <!---
-      <div class="bottom-config">
+    <%# Use sidebar layout if we're logged in, otherwise main fills whole screen. %>
+    <%= if @current_user do %>
+      <nav class="sidebar">
+        <ul>
+          <li><%= active_link @conn, "Budget", to: "#" %></li>
+          <li><%= active_link @conn, "All Accounts", to: account_path(@conn, :index) %></li>
+          <%= for account <- @current_user.accounts do %>
+            <li class="account">
+              <%= active_link @conn, account.title, to: account_path(@conn, :show, account.id) %>
+            </li>
+          <% end %>
+          <li><%= link "Investments", to: "#" %></li>
+        </ul>
+      </nav>
+    <% end %>
+
+    <header class="header">
+      <span class="logo">
+        MoneyTracker9000
+      </span>
+
+      <div class="right">
         <ol>
           <%= if @current_user do %>
-            <li><%= @current_user.username %></li>
-            <li><%= link "My accounts", to: account_path(@conn, :index) %></li>
+            <li><%= link "Settings", to: "#" %></li>
             <li>
               <%= link "Log out", to: session_path(@conn, :delete, @current_user),
                                   method: "delete" %>
@@ -30,43 +47,23 @@
           <% end %>
         </ol>
       </div>
-      -->
-      <ul>
-        <li><%= link "Budget", to: "#" %></li>
-        <li><%= link "All Accounts", to: account_path(@conn, :index) %></li>
-        <li><%= link "Account 1", to: "#" %></li>
-        <li><%= link "Account 2", to: "#" %></li>
-        <li><%= link "Investments", to: "#" %></li>
-      </ul>
-    </nav>
-
-    <header class="header">
-      <ol>
-        <%= if @current_user do %>
-          <li><%= @current_user.username %></li>
-          <li><%= link "My accounts", to: account_path(@conn, :index) %></li>
-          <li>
-            <%= link "Log out", to: session_path(@conn, :delete, @current_user),
-                                method: "delete" %>
-          </li>
-        <% else %>
-          <li><%= link "Register", to: user_path(@conn, :new) %></li>
-          <li><%= link "Log in", to: session_path(@conn, :new) %></li>
-        <% end %>
-      </ol>
     </header>
 
-    <!---
-    <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-    <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
-    -->
-
-    <div class="main">
-      <main role="main">
+    <%= if @current_user do %>
+      <main role="main" class="right-main">
+        <%= render "alerts.html", assigns %>
         <%= render @view_module, @view_template, assigns %>
       </main>
-    </div>
+    <% else %>
+      <div id="main-wrapper">
+        <main role="main" class="centered-main">
+          <%= render "alerts.html", assigns %>
+          <%= render @view_module, @view_template, assigns %>
+        </main>
+      </div>
+    <% end %>
 
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </body>
 </html>
+

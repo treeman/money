@@ -42,8 +42,6 @@ defmodule Money.AccountController do
     account = Repo.get!(user_accounts(user), id)
     expenses = Repo.all(rolling_balance(account))
 
-    IO.inspect(expenses)
-
     render(conn, "show.html", account: account, expenses: expenses)
   end
 

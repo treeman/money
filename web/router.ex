@@ -8,6 +8,7 @@ defmodule Money.Router do
     plug :protect_from_forgery
     plug :put_secure_browser_headers
     plug Money.Auth, repo: Money.Repo
+    plug :preload_user_data, repo: Money.Repo
   end
 
   pipeline :api do
