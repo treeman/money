@@ -30,5 +30,13 @@ defmodule Money.TestHelpers do
     |> Ecto.build_assoc(:transactions, changes)
     |> Repo.insert!()
   end
+
+  def insert_category(attrs \\ %{}) do
+    changes = Dict.merge(%{name: "Rent"}, attrs)
+
+    %Money.Category{}
+    |> Money.Category.changeset(changes)
+    |> Repo.insert!()
+  end
 end
 
