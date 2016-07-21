@@ -1,6 +1,3 @@
-user -> Several accounts
-category -> Several transactions
-
 # MoneyTracker9000
 
 I want to track my budget including investments and expenses. Instead of using any of the many already existing ones I figured I'd build my own, go figure. It's also an excuse for me to learn web dev with Elixir and Phoenix.
