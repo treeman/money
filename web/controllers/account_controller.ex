@@ -9,8 +9,8 @@ defmodule Money.AccountController do
   end
 
   def index(conn, _params, user) do
-    accounts = Repo.all(user_accounts(user))
-    render(conn, "index.html", accounts: accounts)
+    expenses = Repo.all(rolling_balance(user: user))
+    render(conn, "show.html", expenses: expenses)
   end
 
   def new(conn, _params, user) do
@@ -40,7 +40,7 @@ defmodule Money.AccountController do
 
   def show(conn, %{"id" => id}, user) do
     account = Repo.get!(user_accounts(user), id)
-    expenses = Repo.all(rolling_balance(account))
+    expenses = Repo.all(rolling_balance(account: account))
 
     render(conn, "show.html", account: account, expenses: expenses)
   end
@@ -79,11 +79,25 @@ defmodule Money.AccountController do
     assoc(user, :accounts)
   end
 
-  defp rolling_balance(account) do
-     from e in Expense,
-     select: %{expense: e,
-               balance: fragment("SUM(amount) OVER(ORDER BY \"when\", \"id\")")},
-     where: e.account_id == ^account.id
+  defp rolling_balance(account: account) do
+    from e in Expense,
+    select: %{expense: e,
+              balance: fragment("SUM(amount) OVER(ORDER BY ?, ?)",
+                                e.when, e.id)},
+    order_by: [desc: e.when],
+    where: e.account_id == ^account.id
+  end
+
+  defp rolling_balance(user: user) do
+    IO.inspect(user)
+    from e in Expense,
+    join: a in assoc(e, :account),
+    join: u in assoc(a, :user),
+    select: %{expense: e,
+              balance: fragment("SUM(amount) OVER(PARTITION BY ? ORDER BY ?, ?)",
+                                e.account_id, e.when, e.id)},
+    order_by: [desc: e.when],
+    where: u.id == ^user.id
   end
 end
 

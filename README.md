@@ -1,5 +1,7 @@
 # TODO
 
+1. New transaction with default account, or specify which account.
+1. Rename expense to transaction
 1. Store payees and info about them. Last Category and amount.
 1. JS enabled expense view
 1. Category groups

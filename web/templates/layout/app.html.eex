@@ -36,6 +36,7 @@
       <div class="right">
         <ol>
           <%= if @current_user do %>
+            <li><%= @current_user.username %></li>
             <li><%= link "Settings", to: "#" %></li>
             <li>
               <%= link "Log out", to: session_path(@conn, :delete, @current_user),

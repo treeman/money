@@ -159,3 +159,17 @@ html {
  * http://paletton.com/#uid=33L0u1kllll2NRLc3utuCcdSF35kllll1rWJboviviboWJ1rkllll1rWJboviviboWJ1r
  */
 
+/*
+ * Account view
+ */
+nav.transaction-header ol, nav.transaction-header ol li {
+    display: inline-block;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+nav.transaction-header ol li {
+    padding-right: 0.4em;
+}
+

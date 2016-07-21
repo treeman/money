@@ -14,6 +14,10 @@ defmodule Money.ExpenseController do
     render(conn, "index.html", expenses: expenses)
   end
 
+  def new(conn, _params, _user) do
+    changeset = Expense.changeset(%Expense{}, %{})
+    render(conn, "new.html", changeset: changeset)
+  end
   def new(conn, %{"account_id" => account_id}, _user) do
     changeset = Expense.changeset(%Expense{}, %{account_id: account_id})
     render(conn, "new.html", changeset: changeset)
