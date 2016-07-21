@@ -24,7 +24,7 @@
 
   <li>
     <strong>Category:</strong>
-    <%= @transaction.category %>
+    <%= if @transaction.category do @transaction.category.name else "" end %>
   </li>
 
   <li>

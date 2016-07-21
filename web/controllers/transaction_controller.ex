@@ -25,20 +25,13 @@ defmodule Money.TransactionController do
     #render(conn, "new.html", changeset: changeset)
   #end
 
-  def create(conn, %{"transaction" => transaction_params}, user) do
-    IO.inspect(transaction_params)
-    account_id = Map.get(transaction_params, "account_id")
-    account = Repo.get!(user_accounts(user), account_id)
-
-    #category_id = Map.get(transaction_params, "account_id")
-    #category = Repo.get!(Category, category_id)
-
-    changeset =
-      build_assoc(account, :transactions)
-      |> Transaction.changeset(transaction_params)
+  def create(conn, %{"transaction" => transaction_params}, _user) do
+    changeset = Transaction.changeset(%Transaction{}, transaction_params)
 
     case Repo.insert(changeset) do
       {:ok, _transaction} ->
+        # TODO handle redirects in a cleaner way.
+        account_id = Map.get(transaction_params, "account_id")
         conn
         |> put_flash(:info, "Transaction created successfully.")
         |> redirect(to: account_path(conn, :show, account_id))

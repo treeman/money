@@ -37,7 +37,7 @@
       <td><%= transaction.account_id %></td>
       <td><%= Ecto.DateTime.to_date(transaction.when) %></td>
       <td><%= transaction.payee %></td>
-      <td><%= transaction.category %></td>
+      <td><%= if transaction.category do transaction.category.name else "" end %></td>
       <td><%= transaction.description %></td>
       <td><%= transaction.amount %></td>
       <td><%= balance %></td>
