@@ -16,7 +16,7 @@
     <%= if @current_user do %>
       <nav class="sidebar">
         <ul>
-          <li><%= active_link @conn, "Budget", to: "#" %></li>
+          <li><%= active_link @conn, "Budget", to: budget_path(@conn, :index) %></li>
           <li><%= active_link @conn, "All Accounts", to: account_path(@conn, :index) %></li>
           <%= for account <- @current_user.accounts do %>
             <li class="account">

@@ -28,6 +28,8 @@ defmodule Money.Router do
 
     resources "/accounts", AccountController
     resources "/transactions", TransactionController, except: [:index]
+    get "/budget", BudgetController, :index
+    get "/budget/:year/:month", BudgetController, :show
   end
 end
 
