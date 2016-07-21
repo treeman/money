@@ -19,7 +19,7 @@ defmodule Money.TestHelpers do
     |> Repo.insert!()
   end
 
-  def insert_expense(account, attrs \\ %{}) do
+  def insert_transaction(account, attrs \\ %{}) do
     changes = Dict.merge(%{
       amount: 13,
       when: Ecto.DateTime.utc,
@@ -27,7 +27,7 @@ defmodule Money.TestHelpers do
     }, attrs)
 
     account
-    |> Ecto.build_assoc(:expenses, changes)
+    |> Ecto.build_assoc(:transactions, changes)
     |> Repo.insert!()
   end
 end

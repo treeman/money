@@ -4,7 +4,7 @@ defmodule Money.Account do
   schema "accounts" do
     field :title, :string
     belongs_to :user, Money.User
-    has_many :expenses, Money.Expense, on_delete: :delete_all
+    has_many :transactions, Money.Transaction, on_delete: :delete_all
 
     timestamps
   end

@@ -1,7 +1,7 @@
-defmodule Money.ExpenseControllerTest do
+defmodule Money.TransactionControllerTest do
   use Money.ConnCase
 
-  alias Money.Expense
+  alias Money.Transaction
   @valid_attrs %{amount: 42,
                  category: "some category",
                  description: "some description",
@@ -35,8 +35,8 @@ defmodule Money.ExpenseControllerTest do
 
   @tag login_as: "max"
   test "renders form for new resources", %{conn: conn, user: _user} do
-    conn = get conn, expense_path(conn, :new, %{"account_id" => 3})
-    assert html_response(conn, 200) =~ "New expense"
+    conn = get conn, transaction_path(conn, :new, %{"account_id" => 3})
+    assert html_response(conn, 200) =~ "New transaction"
   end
 
   @tag login_as: "max"
@@ -44,9 +44,9 @@ defmodule Money.ExpenseControllerTest do
     account = insert_account(user)
     attrs = Dict.merge(%{account_id: account.id}, @valid_attrs)
 
-    conn = post conn, expense_path(conn, :create), expense: attrs
+    conn = post conn, transaction_path(conn, :create), transaction: attrs
     assert redirected_to(conn) == account_path(conn, :show, account.id)
-    assert Repo.get_by(Expense, @valid_attrs)
+    assert Repo.get_by(Transaction, @valid_attrs)
   end
 
   @tag login_as: "max"
@@ -54,84 +54,84 @@ defmodule Money.ExpenseControllerTest do
     account = insert_account(user)
     attrs = Dict.merge(%{account_id: account.id}, @invalid_attrs)
 
-    conn = post conn, expense_path(conn, :create), expense: attrs
-    assert html_response(conn, 200) =~ "New expense"
+    conn = post conn, transaction_path(conn, :create), transaction: attrs
+    assert html_response(conn, 200) =~ "New transaction"
   end
 
   @tag login_as: "max"
   test "shows chosen resource", %{conn: conn, user: user} do
     account = insert_account(user)
-    expense = insert_expense(account)
+    transaction = insert_transaction(account)
 
-    conn = get conn, expense_path(conn, :show, expense)
-    assert html_response(conn, 200) =~ "Show expense"
+    conn = get conn, transaction_path(conn, :show, transaction)
+    assert html_response(conn, 200) =~ "Show transaction"
   end
 
   @tag login_as: "max"
   test "renders page not found when id is nonexistent", %{conn: conn, user: _user} do
     assert_error_sent 404, fn ->
-      get conn, expense_path(conn, :show, -1)
+      get conn, transaction_path(conn, :show, -1)
     end
   end
 
   @tag login_as: "max"
   test "renders form for editing chosen resource", %{conn: conn, user: user} do
     account = insert_account(user)
-    expense = insert_expense(account)
+    transaction = insert_transaction(account)
 
-    conn = get conn, expense_path(conn, :edit, expense)
-    assert html_response(conn, 200) =~ "Edit expense"
+    conn = get conn, transaction_path(conn, :edit, transaction)
+    assert html_response(conn, 200) =~ "Edit transaction"
   end
 
   @tag login_as: "max"
   test "updates chosen resource and redirects when data is valid", %{conn: conn, user: user} do
     account = insert_account(user)
-    expense = insert_expense(account)
+    transaction = insert_transaction(account)
 
-    conn = put conn, expense_path(conn, :update, expense), expense: @valid_attrs
-    assert redirected_to(conn) == expense_path(conn, :show, expense)
-    assert Repo.get_by(Expense, @valid_attrs)
+    conn = put conn, transaction_path(conn, :update, transaction), transaction: @valid_attrs
+    assert redirected_to(conn) == transaction_path(conn, :show, transaction)
+    assert Repo.get_by(Transaction, @valid_attrs)
   end
 
   @tag login_as: "max"
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, user: user} do
     account = insert_account(user)
-    expense = insert_expense(account)
+    transaction = insert_transaction(account)
 
-    conn = put conn, expense_path(conn, :update, expense), expense: @invalid_attrs
-    assert html_response(conn, 200) =~ "Edit expense"
+    conn = put conn, transaction_path(conn, :update, transaction), transaction: @invalid_attrs
+    assert html_response(conn, 200) =~ "Edit transaction"
   end
 
   @tag login_as: "max"
   test "deletes chosen resource", %{conn: conn, user: user} do
     account = insert_account(user)
-    expense = insert_expense(account)
+    transaction = insert_transaction(account)
 
-    conn = delete conn, expense_path(conn, :delete, expense)
+    conn = delete conn, transaction_path(conn, :delete, transaction)
     assert redirected_to(conn) == account_path(conn, :show, account.id)
-    refute Repo.get(Expense, expense.id)
+    refute Repo.get(Transaction, transaction.id)
   end
 
   @tag login_as: "max"
   test "authorizes actions against access by other users", %{conn: conn, user: owner} do
     account = insert_account(owner)
-    expense = insert_expense(account)
+    transaction = insert_transaction(account)
 
     non_owner = insert_user(username: "alice")
     conn = assign(conn, :current_user, non_owner)
 
     assert_error_sent :not_found, fn ->
-      get(conn, expense_path(conn, :show, expense))
+      get(conn, transaction_path(conn, :show, transaction))
     end
     assert_error_sent :not_found, fn ->
-      get(conn, expense_path(conn, :edit, expense))
+      get(conn, transaction_path(conn, :edit, transaction))
     end
     assert_error_sent :not_found, fn ->
       attrs = Dict.merge(%{account_id: account.id}, @valid_attrs)
-      put(conn, expense_path(conn, :update, expense), expense: attrs)
+      put(conn, transaction_path(conn, :update, transaction), transaction: attrs)
     end
     assert_error_sent :not_found, fn ->
-      delete(conn, expense_path(conn, :delete, expense))
+      delete(conn, transaction_path(conn, :delete, transaction))
     end
   end
 end

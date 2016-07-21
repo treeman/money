@@ -1,7 +1,7 @@
-defmodule Money.Expense do
+defmodule Money.Transaction do
   use Money.Web, :model
 
-  schema "expenses" do
+  schema "transactions" do
     field :amount, :integer
     field :when, Ecto.DateTime
     field :payee, :string

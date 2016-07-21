@@ -37,6 +37,7 @@ defmodule Money.Web do
       import Money.Router.Helpers
       import Money.Gettext
       import Money.Auth, only: [authenticate_user: 2]
+      import Money.UserHelpers
     end
   end
 
@@ -62,7 +63,7 @@ defmodule Money.Web do
       use Phoenix.Router
 
       import Money.Auth, only: [authenticate_user: 2]
-      import Money.UserHelper, only: [preload_user_data: 2]
+      import Money.UserHelpers, only: [preload_user_data: 2]
     end
   end
 

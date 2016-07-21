@@ -6,11 +6,11 @@
 
 <nav class="transaction-header">
   <ol>
-    <%= case Access.fetch(assigns, :account_id) do %>
-      <%= {:ok, id} -> %>
-        <li><%= link "New transaction", to: expense_path(@conn, :new, account_id: id) %></li>
-      <%= _ ->%>
-        <li><%= link "New transaction", to: expense_path(@conn, :new) %></li>
+    <%= case Access.fetch(assigns, :account) do %>
+      <%= {:ok, account} -> %>
+        <li><%= link "New transaction", to: transaction_path(@conn, :new, account_id: account.id) %></li>
+      <%= _ -> %>
+        <li><%= link "New transaction", to: transaction_path(@conn, :new) %></li>
     <% end %>
     <li><%= link "Edit", to: "#" %></li>
     <li><%= link "Undo", to: "#" %></li>
@@ -32,20 +32,20 @@
     </tr>
   </thead>
   <tbody>
-  <%= for %{expense: expense, balance: balance} <- @expenses do %>
+  <%= for %{transaction: transaction, balance: balance} <- @transactions do %>
     <tr>
-      <td><%= expense.account_id %></td>
-      <td><%= Ecto.DateTime.to_date(expense.when) %></td>
-      <td><%= expense.payee %></td>
-      <td><%= expense.category %></td>
-      <td><%= expense.description %></td>
-      <td><%= expense.amount %></td>
+      <td><%= transaction.account_id %></td>
+      <td><%= Ecto.DateTime.to_date(transaction.when) %></td>
+      <td><%= transaction.payee %></td>
+      <td><%= transaction.category %></td>
+      <td><%= transaction.description %></td>
+      <td><%= transaction.amount %></td>
       <td><%= balance %></td>
 
       <td class="text-right">
-        <%= link "Show", to: expense_path(@conn, :show, expense), class: "btn btn-default btn-xs" %>
-        <%= link "Edit", to: expense_path(@conn, :edit, expense), class: "btn btn-default btn-xs" %>
-        <%= link "Delete", to: expense_path(@conn, :delete, expense), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
+        <%= link "Show", to: transaction_path(@conn, :show, transaction), class: "btn btn-default btn-xs" %>
+        <%= link "Edit", to: transaction_path(@conn, :edit, transaction), class: "btn btn-default btn-xs" %>
+        <%= link "Delete", to: transaction_path(@conn, :delete, transaction), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>
       </td>
     </tr>
   <% end %>

@@ -1,7 +1,7 @@
 defmodule Money.AccountController do
   use Money.Web, :controller
   alias Money.Account
-  alias Money.Expense
+  alias Money.Transaction
 
   def action(conn, _) do
     apply(__MODULE__, action_name(conn),
@@ -9,8 +9,8 @@ defmodule Money.AccountController do
   end
 
   def index(conn, _params, user) do
-    expenses = Repo.all(rolling_balance(user: user))
-    render(conn, "show.html", expenses: expenses)
+    transactions = Repo.all(rolling_balance(user: user))
+    render(conn, "show.html", transactions: transactions)
   end
 
   def new(conn, _params, user) do
@@ -40,9 +40,9 @@ defmodule Money.AccountController do
 
   def show(conn, %{"id" => id}, user) do
     account = Repo.get!(user_accounts(user), id)
-    expenses = Repo.all(rolling_balance(account: account))
+    transactions = Repo.all(rolling_balance(account: account))
 
-    render(conn, "show.html", account: account, expenses: expenses)
+    render(conn, "show.html", account: account, transactions: transactions)
   end
 
   def edit(conn, %{"id" => id}, user) do
@@ -75,13 +75,9 @@ defmodule Money.AccountController do
     |> redirect(to: account_path(conn, :index))
   end
 
-  defp user_accounts(user) do
-    assoc(user, :accounts)
-  end
-
   defp rolling_balance(account: account) do
-    from e in Expense,
-    select: %{expense: e,
+    from e in Transaction,
+    select: %{transaction: e,
               balance: fragment("SUM(amount) OVER(ORDER BY ?, ?)",
                                 e.when, e.id)},
     order_by: [desc: e.when],
@@ -89,11 +85,10 @@ defmodule Money.AccountController do
   end
 
   defp rolling_balance(user: user) do
-    IO.inspect(user)
-    from e in Expense,
+    from e in Transaction,
     join: a in assoc(e, :account),
     join: u in assoc(a, :user),
-    select: %{expense: e,
+    select: %{transaction: e,
               balance: fragment("SUM(amount) OVER(PARTITION BY ? ORDER BY ?, ?)",
                                 e.account_id, e.when, e.id)},
     order_by: [desc: e.when],

@@ -1,0 +1,10 @@
+<%= @transaction.when %> 
+
+<%= @transaction.amount %> 
+
+<%= @transaction.where %> 
+
+<%= @transaction.category %> 
+
+<%= @transaction.description %> 
+

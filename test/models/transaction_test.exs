@@ -1,7 +1,7 @@
-defmodule Money.ExpenseTest do
+defmodule Money.TransactionTest do
   use Money.ModelCase
 
-  alias Money.Expense
+  alias Money.Transaction
 
   @valid_attrs %{
     amount: 42,
@@ -12,12 +12,13 @@ defmodule Money.ExpenseTest do
   @invalid_attrs %{}
 
   test "changeset with valid attributes" do
-    changeset = Expense.changeset(%Expense{}, @valid_attrs)
+    changeset = Transaction.changeset(%Transaction{}, @valid_attrs)
     assert changeset.valid?
   end
 
   test "changeset with invalid attributes" do
-    changeset = Expense.changeset(%Expense{}, @invalid_attrs)
+    changeset = Transaction.changeset(%Transaction{}, @invalid_attrs)
     refute changeset.valid?
   end
 end
+

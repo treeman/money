@@ -1,7 +1,7 @@
 defmodule Money.AccountControllerTest do
   use Money.ConnCase
-
   alias Money.Account
+
   @valid_attrs %{title: "some content"}
   @invalid_attrs %{}
 
@@ -31,9 +31,27 @@ defmodule Money.AccountControllerTest do
   end
 
   @tag login_as: "max"
-  test "lists all entries on index", %{conn: conn, user: _user} do
+  test "lists all transactions on index", %{conn: conn, user: user} do
+    account = insert_account(user)
+    insert_transaction(account, %{amount: 1337, payee: "John", description: "Johns payment"})
+    insert_transaction(account, %{amount: -99, payee: "Mr.X", description: "secret transaction"})
+
+    other_account = insert_account(user)
+    insert_transaction(other_account, %{amount: 123456, payee: "Alice"})
+
     conn = get conn, account_path(conn, :index)
-    assert html_response(conn, 200) =~ "Listing accounts"
+    html = html_response(conn, 200)
+
+    assert String.contains?(html, "1337")
+    assert String.contains?(html, "John")
+    assert String.contains?(html, "Johns payment")
+
+    assert String.contains?(html, "-99")
+    assert String.contains?(html, "Mr.X")
+    assert String.contains?(html, "secret transaction")
+
+    assert String.contains?(html, "123456")
+    assert String.contains?(html, "Alice")
   end
 
   @tag login_as: "max"
@@ -58,8 +76,25 @@ defmodule Money.AccountControllerTest do
   @tag login_as: "max"
   test "shows chosen resource", %{conn: conn, user: user} do
     account = insert_account(user)
+    insert_transaction(account, %{amount: 1337, payee: "John", description: "Johns payment"})
+    insert_transaction(account, %{amount: -99, payee: "Mr.X", description: "secret transaction"})
+
+    other_account = insert_account(user)
+    insert_transaction(other_account, %{amount: 123456, payee: "Alice"})
+
     conn = get conn, account_path(conn, :show, account)
-    assert html_response(conn, 200)
+    html = html_response(conn, 200)
+
+    assert String.contains?(html, "1337")
+    assert String.contains?(html, "John")
+    assert String.contains?(html, "Johns payment")
+
+    assert String.contains?(html, "-99")
+    assert String.contains?(html, "Mr.X")
+    assert String.contains?(html, "secret transaction")
+
+    refute String.contains?(html, "123456")
+    refute String.contains?(html, "Alice")
   end
 
   @tag login_as: "max"

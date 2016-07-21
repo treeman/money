@@ -27,7 +27,7 @@ defmodule Money.Router do
     pipe_through [:browser, :authenticate_user]
 
     resources "/accounts", AccountController
-    resources "/expenses", ExpenseController, except: [:index]
+    resources "/transactions", TransactionController, except: [:index]
   end
 end
 
