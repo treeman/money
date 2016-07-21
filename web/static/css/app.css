@@ -59,13 +59,14 @@ html {
     background-color: #2e4272;
 }
 
+/*
 .sidebar .bottom-config {
     font-size: 0.4em;
-    /*font-weight: bold;*/
     bottom: 0;
     position: fixed;
     padding: 0.5em;
 }
+*/
 
 .sidebar, .sidebar a {
     /*color: #FFF0AA;*/
@@ -85,11 +86,22 @@ html {
     list-style: none;
     padding: 0;
     margin: 0;
+    padding-left: 0.3em;
 }
 
 .sidebar ul li {
     /*padding: 2em 0 2em 0;*/
     padding: 0.2em 0;
+}
+
+.sidebar li.account {
+    padding-left: 0.4em;
+    font-size: 0.8em;
+}
+.sidebar li.account .edit {
+    font-size: 0.8em;
+    padding-left: 0.4em;
+    color: #7887AB;
 }
 
 /*

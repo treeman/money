@@ -20,10 +20,10 @@
           <li><%= active_link @conn, "All Accounts", to: account_path(@conn, :index) %></li>
           <%= for account <- @current_user.accounts do %>
             <li class="account">
-              <%= active_link @conn, account.title, to: account_path(@conn, :show, account.id) %>
+              <%= active_link @conn, account.title, to: account_path(@conn, :show, account.id) %> 
+              <%= link "edit", to: account_path(@conn, :edit, account), class: "edit" %>
             </li>
           <% end %>
-          <li><%= link "Investments", to: "#" %></li>
         </ul>
       </nav>
     <% end %>

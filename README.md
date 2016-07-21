@@ -4,9 +4,6 @@ I want to track my budget including investments and expenses. Instead of using a
 
 # TODO
 
-## Budget view
-1. Create a budget view
-
 ## Transactions
 1. Actual categories instead of just strings.
    1. Category groups
@@ -20,5 +17,14 @@ I want to track my budget including investments and expenses. Instead of using a
 1. Edit accounts
 1. Add transaction must be tied to an account (form generation/default account)
 
+Should be split up in budgeted/non-budgeted accounts.
+This is where we can track our investments.
+Allow us to track some things automatically. (cryptos)
+
+## Budget view
+1. Create a budget view
+
 ## Misc
 1. Add behavior/tests for cascading deletion
+1. Graphs and shit
+
