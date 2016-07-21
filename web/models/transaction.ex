@@ -5,15 +5,15 @@ defmodule Money.Transaction do
     field :amount, :integer
     field :when, Ecto.DateTime
     field :payee, :string
-    field :category, :string
     field :description, :string
     belongs_to :account, Money.Account
+    belongs_to :category, Money.Category
 
     timestamps
   end
 
   @required_fields [:amount, :when, :payee]
-  @optional_fields [:category, :description]
+  @optional_fields [:description, :account_id, :category_id]
 
   def changeset(struct, params \\ %{}) do
     struct

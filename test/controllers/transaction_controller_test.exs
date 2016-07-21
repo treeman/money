@@ -3,7 +3,6 @@ defmodule Money.TransactionControllerTest do
 
   alias Money.Transaction
   @valid_attrs %{amount: 42,
-                 category: "some category",
                  description: "some description",
                  when: Ecto.DateTime.utc,
                  payee: "somewhere"}

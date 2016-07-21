@@ -13,4 +13,3 @@ defmodule Money.Repo.Migrations.CreateCategory do
     create unique_index(:categories, [:name])
   end
 end
-

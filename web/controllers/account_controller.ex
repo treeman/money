@@ -80,6 +80,7 @@ defmodule Money.AccountController do
     select: %{transaction: e,
               balance: fragment("SUM(amount) OVER(ORDER BY ?, ?)",
                                 e.when, e.id)},
+    preload: :category,
     order_by: [desc: e.when],
     where: e.account_id == ^account.id
   end
@@ -91,6 +92,7 @@ defmodule Money.AccountController do
     select: %{transaction: e,
               balance: fragment("SUM(amount) OVER(PARTITION BY ? ORDER BY ?, ?)",
                                 e.account_id, e.when, e.id)},
+    preload: :category,
     order_by: [desc: e.when],
     where: u.id == ^user.id
   end

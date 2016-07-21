@@ -19,9 +19,10 @@ defmodule Money.UserHelpers do
   end
 
   def user_transactions(user) do
-    from e in Money.Transaction,
-    join: a in assoc(e, :account),
+    from t in Money.Transaction,
+    join: a in assoc(t, :account),
     join: u in assoc(a, :user),
+    preload: :category,
     where: u.id == ^user.id
   end
 end

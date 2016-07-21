@@ -1,6 +1,9 @@
 defmodule Money.TransactionController do
   use Money.Web, :controller
   alias Money.Transaction
+  alias Money.Category
+
+  plug :load_categories when action in [:new, :create, :edit, :update]
 
   def action(conn, _) do
     apply(__MODULE__, action_name(conn),
@@ -16,14 +19,19 @@ defmodule Money.TransactionController do
     changeset = Transaction.changeset(%Transaction{}, %{account_id: account_id})
     render(conn, "new.html", changeset: changeset)
   end
-  def new(conn, _params, _user) do
-    changeset = Transaction.changeset(%Transaction{}, %{})
-    render(conn, "new.html", changeset: changeset)
-  end
+  # Cannot do it yet.
+  #def new(conn, _params, _user) do
+    #changeset = Transaction.changeset(%Transaction{}, %{})
+    #render(conn, "new.html", changeset: changeset)
+  #end
 
   def create(conn, %{"transaction" => transaction_params}, user) do
+    IO.inspect(transaction_params)
     account_id = Map.get(transaction_params, "account_id")
     account = Repo.get!(user_accounts(user), account_id)
+
+    #category_id = Map.get(transaction_params, "account_id")
+    #category = Repo.get!(Category, category_id)
 
     changeset =
       build_assoc(account, :transactions)
@@ -75,6 +83,15 @@ defmodule Money.TransactionController do
     conn
     |> put_flash(:info, "Transaction deleted successfully.")
     |> redirect(to: account_path(conn, :show, transaction.account_id))
+  end
+
+  defp load_categories(conn, _) do
+    query =
+      Category
+      |> Category.alphabetical
+      |> Category.names_and_ids
+    categories = Repo.all(query)
+    assign(conn, :categories, categories)
   end
 end
 

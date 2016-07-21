@@ -12,3 +12,4 @@ defmodule Money.Repo.Migrations.CreateAccount do
 
   end
 end
+
