@@ -24,7 +24,7 @@ Allow us to track some things automatically. (cryptos)
 
 ## Budget view
 1. Need test for summations!
-1. Create a budget view
+1. Support create/update
 1. Customized sort?
 
 ## Misc
