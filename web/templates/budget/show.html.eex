@@ -1,2 +1,31 @@
 <%= "year: #{@year} month: #{@month}" %>
 
+<table class="table">
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>Budgeted</th>
+      <th>Activity</th>
+      <th>Balance</th>
+    </tr>
+  </thead>
+  <tbody>
+  <%= for group <- @budget do %>
+    <tr class="budgeted-group">
+      <td><%= group.name %></td>
+      <td><%= group.budgeted %></td>
+      <td><%= group.activity %></td>
+      <td><%= group.budgeted + group.activity %></td>
+    </tr>
+    <%= for c <- group.budgeted_categories do %>
+      <tr class="budgeted-category">
+        <td><%= c.category.name %></td>
+        <td><%= c.budgeted %></td>
+        <td><%= c.activity %></td>
+        <td><%= c.budgeted + c.activity %></td>
+      </tr>
+    <% end %>
+  <% end %>
+  </tbody>
+</table>
+

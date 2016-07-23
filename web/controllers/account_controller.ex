@@ -76,25 +76,22 @@ defmodule Money.AccountController do
   end
 
   defp rolling_balance(account: account) do
-    from e in Transaction,
-    select: %{transaction: e,
+    from t in Transaction,
+    select: %{transaction: t,
               balance: fragment("SUM(amount) OVER(ORDER BY ?, ?)",
-                                e.when, e.id)},
+                                t.when, t.id)},
     preload: :category,
-    order_by: [desc: e.when],
-    where: e.account_id == ^account.id
+    order_by: [desc: t.when, desc: t.id],
+    where: t.account_id == ^account.id
   end
 
   defp rolling_balance(user: user) do
-    from e in Transaction,
-    join: a in assoc(e, :account),
-    join: u in assoc(a, :user),
-    select: %{transaction: e,
-              balance: fragment("SUM(amount) OVER(PARTITION BY ? ORDER BY ?, ?)",
-                                e.account_id, e.when, e.id)},
+    from t in user_transactions(user),
+    order_by: [desc: t.when, desc: t.id],
     preload: :category,
-    order_by: [desc: e.when],
-    where: u.id == ^user.id
+    select: %{transaction: t,
+              balance: fragment("SUM(amount) OVER(PARTITION BY ? ORDER BY ?, ?)",
+                                t.account_id, t.when, t.id)}
   end
 end
 

@@ -12,6 +12,7 @@ defmodule Money.TransactionController do
 
   def index(conn, _params, user) do
     transactions = Repo.all(user_transactions(user))
+                   |> Repo.preload(:category)
     render(conn, "index.html", transactions: transactions)
   end
 
@@ -42,6 +43,7 @@ defmodule Money.TransactionController do
 
   def show(conn, %{"id" => id}, user) do
     transaction = Repo.get!(user_transactions(user), id)
+                  |> Repo.preload(:category)
 
     render(conn, "show.html", transaction: transaction)
   end

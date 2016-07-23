@@ -28,6 +28,7 @@ html {
     /*left: 0; top: 0; bottom: 0;*/
     left: 0; top: 44px; bottom: 0;
     width: 180px;
+    height: 100%;
 }
 .right-main {
     position: absolute;
@@ -183,5 +184,18 @@ nav.transaction-header ol, nav.transaction-header ol li {
 
 nav.transaction-header ol li {
     padding-right: 0.4em;
+}
+
+/*
+ * Budget view
+ */
+tr.budgeted-group {
+    /*background-color: #FFF0AA;*/
+    /*background-color: #7887AB;*/
+    background-color: #D5DAE7;
+    /*background-color: #D49A6A;*/
+}
+tr.budgeted-category {
+
 }
 

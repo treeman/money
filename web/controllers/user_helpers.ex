@@ -22,7 +22,6 @@ defmodule Money.UserHelpers do
     from t in Money.Transaction,
     join: a in assoc(t, :account),
     join: u in assoc(a, :user),
-    preload: :category,
     where: u.id == ^user.id
   end
 end
