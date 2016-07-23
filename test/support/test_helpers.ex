@@ -31,11 +31,33 @@ defmodule Money.TestHelpers do
     |> Repo.insert!()
   end
 
-  def insert_category(attrs \\ %{}) do
+  def insert_category(group, attrs \\ %{}) do
     changes = Dict.merge(%{name: "Rent"}, attrs)
 
-    %Money.Category{}
-    |> Money.Category.changeset(changes)
+    group
+    |> Ecto.build_assoc(:categories, changes)
+    |> Repo.insert!()
+  end
+
+  def insert_category_group(attrs \\ %{}) do
+    changes = Dict.merge(%{name: "Rent"}, attrs)
+
+    %Money.CategoryGroup{}
+    |> Money.CategoryGroup.changeset(changes)
+    |> Repo.insert!()
+  end
+
+  def insert_budgeted_category(category, attrs \\ %{}) do
+    changes = Dict.merge(%{
+      budgeted: 1337,
+      year: 2016,
+      month: 7,
+      category_id: category.id,
+      category: category,
+    }, attrs)
+
+    %Money.BudgetedCategory{}
+    |> Money.BudgetedCategory.changeset(changes)
     |> Repo.insert!()
   end
 end
