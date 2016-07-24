@@ -1,5 +1,6 @@
 defmodule Money.BudgetControllerTest do
   use Money.ConnCase
+  import Money.HtmlParsers
   alias Ecto.DateTime
 
   setup %{conn: conn} = config do
@@ -105,6 +106,26 @@ defmodule Money.BudgetControllerTest do
     IO.puts(html)
     #IO.inspect(Money.Repo.all(Money.Transaction) |> Money.Repo.preload(:category))
     #IO.inspect(Money.Repo.all(Money.CategoryGroup) |> Money.Repo.preload(:categories))
+    #
+    #table = Floki.find(html, "tbody")
+
+    table = parse_table(html, ".table")
+    IO.inspect(table)
+
+    essentials_budget = find_category(table, "Essentials")
+    rent_budget = find_category(table, "Rent")
+    food_budget = find_category(table, "Food")
+    assert food_budget["Activity"] == 122
+    assert food_budget["Budgeted"] == 99
+    assert food_budget["Balance"] == -23
+
+    IO.inspect(essentials_budget)
+    IO.inspect(rent_budget)
+    IO.inspect(food_budget)
+  end
+
+  defp find_category(table, category) do
+    Enum.find(table, fn %{"Category" => c} -> c == category end)
   end
 end
 

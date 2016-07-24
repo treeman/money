@@ -30,4 +30,5 @@ Allow us to track some things automatically. (cryptos)
 ## Misc
 1. Add behavior/tests for cascading deletion
 1. Graphs and shit
+1. Need to support fraction (use integers) calculations
 
