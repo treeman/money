@@ -18,16 +18,17 @@ I want to track my budget including investments and expenses. Instead of using a
 1. Edit accounts
 1. Add transaction must be tied to an account (form generation/default account)
 
-Should be split up in budgeted/non-budgeted accounts.
+Should be split up in budgeted/non-budgeted accounts. Or possibly generate several budgets? Hm.
 This is where we can track our investments.
 Allow us to track some things automatically. (cryptos)
 
 ## Budget view
-1. Need test for summations!
+1. Fix calculation errors.
 1. Support create/update
 1. Customized sort?
 
 ## Misc
+1. Use a factory to generate test data. Find some library?
 1. Add behavior/tests for cascading deletion
 1. Graphs and shit
 1. Need to support fraction (use integers) calculations

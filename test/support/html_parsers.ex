@@ -14,7 +14,6 @@ defmodule Money.HtmlParsers do
       headers
       |> Enum.map(fn {"th", _class, [title]} -> title end)
       |> Enum.reduce({0, %{}}, fn(x, {i, map}) -> {i + 1, Map.put(map, i, x)} end)
-    IO.inspect(index2head)
 
     # End result is a list where each row is a map with the header title used as keys.
     #
@@ -24,7 +23,7 @@ defmodule Money.HtmlParsers do
       # "Category" => "Food"}]
     trs = Floki.find(table, "tbody") |> Floki.find("tr")
 
-    rows = Enum.map(trs, fn {"tr", _class, tds} ->
+    Enum.map(trs, fn {"tr", _class, tds} ->
       {_, mapped} = Enum.reduce(tds, {0, %{}}, fn({"td", _class, [val]}, {i, map}) ->
         head = Map.get(index2head, i)
 

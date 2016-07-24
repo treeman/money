@@ -86,9 +86,6 @@ defmodule Money.BudgetControllerTest do
     {:ok, dt} = DateTime.cast("2016-08-01 00:00:00")
     insert_transaction(account, category: food, amount: 999, payee: "9", when: dt)
 
-    #{:ok, dt} = DateTime.cast("2016-07-12 12:12:12")
-    #insert_transaction(account, category: clothes, amount: 400, payee: "Jeans", when: dt)
-
     {:ok, dt} = DateTime.cast("2016-07-03 00:00:01")
     insert_transaction(account, category: games, amount: 1, payee: "Casino Royale 1", when: dt)
     {:ok, dt} = DateTime.cast("2016-07-03 00:00:02")
@@ -103,25 +100,38 @@ defmodule Money.BudgetControllerTest do
     conn = get conn, budget_path(conn, :show, 2016, 7)
     html = html_response(conn, 200)
 
-    IO.puts(html)
-    #IO.inspect(Money.Repo.all(Money.Transaction) |> Money.Repo.preload(:category))
-    #IO.inspect(Money.Repo.all(Money.CategoryGroup) |> Money.Repo.preload(:categories))
-    #
-    #table = Floki.find(html, "tbody")
-
     table = parse_table(html, ".table")
-    IO.inspect(table)
 
     essentials_budget = find_category(table, "Essentials")
+    assert essentials_budget["Activity"] == 3692
+    assert essentials_budget["Budgeted"] == 5301
+    assert essentials_budget["Balance"] == 169
+
     rent_budget = find_category(table, "Rent")
+    assert rent_budget["Activity"] == 3570
+    assert rent_budget["Budgeted"] == 5202
+    assert rent_budget["Balance"] == 1632
+
     food_budget = find_category(table, "Food")
     assert food_budget["Activity"] == 122
     assert food_budget["Budgeted"] == 99
     assert food_budget["Balance"] == -23
 
-    IO.inspect(essentials_budget)
-    IO.inspect(rent_budget)
-    IO.inspect(food_budget)
+
+    fun_budget = find_category(table, "Fun")
+    assert fun_budget["Activity"] == 3
+    assert fun_budget["Budgeted"] == 60
+    assert fun_budget["Balance"] == 57
+
+    clothes_budget = find_category(table, "Clothes")
+    assert clothes_budget["Activity"] == 0
+    assert clothes_budget["Budgeted"] == 43
+    assert clothes_budget["Balance"] == 43
+
+    games_budget = find_category(table, "Games")
+    assert games_budget["Activity"] == 3
+    assert games_budget["Budgeted"] == 17
+    assert games_budget["Balance"] == 14
   end
 
   defp find_category(table, category) do
