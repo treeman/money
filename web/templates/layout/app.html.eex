@@ -17,11 +17,14 @@
       <nav class="sidebar">
         <ul>
           <li><%= active_link_starts_with @conn, "/budget/", "Budget", to: budget_path(@conn, :index) %></li>
-          <li><%= active_link @conn, "All Accounts", to: account_path(@conn, :index) %></li>
+          <li>
+            <%= active_link @conn, "All Accounts", to: account_path(@conn, :index) %>
+            <%= link "new", to: account_path(@conn, :new), class: "extra" %>
+          </li>
           <%= for account <- @current_user.accounts do %>
             <li class="account">
               <%= active_link @conn, account.title, to: account_path(@conn, :show, account.id) %> 
-              <%= link "edit", to: account_path(@conn, :edit, account), class: "edit" %>
+              <%= link "edit", to: account_path(@conn, :edit, account), class: "extra" %>
             </li>
           <% end %>
         </ul>

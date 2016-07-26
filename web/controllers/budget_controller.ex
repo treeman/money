@@ -25,35 +25,37 @@ defmodule Money.BudgetController do
     render(conn, "show.html", year: year, month: month, budget: budget)
   end
 
-  defp monthly_budget(user, year, month) do
+  defp monthly_budget(_user, year, month) do
     # Select transactions during a single month.
     last_day = :calendar.last_day_of_the_month(year, month)
     {:ok, start_date} = Ecto.DateTime.cast({{year, month, 1}, {0, 0, 0}})
-    {:ok, end_date} = Ecto.DateTime.cast({{year, month, last_day}, {0, 0, 0}})
+    {:ok, end_date} = Ecto.DateTime.cast({{year, month, last_day}, {23, 59, 59}})
 
-    transactions =
-      from t in user_transactions(user),
-      where: ^start_date <= t.when and t.when <= ^end_date
-
-    # Find the amount budgeted and sum the transactions for that category.
-    budgeted =
-      from t in transactions,
-      join: c in assoc(t, :category),
-      join: bc in assoc(c, :budgeted_category),
-      group_by: [c.id, bc.budgeted],
-      where: bc.year == ^year and bc.month == ^month,
-      select: %{category_id: c.id,
-                activity: sum(t.amount),
-                budgeted: bc.budgeted}
+    # Find the amount budgeted and sum of transactions for that category.
+    # All categories must be there, non-existing transactions/budgets should be 0.
+    # TODO limit categories for a user.
+    budgeted = Ecto.Adapters.SQL.query!(Money.Repo, """
+    SELECT c.id, COALESCE(SUM(t.amount), 0), COALESCE(bc.budgeted, 0), c.name
+    FROM categories AS c
+    LEFT JOIN transactions AS t
+      ON c.id = t.category_id
+      AND $1 <= t.when AND t.when <= $2
+    LEFT JOIN budgeted_categories AS bc
+      ON c.id = bc.category_id
+      AND bc.year = $3 AND bc.month = $4
+    GROUP BY c.id, bc.id
+    """, [start_date, end_date, year, month])
 
     # We only construct a budget for a category if the user updates it,
     # transform to a map to keep a record of the existing ones.
-    existing_budgets = Enum.reduce Repo.all(budgeted), %{}, fn b, acc->
-      Map.put(acc, b[:category_id], b)
+    budgets = Enum.reduce budgeted.rows, %{}, fn [c_id, activity, budgeted, c_name], acc->
+      Map.put(acc, c_id, %{
+        category_id: c_id,
+        category_name: c_name,
+        activity: activity,
+        budgeted: budgeted
+      })
     end
-
-    # Organize the budgets by group and generate budgeted categories for all categories
-    # even if they do not exist in the database. Should only insert on update.
 
     # TODO categories/budgets only for a single user.
     groups = from g in CategoryGroup, preload: :categories
@@ -65,17 +67,12 @@ defmodule Money.BudgetController do
                     {0, 0, []},
                     fn c, {budgeted_sum, activity_sum, categories} ->
 
-          category = case Map.get(existing_budgets, c.id) do
-            %{activity: activity,
-              budgeted: budgeted} ->
-                %BudgetedCategory{year: year, month: month,
-                                  budgeted: budgeted, activity: activity,
-                                  category_id: c.id, category: c}
-            nil ->
-                %BudgetedCategory{year: year, month: month,
-                                  budgeted: 0, activity: 0,
-                                  category_id: c.id, category: c}
-          end
+          # All categories should exist!
+          %{activity: activity, budgeted: budgeted} = Map.get(budgets, c.id)
+
+          category = %BudgetedCategory{year: year, month: month,
+                                       budgeted: budgeted, activity: activity,
+                                       category_id: c.id, category: c}
 
           {budgeted_sum + category.budgeted,
            activity_sum + category.activity,

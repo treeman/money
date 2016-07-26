@@ -99,7 +99,7 @@ html {
     padding-left: 0.4em;
     font-size: 0.8em;
 }
-.sidebar li.account .edit {
+.sidebar li .extra {
     font-size: 0.8em;
     padding-left: 0.4em;
     color: #7887AB;
