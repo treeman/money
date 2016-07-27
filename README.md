@@ -27,7 +27,6 @@ Allow us to track some things automatically. (cryptos)
 1. Customized sort?
 1. Need to specify currency
 1. Need to support split budgets with another person/non-tracked account
-1. Modify end-date to fix bug
 
 ## Investments Graphs/Repots
 1. Possibly just use a non-budget account as a base
