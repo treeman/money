@@ -1,6 +1,9 @@
 defmodule Money.AccountControllerTest do
   use Money.ConnCase
   alias Money.Account
+  import Money.HtmlParsers
+  alias Ecto.DateTime
+  import Kernel
 
   @valid_attrs %{title: "some content"}
   @invalid_attrs %{}
@@ -152,6 +155,86 @@ defmodule Money.AccountControllerTest do
     assert_error_sent :not_found, fn ->
       delete(conn, account_path(conn, :delete, account))
     end
+  end
+
+  @tag login_as: "max"
+  test "list all accounts", %{conn: conn, user: user} do
+    acc1 = insert_account(user, title: "Alice account")
+    acc2 = insert_account(user, title: "Bob account")
+
+    other_user = insert_user(username: "Eve")
+    acc3 = insert_account(other_user, title: "Eve account")
+
+    conn = get conn, account_path(conn, :index)
+    html = html_response(conn, 200)
+
+    assert String.contains?(html, account_path(conn, :index))
+    assert String.contains?(html, account_path(conn, :show, acc1))
+    assert String.contains?(html, account_path(conn, :show, acc2))
+    refute String.contains?(html, account_path(conn, :show, acc3))
+  end
+
+  @tag login_as: "max"
+  test "rolling balance of transactions", %{conn: conn, user: user} do
+    # Should never show up.
+    other_user = insert_user(username: "Alice")
+    other_account = insert_account(other_user)
+    {:ok, dt} = DateTime.cast("2016-07-01 23:59:59")
+    insert_transaction(other_account, amount: -99999, payee: "Bob", when: dt)
+    {:ok, dt} = DateTime.cast("2016-07-03 11:11:11")
+    insert_transaction(other_account, amount: -99999, payee: "Alice", when: dt)
+
+    acc1 = insert_account(user)
+    {:ok, dt} = DateTime.cast("2016-06-30 00:01:00")
+    insert_transaction(acc1, amount: 1000, payee: "Income", when: dt)
+    {:ok, dt} = DateTime.cast("2016-06-30 00:01:01")
+    insert_transaction(acc1, amount: -23, payee: "Gum1", when: dt)
+    {:ok, dt} = DateTime.cast("2016-07-01 23:59:59")
+    insert_transaction(acc1, amount: -13, payee: "Gum2", when: dt)
+    {:ok, dt} = DateTime.cast("2016-07-03 00:11:11")
+    insert_transaction(acc1, amount: -102, payee: "Gum3", when: dt)
+    {:ok, dt} = DateTime.cast("2016-07-03 00:11:11")
+    insert_transaction(acc1, amount: -1017, payee: "Gum4", when: dt)
+    {:ok, dt} = DateTime.cast("2016-07-31 01:00:00")
+    insert_transaction(acc1, amount: 1000, payee: "Income", when: dt)
+    {:ok, dt} = DateTime.cast("2016-08-01 00:10:00")
+    insert_transaction(acc1, amount: -3, payee: "Gum5", when: dt)
+
+    acc2 = insert_account(user)
+    {:ok, dt} = DateTime.cast("2016-06-30 00:02:00")
+    insert_transaction(acc2, amount: 37, payee: "Food Income", when: dt)
+    {:ok, dt} = DateTime.cast("2016-07-02 23:59:59")
+    insert_transaction(acc2, amount: -3, payee: "Food1", when: dt)
+    {:ok, dt} = DateTime.cast("2016-07-10 01:00:00")
+    insert_transaction(acc2, amount: -7, payee: "Food2", when: dt)
+    {:ok, dt} = DateTime.cast("2016-08-01 00:00:00")
+    insert_transaction(acc2, amount: -31, payee: "Food3", when: dt)
+
+    conn = get conn, account_path(conn, :index)
+    html = html_response(conn, 200)
+    #IO.inspect(html)
+
+    # List is rendered latest at the top, test bottom up
+    table = parse_table(html, ".table") |> Enum.reverse
+    #IO.inspect(table)
+
+    expected = [
+      %{"Amount" => 1000, "Balance" => 1000, "Payee" => "Income", "Date" => "2016-06-30"},
+      %{"Amount" => -23, "Balance" => 977, "Payee" => "Gum1", "Date" => "2016-06-30"},
+      %{"Amount" => 37, "Balance" => 37, "Payee" => "Food Income", "Date" => "2016-06-30"},
+      %{"Amount" => -13, "Balance" => 964, "Payee" => "Gum2", "Date" => "2016-07-01"},
+      %{"Amount" => -3, "Balance" => 34, "Payee" => "Food1", "Date" => "2016-07-02"},
+      %{"Amount" => -102, "Balance" => 862, "Payee" => "Gum3", "Date" => "2016-07-03"},
+      %{"Amount" => -1017, "Balance" => -155, "Payee" => "Gum4", "Date" => "2016-07-03"},
+      %{"Amount" => -7, "Balance" => 27, "Payee" => "Food2", "Date" => "2016-07-10"},
+      %{"Amount" => 1000, "Balance" => 845, "Payee" => "Income", "Date" => "2016-07-31"},
+      %{"Amount" => -31, "Balance" => -4, "Payee" => "Food3", "Date" => "2016-08-01"},
+      %{"Amount" => -3, "Balance" => 842, "Payee" => "Gum5", "Date" => "2016-08-01"}
+    ]
+    for {want, have} <- Enum.zip(expected, table) do
+      assert want == have
+    end
+    assert length(table) == length(expected)
   end
 end
 

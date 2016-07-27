@@ -14,7 +14,7 @@ I want to track my budget including investments and expenses. Instead of using a
 1. Transactions between accounts (with transaction fee support)
 
 ## Accounts
-1. Need tests for rolling balance! Need to check for sort order as well!
+1. Split amount -> inflow/outflow
 1. Edit accounts
 1. Add transaction must be tied to an account (form generation/default account)
 
@@ -23,7 +23,6 @@ This is where we can track our investments.
 Allow us to track some things automatically. (cryptos)
 
 ## Budget view
-1. Fix calculation errors.
 1. Support create/update
 1. Customized sort?
 1. Need to specify currency

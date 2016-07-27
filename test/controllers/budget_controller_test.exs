@@ -55,6 +55,8 @@ defmodule Money.BudgetControllerTest do
     games = insert_category(fun, name: "Games")
     vacation = insert_category(fun, name: "Vacation")
 
+    insert_budgeted_category(rent, year: 2015, month: 7, budgeted: 9999)
+
     insert_budgeted_category(rent, year: 2016, month: 6, budgeted: 5201)
     insert_budgeted_category(food, year: 2016, month: 6, budgeted: 317)
     insert_budgeted_category(clothes, year: 2016, month: 6, budgeted: 999999)
@@ -69,6 +71,8 @@ defmodule Money.BudgetControllerTest do
     insert_budgeted_category(food, year: 2016, month: 8, budgeted: 1)
     insert_budgeted_category(clothes, year: 2016, month: 8, budgeted: 999999)
     insert_budgeted_category(games, year: 2016, month: 8, budgeted: 5)
+
+    insert_budgeted_category(rent, year: 2015, month: 9, budgeted: 9999)
 
     {:ok, dt} = DateTime.cast("2016-06-30 00:01:00")
     insert_transaction(account, category: rent, amount: -3570, payee: "Mr.T", when: dt)

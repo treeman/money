@@ -12,7 +12,10 @@ defmodule Money.HtmlParsers do
 
     {_, index2head} =
       headers
-      |> Enum.map(fn {"th", _class, [title]} -> title end)
+      |> Enum.map(fn {"th", _class, [title]} -> title
+                     {"th", _class, []} -> nil
+                  end)
+      #|> Enum.filter(&(!is_nil(&1)))
       |> Enum.reduce({0, %{}}, fn(x, {i, map}) -> {i + 1, Map.put(map, i, x)} end)
 
     # End result is a list where each row is a map with the header title used as keys.
@@ -24,17 +27,24 @@ defmodule Money.HtmlParsers do
     trs = Floki.find(table, "tbody") |> Floki.find("tr")
 
     Enum.map(trs, fn {"tr", _class, tds} ->
-      {_, mapped} = Enum.reduce(tds, {0, %{}}, fn({"td", _class, [val]}, {i, map}) ->
-        head = Map.get(index2head, i)
+      {_, mapped} = Enum.reduce(tds, {0, %{}}, fn(
+        {"td", _class, [val]}, {i, map}) ->
+          head = Map.get(index2head, i)
 
-        # Just a convenience conversion.
-        # FIXME need to be changed when we allow fraction calculations.
-        val = case Integer.parse(val) do
-          {int, ""} -> int
-          _ -> val
-        end
+          if Kernel.is_nil(head) do
+            {i + 1, map}
+          else
+            # Just a convenience conversion.
+            # FIXME need to be changed when we allow fraction calculations.
+            val = case Integer.parse(val) do
+              {int, ""} -> int
+              _ -> val
+            end
 
-        {i + 1, Map.put(map, head, val)}
+            {i + 1, Map.put(map, head, val)}
+          end
+        {_, _, _}, {i, map} ->
+          {i + 1, map}
       end)
 
       mapped
