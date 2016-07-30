@@ -50,5 +50,6 @@
     </tr>
   <% end %>
   </tbody>
+  <a href="#" id="js_link">Link</a>
 </table>
 
