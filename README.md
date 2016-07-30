@@ -4,9 +4,14 @@ I want to track my budget including investments and expenses. Instead of using a
 
 # TODO
 
+1. Javascript ajax + rewrite dom!
 1. Need to associate categories/budgets with a single user
 
+## User
+1. When new user is created need to seed categories
+
 ## Transactions
+1. No good error message if category isn't select (also it should be possible to create)
 1. Importer/Generator
 1. JS enabled transaction view
 1. Store payees and info about them. Last Category and amount and others?
@@ -43,3 +48,4 @@ Allow us to track some things automatically. (cryptos)
 1. Better register/landing page
 
 coincap API <https://github.com/CoinCapDev/CoinCap.io>
+
