@@ -4,16 +4,19 @@ I want to track my budget including investments and expenses. Instead of using a
 
 # TODO
 
-1. Javascript ajax + rewrite dom!
+1. Javascript powered transactions
 1. Need to associate categories/budgets with a single user
 
 ## User
 1. When new user is created need to seed categories
 
 ## Transactions
+1. JS enabled transaction view
+    1. New transaction needs a form and server support
+    1. Edit transactions needs to rebuild with forms and then conform with server
+
 1. No good error message if category isn't select (also it should be possible to create)
 1. Importer/Generator
-1. JS enabled transaction view
 1. Store payees and info about them. Last Category and amount and others?
 1. Recurring transactions
 1. Transactions between accounts (with transaction fee support)
@@ -32,6 +35,8 @@ Allow us to track some things automatically. (cryptos)
 1. Customized sort?
 1. Need to specify currency
 1. Need to support split budgets with another person/non-tracked account
+1. JS enabled budget view
+    1. Everything should already be editable, just click and change.
 
 ## Investments Graphs/Repots
 1. Possibly just use a non-budget account as a base
