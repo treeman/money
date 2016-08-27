@@ -31,5 +31,11 @@ defmodule Money.Router do
     get "/budget", BudgetController, :index
     get "/budget/:year/:month", BudgetController, :show
   end
+
+  scope "/api/v1", Money do
+    pipe_through [:api, :authenticate_user]
+
+    #get "/budget", BudgetController, :index
+  end
 end
 
