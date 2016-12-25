@@ -75,4 +75,3 @@
                                     action: transaction_path(@conn, :create) %>
 <% end %>
 
-
