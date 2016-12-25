@@ -18,7 +18,7 @@
   </ol>
 </nav>
 
-<table class="table">
+<table class="table" id="transactions">
   <thead>
     <tr>
       <th></th>

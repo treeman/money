@@ -32,10 +32,11 @@ defmodule Money.Router do
     get "/budget/:year/:month", BudgetController, :show
   end
 
-  #scope "/", Money do
-    #pipe_through [:browser, :authenticate_user]
+  # TODO post transaction and get html formated return
+  scope "/api/v1", Money do
+    pipe_through [:api, :authenticate_user]
 
-    #resources "/transactions", TransactionController, except: [:index, :show]
-  #end
+    #get "/budget", BudgetController, :index
+  end
 end
 
