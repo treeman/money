@@ -49,6 +49,8 @@
       </td>
     </tr>
   <% end %>
+
+  <%#
     <tr>
       <td></td>
       <td></td>
@@ -61,11 +63,16 @@
       <td class="text-right">
       </td>
     </tr>
+  %>
   </tbody>
 </table>
 
 <a href="#" id="js_link">Link</a>
 
-<%= render Money.TransactionView, "form.html", changeset: @new_transaction, categories: @categories,
-                        action: transaction_path(@conn, :create) %>
+<%# FIXME actually allow this %>
+<%= if assigns[:new_transaction] do %>
+  <%= render Money.TransactionView, "form.html", changeset: @new_transaction, categories: @categories,
+                                    action: transaction_path(@conn, :create) %>
+<% end %>
+
 
