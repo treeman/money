@@ -1,0 +1,44 @@
+<%= form_for @changeset, @action, [id: "new-transaction"], fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <%= hidden_input f, :account_id, class: "form-control" %>
+
+  <div class="form-group">
+    <%= label f, :amount, class: "control-label" %>
+    <%= number_input f, :amount, class: "form-control" %>
+    <%= error_tag f, :amount %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :when, class: "control-label" %>
+    <%= datetime_select f, :when, class: "form-control" %>
+    <%= error_tag f, :when %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :payee, class: "control-label" %>
+    <%= text_input f, :payee, class: "form-control" %>
+    <%= error_tag f, :payee %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :category_id, "Category", class: "control-label" %>
+    <%= select f, :category_id, @categories, class: "form-control",
+               prompt: "Choose a category" %>
+  </div>
+
+  <div class="form-group">
+    <%= label f, :description, class: "control-label" %>
+    <%= text_input f, :description, class: "form-control" %>
+    <%= error_tag f, :description %>
+  </div>
+
+  <div class="form-group">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>
+

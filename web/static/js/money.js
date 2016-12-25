@@ -32,9 +32,10 @@ function post(url, params) {
   return new Promise(function(resolve, reject) {
     var req = new XMLHttpRequest();
     req.open('POST', url);
-    req.setRequestHeader("Content-type", "application/json; charset=utf-8");
-    req.setRequestHeader("Content-length", params.length);
-    req.setRequestHeader("Connection", "close");
+    // This breaks for some reason. Because we're trying to send formData...?
+    //req.setRequestHeader("Content-type", "application/json; charset=utf-8");
+    //req.setRequestHeader("Content-length", params.length);
+    //req.setRequestHeader("Connection", "close");
 
     req.onload = function() {
       // This is always called
@@ -95,6 +96,25 @@ for (var i = 0; i < transaction_rows.length; ++i) {
     edit.setAttribute('href', '#');
     */
 }
+
+// Change add functionality for new transaction.
+var new_form = document.querySelectorAll('form#new-transaction')[0];
+new_form.addEventListener('submit', function(evt) {
+    console.log('submit');
+    evt.preventDefault();
+    var formData = new FormData(new_form);
+    var request = new XMLHttpRequest();
+    // FIXME cleanup.
+    // FIXME create a proper response framework. Should only return 200 on success.
+    // FIXME validation on client side.
+    //request.open("POST", "/transactions");
+    //request.send(formData);
+    post('/transactions', formData).then(function(response) {
+        console.log("Success!", response);
+    }, function(error) {
+        console.error("Failed!", error);
+    });
+});
 
 // Testing to add in a new transaction.
 // TODO get info from server and then add in elements.

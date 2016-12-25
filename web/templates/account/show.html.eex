@@ -71,7 +71,7 @@
 
 <%# FIXME actually allow this %>
 <%= if assigns[:new_transaction] do %>
-  <%= render Money.TransactionView, "form.html", changeset: @new_transaction, categories: @categories,
+  <%= render "new_transaction.html", changeset: @new_transaction, categories: @categories,
                                     action: transaction_path(@conn, :create) %>
 <% end %>
 
