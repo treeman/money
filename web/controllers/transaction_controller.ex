@@ -57,6 +57,7 @@ defmodule Money.TransactionController do
   def update(conn, %{"id" => id, "transaction" => transaction_params}, user) do
     transaction = Repo.get!(user_transactions(user), id)
     changeset = Transaction.changeset(transaction, transaction_params)
+    IO.inspect(changeset)
 
     case Repo.update(changeset) do
       {:ok, transaction} ->

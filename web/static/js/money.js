@@ -57,6 +57,7 @@ function post(url, params) {
   });
 }
 
+/*
 document.getElementById("js_link").onclick = function() {
   console.log('Click!');
 
@@ -68,14 +69,32 @@ document.getElementById("js_link").onclick = function() {
     console.error("Failed!", error);
   });
 };
+*/
 
 /*
-document.getElementById("js_link").onclick = function() {
-  console.log('Click!');
-  var x = document.getElementById("transactions");
-  console.log(x);
-};
+document.getElementById("").onclick = function() {
+    console.log('Click!');
+}
 */
+/*
+var table = document.getElementById("transactions");
+console.log(table);
+console.log(table.getElementsByClassName("tr"));
+*/
+
+// Changing edit functionality for all transactions.
+var transaction_rows = document.querySelectorAll('#transactions tbody tr');
+for (var i = 0; i < transaction_rows.length; ++i) {
+    var row = transaction_rows[i];
+
+    var edit = row.querySelectorAll('.btn-edit')[0];
+    /*
+    edit.onclick = function() {
+        //console.log('Edit');
+    }
+    edit.setAttribute('href', '#');
+    */
+}
 
 // Testing to add in a new transaction.
 // TODO get info from server and then add in elements.

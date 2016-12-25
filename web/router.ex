@@ -32,10 +32,12 @@ defmodule Money.Router do
     get "/budget/:year/:month", BudgetController, :show
   end
 
-  # TODO post transaction and get html formated return
+  # TODO post transaction and get html formated return.
+  # Use another controller or the same? It's not possible to use the same?
   scope "/api/v1", Money do
     pipe_through [:api, :authenticate_user]
 
+    #post "/transactions/:id", TransactionController, :update
     #get "/budget", BudgetController, :index
   end
 end
