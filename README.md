@@ -8,17 +8,24 @@ C-]     Jump to definition
 C-t     Jump back
 
 # TODO
+1. json api for transaction support
+1. JS transactions add/edit/remove
+1. Add/remove/edit categories
 
-1. Javascript powered transactions
-1. Need to associate categories/budgets with a single user
+## Categories
+1. Need to be able to create a category
+1. Need to be able to delete/rename a category
 
 ## User
 1. When new user is created need to seed categories
+1. Need to associate categories/budgets with a single user
 
 ## Transactions
 1. JS enabled transaction view
     1. New transaction needs a form and server support
     1. Edit transactions needs to rebuild with forms and then conform with server
+    1. Delete transaction directly from account view
+1. Add/edit/new transaction support for the all account view
 
 1. No good error message if category isn't select (also it should be possible to create)
 1. Importer/Generator
@@ -42,6 +49,7 @@ Allow us to track some things automatically. (cryptos)
 1. Need to support split budgets with another person/non-tracked account
 1. JS enabled budget view
     1. Everything should already be editable, just click and change.
+1. The budget shouldn't automatically operate on all accounts but should be configurable
 
 ## Investments Graphs/Repots
 1. Possibly just use a non-budget account as a base
