@@ -2,6 +2,8 @@ defmodule Money.UserHelpers do
   import Plug.Conn
   import Ecto
   import Ecto.Query
+  alias Money.Repo
+  alias Money.Category
 
   def preload_user_data(conn, opts) do
     repo = Keyword.fetch!(opts, :repo)
@@ -23,6 +25,15 @@ defmodule Money.UserHelpers do
     join: a in assoc(t, :account),
     join: u in assoc(a, :user),
     where: u.id == ^user.id
+  end
+
+  def load_categories(conn, _) do
+    query =
+      Category
+      |> Category.alphabetical
+      |> Category.names_and_ids
+    categories = Repo.all(query)
+    assign(conn, :categories, categories)
   end
 end
 

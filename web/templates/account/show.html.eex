@@ -49,7 +49,23 @@
       </td>
     </tr>
   <% end %>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>2</td>
+
+      <td class="text-right">
+      </td>
+    </tr>
   </tbody>
-  <a href="#" id="js_link">Link</a>
 </table>
+
+<a href="#" id="js_link">Link</a>
+
+<%= render Money.TransactionView, "form.html", changeset: @new_transaction, categories: @categories,
+                        action: transaction_path(@conn, :create) %>
 

@@ -1,7 +1,6 @@
 defmodule Money.TransactionController do
   use Money.Web, :controller
   alias Money.Transaction
-  alias Money.Category
 
   plug :load_categories when action in [:new, :create, :edit, :update]
 
@@ -27,6 +26,7 @@ defmodule Money.TransactionController do
   #end
 
   def create(conn, %{"transaction" => transaction_params}, _user) do
+    IO.inspect(transaction_params)
     changeset = Transaction.changeset(%Transaction{}, transaction_params)
 
     case Repo.insert(changeset) do
@@ -78,15 +78,6 @@ defmodule Money.TransactionController do
     conn
     |> put_flash(:info, "Transaction deleted successfully.")
     |> redirect(to: account_path(conn, :show, transaction.account_id))
-  end
-
-  defp load_categories(conn, _) do
-    query =
-      Category
-      |> Category.alphabetical
-      |> Category.names_and_ids
-    categories = Repo.all(query)
-    assign(conn, :categories, categories)
   end
 end
 

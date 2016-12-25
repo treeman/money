@@ -3,6 +3,8 @@ defmodule Money.AccountController do
   alias Money.Account
   alias Money.Transaction
 
+  plug :load_categories when action in [:show, :index]
+
   def action(conn, _) do
     apply(__MODULE__, action_name(conn),
      [conn, conn.params, conn.assigns.current_user])
@@ -41,8 +43,12 @@ defmodule Money.AccountController do
   def show(conn, %{"id" => id}, user) do
     account = Repo.get!(user_accounts(user), id)
     transactions = Repo.all(rolling_balance(account: account))
+    new_transaction = Transaction.changeset(%Transaction{}, %{account_id: account.id})
 
-    render(conn, "show.html", account: account, transactions: transactions)
+    render(conn, "show.html",
+           account: account,
+           transactions: transactions,
+           new_transaction: new_transaction)
   end
 
   def edit(conn, %{"id" => id}, user) do

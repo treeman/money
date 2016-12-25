@@ -31,12 +31,6 @@
                prompt: "Choose a category" %>
   </div>
 
-  <%#<div class="form-group">%>
-    <%#<%= label f, :category, class: "control-label" %>%>
-    <%#<%= text_input f, :category, class: "form-control" %>%>
-    <%#<%= error_tag f, :category %>%>
-  <%#</div>%>
-
   <div class="form-group">
     <%= label f, :description, class: "control-label" %>
     <%= text_input f, :description, class: "form-control" %>

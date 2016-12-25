@@ -2,6 +2,11 @@
 
 I want to track my budget including investments and expenses. Instead of using any of the many already existing ones I figured I'd build my own, go figure. It's also an excuse for me to learn web dev with Elixir and Phoenix.
 
+# Vim
+
+C-]     Jump to definition
+C-t     Jump back
+
 # TODO
 
 1. Javascript ajax + rewrite dom!
@@ -46,6 +51,22 @@ Allow us to track some things automatically. (cryptos)
 1. Need to support fraction (use integers) calculations
 1. Login directly on homepage
 1. Better register/landing page
+1. Need a way to register debt/borrowing
 
 coincap API <https://github.com/CoinCapDev/CoinCap.io>
+
+# Phoenix
+
+To start your Phoenix app:
+
+  * Install dependencies with `mix deps.get`
+  * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
+  * Install Node.js dependencies with `npm install`
+  * Start Phoenix endpoint with `mix phoenix.server`
+
+Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+
+Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
+
+Test: tradet 123456
 
