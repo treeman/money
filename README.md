@@ -8,9 +8,15 @@ C-]     Jump to definition
 C-t     Jump back
 
 # TODO
-1. json api for transaction support
-1. JS transactions add/edit/remove
+1. Ajax transactions add/edit/remove
+    1. Properly init balance & order for new transactions
+    1. Edit transactions inline in account view
+    1. Deletion still reloads the page
 1. Add/remove/edit categories
+1. Ability to add transactions from main view
+
+1. Prettier add transaction form
+1. Sidebar isn't tall enough. Use a frame for all transactions?
 
 ## Categories
 1. Need to be able to create a category
