@@ -13,6 +13,12 @@ defmodule Money.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug :fetch_flash # FIXME temp, not needed
+    plug :protect_from_forgery
+    plug :put_secure_browser_headers
+    plug Money.Auth, repo: Money.Repo
+    plug :preload_user_data, repo: Money.Repo
   end
 
   scope "/", Money do
@@ -37,7 +43,8 @@ defmodule Money.Router do
   scope "/api/v1", Money do
     pipe_through [:api, :authenticate_user]
 
-    #post "/transactions/:id", TransactionController, :update
+    post "/transactions", ApiTransactionController, :create
+    #post "/transactions/:id", ApiTransactionController, :update
     #get "/budget", BudgetController, :index
   end
 end

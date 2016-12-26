@@ -72,6 +72,6 @@
 <%# FIXME actually allow this %>
 <%= if assigns[:new_transaction] do %>
   <%= render "new_transaction.html", changeset: @new_transaction, categories: @categories,
-                                    action: transaction_path(@conn, :create) %>
+                                    action: api_transaction_path(@conn, :create) %>
 <% end %>
 

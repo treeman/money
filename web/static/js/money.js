@@ -103,13 +103,16 @@ new_form.addEventListener('submit', function(evt) {
     console.log('submit');
     evt.preventDefault();
     var formData = new FormData(new_form);
-    var request = new XMLHttpRequest();
+    console.log(formData);
+    console.log(new_form.action);
+
+    //var request = new XMLHttpRequest();
     // FIXME cleanup.
     // FIXME create a proper response framework. Should only return 200 on success.
     // FIXME validation on client side.
     //request.open("POST", "/transactions");
     //request.send(formData);
-    post('/transactions', formData).then(function(response) {
+    post(new_form.action, formData).then(function(response) {
         console.log("Success!", response);
     }, function(error) {
         console.error("Failed!", error);
