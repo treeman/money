@@ -7,13 +7,14 @@ defmodule Money.HtmlParsers do
     # Create a index->table_head map for use when traversing the table rows.
     headers =
       table
-      |> Floki.find("thead")
-      |> Floki.find("th")
-
+      |> Floki.find(".thead")
+      |> Floki.find(".th")
+    #IO.inspect(headers)
+    # Need to keep nil for empty header stuff in budget
     {_, index2head} =
       headers
-      |> Enum.map(fn {"th", _class, [title]} -> title
-                     {"th", _class, []} -> nil
+      |> Enum.map(fn {_, _, [title]} -> title
+                     {_, _, []} -> nil
                   end)
       #|> Enum.filter(&(!is_nil(&1)))
       |> Enum.reduce({0, %{}}, fn(x, {i, map}) -> {i + 1, Map.put(map, i, x)} end)
@@ -24,11 +25,11 @@ defmodule Money.HtmlParsers do
       # "Category" => "Essentials"},
     # %{"Activity" => 122, "Balance" => 1459, "Budgeted" => 1337,
       # "Category" => "Food"}]
-    trs = Floki.find(table, "tbody") |> Floki.find("tr")
+    trs = Floki.find(table, ".tbody") |> Floki.find(".tr")
 
-    Enum.map(trs, fn {"tr", _class, tds} ->
-      {_, mapped} = Enum.reduce(tds, {0, %{}}, fn(
-        {"td", _class, [val]}, {i, map}) ->
+    Enum.map(trs, fn {_, _, cols} ->
+      {_, mapped} = Enum.reduce(cols, {0, %{}}, fn(
+        {_, _, [val]}, {i, map}) ->
           head = Map.get(index2head, i)
 
           if Kernel.is_nil(head) do

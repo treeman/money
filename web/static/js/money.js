@@ -64,14 +64,14 @@ function post(url, params, success_status = 200, binary = false) {
 }
 
 // Changing edit functionality for all transactions.
-var transaction_rows = document.querySelectorAll('#transactions tbody tr');
+var transaction_rows = document.querySelectorAll('#transactions .tbody .tr');
 for (var i = 0; i < transaction_rows.length; ++i) {
     var row = transaction_rows[i];
 
     var edit = row.querySelectorAll('.btn-edit')[0];
     /*
     edit.onclick = function() {
-        //console.log('Edit');
+        console.log('Edit');
     }
     edit.setAttribute('href', '#');
     */
@@ -88,16 +88,14 @@ new_form.addEventListener('submit', function(evt) {
         var html = response.data.html_row;
         console.log(html);
         if (html) {
-            var newTransaction = document.createElement("tr");
+            // Create an element from the returned string.
+            var newTransaction = document.createElement("div");
             newTransaction.innerHTML = html;
+            newTransaction = newTransaction.firstChild;
 
             // FIXME need to get the position to insert the transaction in, to get the proper order.
-            var body = document.querySelectorAll('#transactions tbody')[0];
+            var body = document.querySelectorAll('#transactions .tbody')[0];
             body.appendChild(newTransaction);
-            //var tr = body.getElementsByTagName("tr")[0];
-            //if (tr) {
-                //tr.parentNode.insertBefore(newTransaction, tr.nextSibling);
-            //}
         }
     }, function(error) {
         // FIXME add in flash.

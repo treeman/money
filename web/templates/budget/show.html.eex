@@ -1,31 +1,31 @@
 <%= "year: #{@year} month: #{@month}" %>
 
-<table class="table">
-  <thead>
-    <tr>
-      <th>Category</th>
-      <th>Budgeted</th>
-      <th>Activity</th>
-      <th>Balance</th>
-    </tr>
-  </thead>
-  <tbody>
+<div class="ctable">
+  <div class="thead">
+    <div class="tr">
+      <div class="th">Category</div>
+      <div class="th">Budgeted</div>
+      <div class="th">Activity</div>
+      <div class="th">Balance</div>
+    </div>
+  </div>
+  <div class="tbody">
   <%= for group <- @budget do %>
-    <tr class="budgeted-group">
-      <td><%= group.name %></td>
-      <td><%= group.budgeted %></td>
-      <td><%= group.activity %></td>
-      <td><%= group.budgeted + group.activity %></td>
-    </tr>
+    <div class="tr budgeted-group">
+      <div class="tc"><%= group.name %></div>
+      <div class="tc"><%= group.budgeted %></div>
+      <div class="tc"><%= group.activity %></div>
+      <div class="tc"><%= group.budgeted + group.activity %></div>
+    </div>
     <%= for c <- group.budgeted_categories do %>
-      <tr class="budgeted-category">
-        <td><%= c.category.name %></td>
-        <td><%= c.budgeted %></td>
-        <td><%= c.activity %></td>
-        <td><%= c.budgeted + c.activity %></td>
-      </tr>
+      <div class="tr budgeted-category">
+        <div class="tc"><%= c.category.name %></div>
+        <div class="tc"><%= c.budgeted %></div>
+        <div class="tc"><%= c.activity %></div>
+        <div class="tc"><%= c.budgeted + c.activity %></div>
+      </div>
     <% end %>
   <% end %>
-  </tbody>
-</table>
+  </div>
+</div>
 

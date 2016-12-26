@@ -215,8 +215,7 @@ defmodule Money.AccountControllerTest do
     #IO.inspect(html)
 
     # List is rendered latest at the top, test bottom up
-    table = parse_table(html, ".table") |> Enum.reverse
-    #IO.inspect(table)
+    table = parse_table(html, ".ctable") |> Enum.reverse
 
     expected = [
       %{"Amount" => 1000, "Balance" => 1000, "Payee" => "Income", "Date" => "2016-06-30"},

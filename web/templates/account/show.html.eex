@@ -18,42 +18,23 @@
   </ol>
 </nav>
 
-<table class="table" id="transactions">
-  <thead>
-    <tr>
-      <th></th>
-      <th>Date</th>
-      <th>Payee</th>
-      <th>Category</th>
-      <th>Comment</th>
-      <th>Amount</th>
-      <th>Balance</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-  <%= for %{transaction: transaction, balance: balance} <- @transactions do %>
-    <%= render Money.TransactionView, "row.html", transaction: transaction, balance: balance, conn: @conn %>
-  <% end %>
-
-  <%#
-    <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>2</td>
-
-      <td class="text-right">
-      </td>
-    </tr>
-  %>
-  </tbody>
-</table>
-
-<a href="#" id="js_link">Link</a>
+<div class="ctable" id="transactions">
+  <div class="thead">
+    <div class="th"></div>
+    <div class="th">Date</div>
+    <div class="th">Payee</div>
+    <div class="th">Category</div>
+    <div class="th">Comment</div>
+    <div class="th">Amount</div>
+    <div class="th">Balance</div>
+    <div class="th"></div>
+  </div>
+  <div class="tbody">
+    <%= for %{transaction: transaction, balance: balance} <- @transactions do %>
+      <%= render Money.TransactionView, "row.html", transaction: transaction, balance: balance, conn: @conn %>
+    <% end %>
+  </div>
+</div>
 
 <%# FIXME actually allow this %>
 <%= if assigns[:new_transaction] do %>

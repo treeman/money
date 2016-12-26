@@ -187,15 +187,45 @@ nav.transaction-header ol li {
 }
 
 /*
+ * Mimic table
+ */
+.ctable {
+    display:table;
+    width: 100%;
+}
+.thead {
+    display:table-header-group;
+    font-weight:bold;
+}
+.tr {
+    display:table-row;
+}
+.tbody {
+    display:table-row-group;
+}
+.th, .tc {
+    display:table-cell;
+}
+.thead > .th,
+.tr > .tc {
+    line-height: 1.42857;
+    padding: 8px;
+}
+.tr > .tc {
+    border-top: 1px solid #ddd;
+    vertical-align: top;
+}
+
+/*
  * Budget view
  */
-tr.budgeted-group {
+.tr.budgeted-group {
     /*background-color: #FFF0AA;*/
     /*background-color: #7887AB;*/
     background-color: #D5DAE7;
     /*background-color: #D49A6A;*/
 }
-tr.budgeted-category {
+.tr.budgeted-category {
 
 }
 
