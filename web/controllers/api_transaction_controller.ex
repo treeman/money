@@ -11,6 +11,8 @@ defmodule Money.ApiTransactionController do
       {:ok, transaction} ->
         transaction = Money.Repo.preload(transaction, :category)
 
+        # FIXME figure out balance
+        # FIXME also figure out position (or client side...?)
         html_row = render_to_string TransactionView, "row.html", transaction: transaction, balance: 0, conn: conn
 
         conn

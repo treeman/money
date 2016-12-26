@@ -18,6 +18,8 @@
   </ol>
 </nav>
 
+<% new_transaction_form = if assigns[:new_transaction] do Phoenix.HTML.FormData.to_form(@new_transaction, []) else nil end %>
+
 <div class="ctable" id="transactions">
   <div class="thead">
     <div class="th"></div>
@@ -33,12 +35,14 @@
     <%= for %{transaction: transaction, balance: balance} <- @transactions do %>
       <%= render Money.TransactionView, "row.html", transaction: transaction, balance: balance, conn: @conn %>
     <% end %>
+
+    <%= if new_transaction_form do %>
+      <%= render "new_transaction.html", form: new_transaction_form, form_id: "new-transaction", categories: @categories %>
+    <% end %>
   </div>
 </div>
 
-<%# FIXME actually allow this %>
-<%= if assigns[:new_transaction] do %>
-  <%= render "new_transaction.html", changeset: @new_transaction, categories: @categories,
-                                    action: api_transaction_path(@conn, :create) %>
+<%= if new_transaction_form do %>
+  <%= form_tag(api_transaction_path(@conn, :create), id: "new-transaction") %></form>
 <% end %>
 
