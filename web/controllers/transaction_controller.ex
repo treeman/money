@@ -26,7 +26,6 @@ defmodule Money.TransactionController do
   #end
 
   def create(conn, %{"transaction" => transaction_params}, _user) do
-    IO.inspect(transaction_params)
     changeset = Transaction.changeset(%Transaction{}, transaction_params)
 
     case Repo.insert(changeset) do
@@ -57,7 +56,6 @@ defmodule Money.TransactionController do
   def update(conn, %{"id" => id, "transaction" => transaction_params}, user) do
     transaction = Repo.get!(user_transactions(user), id)
     changeset = Transaction.changeset(transaction, transaction_params)
-    IO.inspect(changeset)
 
     case Repo.update(changeset) do
       {:ok, transaction} ->

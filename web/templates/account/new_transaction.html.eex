@@ -9,26 +9,26 @@
 
   <div class="form-group">
     <%= label f, :amount, class: "control-label" %>
-    <%= number_input f, :amount, class: "form-control" %>
+    <%= number_input f, :amount, class: "form-control", value: 1337 %>
     <%= error_tag f, :amount %>
   </div>
 
   <div class="form-group">
     <%= label f, :when, class: "control-label" %>
-    <%= datetime_select f, :when, class: "form-control" %>
+    <%= datetime_select f, :when, class: "form-control", default: DateTime.utc_now %>
     <%= error_tag f, :when %>
   </div>
 
   <div class="form-group">
     <%= label f, :payee, class: "control-label" %>
-    <%= text_input f, :payee, class: "form-control" %>
+    <%= text_input f, :payee, class: "form-control", value: "Mr X" %>
     <%= error_tag f, :payee %>
   </div>
 
   <div class="form-group">
     <%= label f, :category_id, "Category", class: "control-label" %>
     <%= select f, :category_id, @categories, class: "form-control",
-               prompt: "Choose a category" %>
+               prompt: "Choose a category", selected: 1 %>
   </div>
 
   <div class="form-group">

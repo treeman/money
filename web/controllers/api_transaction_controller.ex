@@ -1,33 +1,25 @@
 defmodule Money.ApiTransactionController do
   use Money.Web, :controller
   alias Money.Transaction
+  alias Money.TransactionView
+  import Phoenix.View
 
-  plug :load_categories when action in [:create]
-  #plug :load_categories when action in [:create, :update]
-
-  def action(conn, _) do
-    apply(__MODULE__, action_name(conn),
-     [conn, conn.params, conn.assigns.current_user])
-  end
-
-  def create(conn, %{"transaction" => transaction_params}, _user) do
-    IO.inspect("api json!")
-    IO.inspect(transaction_params)
+  def create(conn, %{"transaction" => transaction_params}) do
     changeset = Transaction.changeset(%Transaction{}, transaction_params)
 
     case Repo.insert(changeset) do
       {:ok, transaction} ->
-        IO.puts("ok")
-        IO.inspect(transaction)
-        IO.inspect(changeset)
-        # TODO handle redirects in a cleaner way.
-        #account_id = Map.get(transaction_params, "account_id")
-        #render(conn, "create.json", changeset: changeset)
-        render(conn, "create.json", transaction)
+        transaction = Money.Repo.preload(transaction, :category)
+
+        html_row = render_to_string TransactionView, "row.html", transaction: transaction, balance: 0, conn: conn
+
+        conn
+        |> put_status(:created)
+        |> render(TransactionView, "show.json", %{transaction: transaction, html_row: html_row})
       {:error, changeset} ->
-        IO.puts("bad changeset")
-        IO.inspect(changeset)
-        render(conn, "create.json", changeset: changeset)
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(Transaction.ChangesetView, "error.json", changeset: changeset)
     end
   end
 end
