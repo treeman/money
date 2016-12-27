@@ -4,9 +4,13 @@ defmodule Money.AccountView do
   def my_datetime_select(form, field, opts \\ []) do
     builder = fn b ->
       ~e"""
-      Date: <%= b.(:day, opts) %> / <%= b.(:month, opts) %> / <%= b.(:year, opts) %>
-      Time: <%= b.(:hour, opts) %> : <%= b.(:minute, opts) %>
+      <%= b.(:day, opts) %> <%= b.(:month, opts) %> <%= b.(:year, opts) %>
+      <%= b.(:hour, opts) %> <%= b.(:minute, opts) %>
       """
+      #~e"""
+      #Date: <%= b.(:day, opts) %> / <%= b.(:month, opts) %> / <%= b.(:year, opts) %>
+      #Time: <%= b.(:hour, opts) %> : <%= b.(:minute, opts) %>
+      #"""
     end
 
     datetime_select(form, field, [builder: builder] ++ opts)

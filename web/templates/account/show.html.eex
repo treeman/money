@@ -15,6 +15,10 @@
     <li><%= link "Edit", to: "#" %></li>
     <li><%= link "Undo", to: "#" %></li>
     <li><%= link "Redo", to: "#" %></li>
+    <%= if assigns[:account] do %>
+      <li><%= link "Delete all transactions", to: account_path(@conn, :delete_transactions, @account),
+                   method: :delete, data: [confirm: "Are you sure?"] %></li>
+    <% end %>
   </ol>
 </nav>
 
@@ -22,6 +26,7 @@
 
 <div class="ctable" id="transactions">
   <div class="thead">
+    <div class="th"></div>
     <div class="th"></div>
     <div class="th">Date</div>
     <div class="th">Payee</div>

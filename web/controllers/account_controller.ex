@@ -1,4 +1,5 @@
 defmodule Money.AccountController do
+  import Ecto.Query
   use Money.Web, :controller
   alias Money.Account
   alias Money.Transaction
@@ -81,23 +82,13 @@ defmodule Money.AccountController do
     |> redirect(to: account_path(conn, :index))
   end
 
-  defp rolling_balance(account: account) do
-    from t in Transaction,
-    select: %{transaction: t,
-              balance: fragment("SUM(amount) OVER(ORDER BY ?, ?)",
-                                t.when, t.id)},
-    preload: :category,
-    order_by: [desc: t.when, desc: t.id],
-    where: t.account_id == ^account.id
-  end
-
-  defp rolling_balance(user: user) do
-    from t in user_transactions(user),
-    order_by: [desc: t.when, desc: t.id],
-    preload: :category,
-    select: %{transaction: t,
-              balance: fragment("SUM(amount) OVER(PARTITION BY ? ORDER BY ?, ?)",
-                                t.account_id, t.when, t.id)}
+  def delete_transactions(conn, %{"id" => id}, user) do
+    account = Repo.get!(user_accounts(user), id)
+    Repo.delete_all(from t in Transaction,
+                    where: t.account_id == ^account.id)
+    conn
+    |> put_flash(:info, "Deleted all transactions.")
+    |> redirect(to: account_path(conn, :show, account.id))
   end
 end
 

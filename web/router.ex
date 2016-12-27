@@ -43,6 +43,7 @@ defmodule Money.Router do
   scope "/api/v1", Money do
     pipe_through [:api, :authenticate_user]
 
+    delete "/accounts/:id/transactions", AccountController, :delete_transactions
     post "/transactions", ApiTransactionController, :create
     #post "/transactions/:id", ApiTransactionController, :update
     #get "/budget", BudgetController, :index

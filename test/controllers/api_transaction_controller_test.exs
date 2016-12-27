@@ -47,12 +47,14 @@ defmodule ApiTransactionControllerTest do
   #end
 
   @tag login_as: "max"
-  test "creates and renders resource when data is valid", %{conn: conn} do
-    conn = post conn, api_transaction_path(conn, :create), transaction: @valid_attrs
+  test "creates and renders resource when data is valid", %{conn: conn, user: user} do
+    account = insert_account(user)
+    transaction = Map.put(@valid_attrs, :account_id, account.id)
+    conn = post conn, api_transaction_path(conn, :create), transaction: transaction
     json = json_response(conn, 201)
     assert json["data"]["id"]
     assert json["data"]["html_row"]
-    assert Repo.get_by(Transaction, @valid_attrs)
+    assert Repo.get_by(Transaction, transaction)
   end
 
   @tag login_as: "max"

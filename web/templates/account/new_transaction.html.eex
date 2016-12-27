@@ -1,7 +1,8 @@
 <div class="tr new-transaction-tr">
   <%= hidden_input @form, :account_id, form: @form_id %>
 
-  <div class="tc">1</div>
+  <div class="tc"></div>
+  <div class="tc"></div>
   <div class="tc">
     <%= my_datetime_select @form, :when, default: DateTime.utc_now, form: @form_id %>
   </div>

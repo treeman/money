@@ -2,6 +2,7 @@ defmodule Money.ApiTransactionController do
   use Money.Web, :controller
   alias Money.Transaction
   alias Money.TransactionView
+  alias Money.Repo
   import Phoenix.View
 
   def create(conn, %{"transaction" => transaction_params}) do
@@ -9,15 +10,15 @@ defmodule Money.ApiTransactionController do
 
     case Repo.insert(changeset) do
       {:ok, transaction} ->
-        transaction = Money.Repo.preload(transaction, :category)
+        transaction = Repo.preload(transaction, [:category, :account])
+        balance = rolling_balance(transaction: transaction)
 
-        # FIXME figure out balance
         # FIXME also figure out position (or client side...?)
-        html_row = render_to_string TransactionView, "row.html", transaction: transaction, balance: 0, conn: conn
+        html_row = render_to_string TransactionView, "row.html", transaction: transaction, balance: balance, conn: conn
 
         conn
         |> put_status(:created)
-        |> render(TransactionView, "show.json", %{transaction: transaction, html_row: html_row})
+        |> render(TransactionView, "show.json", %{transaction: transaction, balance: balance, html_row: html_row})
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
