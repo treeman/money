@@ -1,7 +1,7 @@
-<div class="tr">
+<div class="tr transaction">
   <div class="tc account-id"><%= @transaction.account_id %></div>
   <div class="tc transaction-id"><%= @transaction.id %></div>
-  <div class="tc"><%= Ecto.DateTime.to_date(@transaction.when) %></div>
+  <div class="tc date"><%= Ecto.DateTime.to_date(@transaction.when) %></div>
   <div class="tc"><%= @transaction.payee %></div>
   <div class="tc"><%= if @transaction.category do @transaction.category.name else "" end %></div>
   <div class="tc"><%= @transaction.description %></div>

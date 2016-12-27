@@ -9,14 +9,18 @@ C-t     Jump back
 
 # TODO
 1. Ajax transactions add/edit/remove
-    1. Properly init balance & order for new transactions
+    1. Need to update balance of all transactions after the one just added
     1. Edit transactions inline in account view
     1. Deletion still reloads the page
 1. Add/remove/edit categories
-1. Ability to add transactions from main view
 
 1. Prettier add transaction form
 1. Sidebar isn't tall enough. Use a frame for all transactions?
+1. Better datetime selector
+1. Ability to add a category via category dropdown
+1. Add a new transaction shouldn't be hidden, it should be fixed at the bottom
+1. Transaction buttons etc at the top shouldn't be hidden
+1. Should be able to close flash with js
 
 ## Categories
 1. Need to be able to create a category
@@ -28,7 +32,6 @@ C-t     Jump back
 
 ## Transactions
 1. JS enabled transaction view
-    1. New transaction needs a form and server support
     1. Edit transactions needs to rebuild with forms and then conform with server
     1. Delete transaction directly from account view
 1. Add/edit/new transaction support for the all account view

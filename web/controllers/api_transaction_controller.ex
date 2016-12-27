@@ -11,6 +11,7 @@ defmodule Money.ApiTransactionController do
     case Repo.insert(changeset) do
       {:ok, transaction} ->
         transaction = Repo.preload(transaction, [:category, :account])
+        # FIXME should find the rolling balance for the whole account, it needs to be updated!
         balance = rolling_balance(transaction: transaction)
 
         # FIXME also figure out position (or client side...?)

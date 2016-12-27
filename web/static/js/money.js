@@ -77,32 +77,64 @@ for (var i = 0; i < transaction_rows.length; ++i) {
     */
 }
 
+function comes_before(a_date, a_id, b_date, b_id) {
+    if (a_date > b_date) return true;
+    if (a_date < b_date) return false;
+    return a_id > b_id;
+}
+
 // Change add functionality for new transaction.
 var new_form = document.querySelectorAll('form#new-transaction')[0];
-new_form.addEventListener('submit', function(evt) {
-    evt.preventDefault();
-    var formData = new FormData(new_form);
+if (new_form) {
+    new_form.addEventListener('submit', function(evt) {
+        evt.preventDefault();
+        var formData = new FormData(new_form);
 
-    // FIXME validation on client side before we post.
-    post(new_form.action, formData, 201, true).then(function(response) {
-        var html = response.data.html_row;
-        console.log(html);
-        if (html) {
-            // Create an element from the returned string.
-            var newTransaction = document.createElement("div");
-            newTransaction.innerHTML = html;
-            newTransaction = newTransaction.firstChild;
+        // FIXME validation on client side before we post.
+        post(new_form.action, formData, 201, true).then(function(response) {
+            var html = response.data.html_row;
+            if (html) {
+                // Create an element from the returned string.
+                var newTransaction = document.createElement("div");
+                newTransaction.innerHTML = html;
+                newTransaction = newTransaction.firstChild;
 
-            // FIXME need to get the position to insert the transaction in, to get the proper order.
-            var body = document.querySelectorAll('#transactions .tbody')[0];
-            body.appendChild(newTransaction);
-        }
-    }, function(error) {
-        // FIXME add in flash.
-        console.error("Failed!", error);
-        set_flash_error(error)
+                // FIXME maybe in the future use a sorting routine and just insert this somewhere.
+                // Should allow for different kinds of sorting.
+                var newId = response.data.id;
+                var newDate = response.data.when;
+
+                var rows = document.querySelectorAll('#transactions .tbody .tr.transaction');
+                var inserted = false;
+                for (var i = 0; i < rows.length; ++i) {
+                    var row = rows[i];
+                    //console.log(row);
+                    var id = row.querySelector('.transaction-id');
+                    var date = row.querySelector('.date');
+                    if (id && date) {
+                        id = id.innerHTML;
+                        date = date.innerHTML;
+
+                        if (comes_before(newDate, newId, date, id)) {
+                            row.parentNode.insertBefore(newTransaction, row);
+                            inserted = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!inserted) {
+                    var insert_form = document.querySelector('#transactions .tbody .tr.new-transaction-tr');
+                    insert_form.parentNode.insertBefore(newTransaction, insert_form);
+                }
+            }
+        }, function(error) {
+            // FIXME add in flash.
+            console.error("Failed!", error);
+            set_flash_error(error)
+        });
     });
-});
+}
 
 function set_flash_info(text) {
     var p = document.querySelectorAll('.alert.alert-info')[0];
