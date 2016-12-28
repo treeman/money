@@ -136,14 +136,17 @@ if (new_form) {
     });
 }
 
-// Date picking for new transaction.
-var picker = new Pikaday({
-    field: document.getElementById('new-transaction-date'),
-    firstDay: 1,
-    //minDate: new Date(),
-    //maxDate: new Date(2020, 12, 31),
-    //yearRange: [2000,2020]
-});
+var datepickers = document.querySelectorAll('.datepicker');
+for (var i = 0; i < datepickers.length; ++i) {
+    // Date picking for new transaction.
+    var picker = new Pikaday({
+        field: datepickers[i],
+        firstDay: 1,
+        //minDate: new Date(),
+        //maxDate: new Date(2020, 12, 31),
+        //yearRange: [2000,2020]
+    });
+}
 
 
 function set_flash_info(text) {

@@ -38,11 +38,10 @@ defmodule Money.ViewHelpers do
   def awesomplete(form, field, options, opts \\ []) do
     id = field_id(form, field)
     list_id = id <> "-list"
-    opts =
-      Keyword.merge(opts, [id: id,
-                           name: field_name(form, field),
-                           class: "awesomplete",
-                           list: list_id])
+    opts = Keyword.merge(opts, [id: id,
+                                name: field_name(form, field),
+                                class: "awesomplete",
+                                list: list_id])
 
     options = Enum.map(options, fn {name, _value} ->
       #content_tag(:option, name, [value: value])
@@ -50,6 +49,13 @@ defmodule Money.ViewHelpers do
     end)
 
     [tag(:input, opts), content_tag(:datalist, options, [id: list_id])]
+  end
+
+  def date_input(form, field, opts \\ []) do
+    opts = Keyword.merge(opts, [id: field_id(form, field),
+                                name: field_name(form, field),
+                                type: "text"])
+    tag(:input, opts)
   end
 end
 

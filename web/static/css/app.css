@@ -242,8 +242,23 @@ nav.transaction-header {
 /*
  * Awesomplete suggestion.
  */
+/*
 div.awesomplete {display: none}
 div.awesomplete ul li p {display: block; font-size: small; margin-left: 1em}
 div.awesomplete .awe-found {border: 2px solid green}
 .hide-not-found div.awesomplete .awe-not-found {border-color: lightblue}
 div.awesomplete .awe-not-found {border: 2px solid red}
+*/
+
+/*
+ * Kill the spin buttons for number fields!
+ */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+

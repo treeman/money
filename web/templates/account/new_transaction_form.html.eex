@@ -1,17 +1,12 @@
 <%= form_for @transaction, @action, [id: "new-transaction"], fn f -> %>
+  <%# FIXME rewrite and don't use a table for this... %>
+  <div class="ctable">
+  <div class="tbody">
   <div class="tr new-transaction-tr">
     <%= hidden_input f, :account_id %>
 
     <div class="tc">
-      <%= my_datetime_select f, :when, default: DateTime.utc_now %>
-    </div>
-
-    <div class="tc">
-      <input type="text" id="new-transaction-date">
-    </div>
-
-    <div class="tc">
-      <input type="date" pattern="\d{4}-\d{2}-\d{2}">
+      <%= date_input f, :when, class: "datepicker", value: DateTime.to_date(DateTime.utc_now) %>
     </div>
 
     <div class="tc">
@@ -29,11 +24,12 @@
     <div class="tc">
       <%= number_input f, :amount, value: 1337 %>
     </div>
-    <div class="tc">7</div>
 
     <div class="tc text-right">
       <%= submit "Submit", class: "btn btn-primary" %>
     </div>
+  </div>
+  </div>
   </div>
 <% end %>
 

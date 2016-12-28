@@ -5,22 +5,33 @@ defmodule Money.ApiTransactionController do
   alias Money.Repo
   alias Money.Category
   import Phoenix.View
+  require Logger
 
   def transform_category(%{"category" => category_name} = params) do
     category = Repo.get_by(Category, name: category_name)
-    category_id = if category do category.id else nil end
+    category_id = if category, do: category.id else: nil
 
     unless category_id do IO.puts("new category not supported yet!") end
 
     params |> Map.delete("category")
            |> Map.put_new("category_id", category_id)
   end
-  def transform_category(params) do
-    params
+  def transform_category(params), do: params
+
+  def transform_date(%{"when" => date_string} = params) do
+    case Date.from_iso8601(date_string) do
+      {:ok, date} ->
+        Map.put(params, "when", {Date.to_erl(date), {0, 0, 0}})
+      {:error, reason} ->
+        Logger.warn "Failed to transform date: #{IO.inspect(date_string)} #{IO.inspect(reason)}"
+        params
+    end
   end
+  def transform_date(params), do: params
 
   def create(conn, %{"transaction" => params}) do
     params = params |> transform_category
+                    |> transform_date
 
     changeset = Transaction.changeset(%Transaction{}, params)
 
