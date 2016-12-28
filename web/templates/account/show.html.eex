@@ -22,32 +22,46 @@
   </ol>
 </nav>
 
-<% new_transaction_form = if assigns[:new_transaction] do Phoenix.HTML.FormData.to_form(@new_transaction, []) else nil end %>
+<div id="main-transactions">
+  <!---
+  <% new_transaction_form = if assigns[:new_transaction] do Phoenix.HTML.FormData.to_form(@new_transaction, []) else nil end %>
+  -->
 
-<div class="ctable" id="transactions">
-  <div class="thead">
-    <div class="th"></div>
-    <div class="th"></div>
-    <div class="th">Date</div>
-    <div class="th">Payee</div>
-    <div class="th">Category</div>
-    <div class="th">Comment</div>
-    <div class="th">Amount</div>
-    <div class="th">Balance</div>
-    <div class="th"></div>
-  </div>
-  <div class="tbody">
-    <%= for %{transaction: transaction, balance: balance} <- @transactions do %>
-      <%= render Money.TransactionView, "row.html", transaction: transaction, balance: balance, conn: @conn %>
-    <% end %>
+  <div class="ctable" id="transactions">
+    <div class="thead">
+      <div class="th"></div>
+      <div class="th"></div>
+      <div class="th">Date</div>
+      <div class="th">Payee</div>
+      <div class="th">Category</div>
+      <div class="th">Comment</div>
+      <div class="th">Amount</div>
+      <div class="th">Balance</div>
+      <div class="th"></div>
+    </div>
+    <div class="tbody">
+      <%= for %{transaction: transaction, balance: balance} <- @transactions do %>
+        <%= render Money.TransactionView, "row.html", transaction: transaction, balance: balance, conn: @conn %>
+      <% end %>
 
-    <%= if new_transaction_form do %>
-      <%= render "new_transaction.html", form: new_transaction_form, form_id: "new-transaction", categories: @categories %>
-    <% end %>
+      <!---
+      <%= if new_transaction_form do %>
+        <%= render "new_transaction.html", form: new_transaction_form, form_id: "new-transaction", categories: @categories %>
+      <% end %>
+      -->
+    </div>
   </div>
+
+  <!---
+  <%= if new_transaction_form do %>
+    <%= form_tag(api_transaction_path(@conn, :create), id: "new-transaction") %></form>
+  <% end %>
+  -->
+
 </div>
 
-<%= if new_transaction_form do %>
-  <%= form_tag(api_transaction_path(@conn, :create), id: "new-transaction") %></form>
-<% end %>
-
+<div id="main-new-transaction">
+  <%= if assigns[:new_transaction] do %>
+    <%= render "new_transaction_form.html", transaction: @new_transaction, action: api_transaction_path(@conn, :create), categories: @categories %>
+  <% end %>
+</div>

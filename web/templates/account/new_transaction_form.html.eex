@@ -1,0 +1,31 @@
+<%= form_for @transaction, @action, [id: "new-transaction"], fn f -> %>
+  <div class="tr new-transaction-tr">
+    <%= hidden_input f, :account_id %>
+
+    <div class="tc">
+      <%= my_datetime_select f, :when, default: DateTime.utc_now %>
+    </div>
+
+    <div class="tc">
+      <%= text_input f, :payee, value: "Mr X" %>
+    </div>
+
+    <div class="tc">
+      <%= select f, :category_id, @categories, prompt: "Choose a category", selected: 1 %>
+    </div>
+
+    <div class="tc">
+      <%= text_input f, :description %>
+    </div>
+
+    <div class="tc">
+      <%= number_input f, :amount, value: 1337 %>
+    </div>
+    <div class="tc">7</div>
+
+    <div class="tc text-right">
+      <%= submit "Submit", class: "btn btn-primary" %>
+    </div>
+  </div>
+<% end %>
+

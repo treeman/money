@@ -31,10 +31,14 @@ html {
     /*height: 100%;*/
 }
 .right-main {
+    padding: 0.5em;
     position: absolute;
     /*left: 180px; top: 92px; right: 0; bottom: 0;*/
     left: 180px; top: 44px; right: 0; bottom: 0;
-    overflow: auto;
+    /*overflow: auto;*/
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
 }
 
 #main-wrapper {
@@ -161,14 +165,6 @@ html {
 }
 
 /*
- * Main
- */
-.right-main {
-    padding: 0.5em;
-    /*background-color: red;*/
-}
-
-/*
  * Colors?
  * http://paletton.com/#uid=33L0u1kllll2NRLc3utuCcdSF35kllll1rWJboviviboWJ1rkllll1rWJboviviboWJ1r
  */
@@ -185,6 +181,19 @@ nav.transaction-header ol, nav.transaction-header ol li {
 
 nav.transaction-header ol li {
     padding-right: 0.4em;
+}
+
+/* Flex style for header/body/footer where body is increased but not the others. */
+nav.transaction-header {
+    flex-shrink: 0;
+}
+#main-transactions {
+    overflow: auto;
+    min-height: 2em;
+    flex-grow: 1;
+}
+#main-new-transaction {
+    flex-shrink: 0;
 }
 
 /*

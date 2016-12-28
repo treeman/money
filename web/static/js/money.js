@@ -84,7 +84,7 @@ function comes_before(a_date, a_id, b_date, b_id) {
 }
 
 // Change add functionality for new transaction.
-var new_form = document.querySelectorAll('form#new-transaction')[0];
+var new_form = document.querySelector('form#new-transaction');
 if (new_form) {
     new_form.addEventListener('submit', function(evt) {
         evt.preventDefault();
@@ -104,7 +104,8 @@ if (new_form) {
                 var newId = response.data.id;
                 var newDate = response.data.when;
 
-                var rows = document.querySelectorAll('#transactions .tbody .tr.transaction');
+                var table = document.querySelector('#transactions .tbody');
+                var rows = table.querySelectorAll('.tr.transaction');
                 var inserted = false;
                 for (var i = 0; i < rows.length; ++i) {
                     var row = rows[i];
@@ -124,8 +125,7 @@ if (new_form) {
                 }
 
                 if (!inserted) {
-                    var insert_form = document.querySelector('#transactions .tbody .tr.new-transaction-tr');
-                    insert_form.parentNode.insertBefore(newTransaction, insert_form);
+                    table.appendChild(newTransaction);
                 }
             }
         }, function(error) {
