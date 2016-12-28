@@ -14,13 +14,14 @@ C-t     Jump back
     1. Deletion still reloads the page
 1. Add/remove/edit categories
 
-1. Make sure date selector is appropriately handled by backend
 1. Prettier add transaction form
 1. Ability to add a category via category dropdown
     1. Need to be able to add/select category group as well
 1. Should be able to close flash with js
 1. Table header should always be visible
 1. Need autocomplete on payee as well
+
+1. Maybe should be able to specify datetime...?
 
 ## Categories
 1. Need to be able to create a category
