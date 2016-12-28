@@ -136,6 +136,16 @@ if (new_form) {
     });
 }
 
+// Date picking for new transaction.
+var picker = new Pikaday({
+    field: document.getElementById('new-transaction-date'),
+    firstDay: 1,
+    //minDate: new Date(),
+    //maxDate: new Date(2020, 12, 31),
+    //yearRange: [2000,2020]
+});
+
+
 function set_flash_info(text) {
     var p = document.querySelectorAll('.alert.alert-info')[0];
     p.innerHTML = text;
@@ -144,4 +154,3 @@ function set_flash_error(text) {
     var p = document.querySelectorAll('.alert.alert-danger')[0];
     p.innerHTML = text;
 }
-
