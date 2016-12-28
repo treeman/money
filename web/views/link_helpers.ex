@@ -34,5 +34,22 @@ defmodule Money.ViewHelpers do
     current_path = Path.join(["/" | conn.path_info])
     if f.(current_path) do "active" else nil end
   end
+
+  def awesomplete(form, field, options, opts \\ []) do
+    id = field_id(form, field)
+    list_id = id <> "-list"
+    opts =
+      Keyword.merge(opts, [id: id,
+                           name: field_name(form, field),
+                           class: "awesomplete",
+                           list: list_id])
+
+    options = Enum.map(options, fn {name, _value} ->
+      #content_tag(:option, name, [value: value])
+      content_tag(:option, name)
+    end)
+
+    [tag(:input, opts), content_tag(:datalist, options, [id: list_id])]
+  end
 end
 

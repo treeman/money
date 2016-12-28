@@ -11,7 +11,7 @@
     </div>
 
     <div class="tc">
-      <%= select f, :category_id, @categories, prompt: "Choose a category", selected: 1 %>
+      <%= awesomplete f, :category, @categories, data_minchars: 0 %>
     </div>
 
     <div class="tc">

@@ -36,4 +36,3 @@ for %{name: name, categories: categories} <- groups do
   end
 end
 
-

@@ -49,12 +49,21 @@ defmodule ApiTransactionControllerTest do
   @tag login_as: "max"
   test "creates and renders resource when data is valid", %{conn: conn, user: user} do
     account = insert_account(user)
-    transaction = Map.put(@valid_attrs, :account_id, account.id)
-    conn = post conn, api_transaction_path(conn, :create), transaction: transaction
+    category_group = insert_category_group()
+    category = insert_category(category_group)
+
+    # Test the ability to only pass in the name of a category
+    params = Map.merge(@valid_attrs, %{account_id: account.id, category: category.name})
+
+    conn = post conn, api_transaction_path(conn, :create), transaction: params
     json = json_response(conn, 201)
     assert json["data"]["id"]
     assert json["data"]["html_row"]
-    assert Repo.get_by(Transaction, transaction)
+
+    transaction = Repo.get_by(Transaction, @valid_attrs)
+    assert transaction
+    assert transaction.account_id == account.id
+    assert transaction.category_id == category.id
   end
 
   @tag login_as: "max"
