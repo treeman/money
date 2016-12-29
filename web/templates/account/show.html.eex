@@ -62,6 +62,7 @@
 
 <div id="main-new-transaction">
   <%= if assigns[:new_transaction] do %>
-    <%= render "new_transaction_form.html", transaction: @new_transaction, action: api_transaction_path(@conn, :create), categories: @categories %>
+    <%= render "new_transaction_form.html", transaction: @new_transaction, action: api_transaction_path(@conn, :create),
+               categories: @categories, transactions: @transactions %>
   <% end %>
 </div>

@@ -1,35 +1,34 @@
 <%= form_for @transaction, @action, [id: "new-transaction"], fn f -> %>
   <%# FIXME rewrite and don't use a table for this... %>
-  <div class="ctable">
-  <div class="tbody">
-  <div class="tr new-transaction-tr">
     <%= hidden_input f, :account_id %>
 
-    <div class="tc">
+    <div class="transaction-date">
       <%= date_input f, :when, class: "datepicker", value: DateTime.to_date(DateTime.utc_now) %>
     </div>
 
-    <div class="tc">
-      <%= text_input f, :payee, value: "Mr X" %>
+    <div class="transaction-payee">
+      <% payees = Enum.map(@transactions, fn %{transaction: t} -> t.payee end) %>
+      <%= text_input f, :payee, id: "new-transaction-payee" %>
+      <%= datalist payees, id: "transaction_payee-list" %>
+      <%#= awesomplete f, :payee, payees, data_minchars: 0 %>
     </div>
 
-    <div class="tc">
+    <div class="transaction-category">
       <%= awesomplete f, :category, @categories, data_minchars: 0 %>
     </div>
 
-    <div class="tc">
+    <div class="transaction-descr">
       <%= text_input f, :description %>
     </div>
 
-    <div class="tc">
+    <div class="transaction-amount">
       <%= number_input f, :amount, value: 1337 %>
     </div>
 
-    <div class="tc text-right">
+    <div class="transaction-button">
       <%= submit "Submit", class: "btn btn-primary" %>
     </div>
-  </div>
-  </div>
-  </div>
 <% end %>
+
+<%#<div id="tmp-footer"></div>%>
 

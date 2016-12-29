@@ -52,8 +52,7 @@ defmodule ApiTransactionControllerTest do
     category_group = insert_category_group()
     category = insert_category(category_group)
 
-    # Test the ability to only pass in the name of a category
-    params = Map.merge(@valid_attrs, %{account_id: account.id, category: category.name})
+    params = Map.merge(@valid_attrs, %{account_id: account.id, category_id: category.id})
 
     conn = post conn, api_transaction_path(conn, :create), transaction: params
     json = json_response(conn, 201)
@@ -63,7 +62,32 @@ defmodule ApiTransactionControllerTest do
     transaction = Repo.get_by(Transaction, @valid_attrs)
     assert transaction
     assert transaction.account_id == account.id
+  end
+
+  @tag login_as: "max"
+  test "parses category name", %{conn: conn, user: user} do
+    account = insert_account(user)
+    category_group = insert_category_group()
+    category = insert_category(category_group)
+
+    params = Map.merge(@valid_attrs, %{account_id: account.id, category: category.name})
+
+    conn = post conn, api_transaction_path(conn, :create), transaction: params
+    json = json_response(conn, 201)
+    assert json["data"]["category"] == category.name
+
+    transaction = Repo.get_by(Transaction, @valid_attrs)
     assert transaction.category_id == category.id
+  end
+
+  @tag login_as: "max"
+  test "parses a date string", %{conn: conn, user: user} do
+    account = insert_account(user)
+    params = Map.merge(@valid_attrs, %{account_id: account.id, when: "2016-02-03"})
+
+    conn = post conn, api_transaction_path(conn, :create), transaction: params
+    json = json_response(conn, 201)
+    assert json["data"]["when"] == "2016-02-03T00:00:00";
   end
 
   @tag login_as: "max"

@@ -42,13 +42,19 @@ defmodule Money.ViewHelpers do
                                 name: field_name(form, field),
                                 class: "awesomplete",
                                 list: list_id])
+    [tag(:input, opts), datalist(options, [id: list_id])]
+  end
 
-    options = Enum.map(options, fn {name, _value} ->
-      #content_tag(:option, name, [value: value])
-      content_tag(:option, name)
+  def datalist(options, opts \\ []) do
+    options = Enum.map(options, fn
+      {name, _value} ->
+        #content_tag(:option, name, [value: value])
+        content_tag(:option, name)
+       name ->
+        content_tag(:option, name)
     end)
 
-    [tag(:input, opts), content_tag(:datalist, options, [id: list_id])]
+    content_tag(:datalist, options, opts)
   end
 
   def date_input(form, field, opts \\ []) do

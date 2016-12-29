@@ -183,7 +183,8 @@ nav.transaction-header ol li {
     padding-right: 0.4em;
 }
 
-/* Flex style for header/body/footer where body is increased but not the others. */
+/*
+ * Flex style for header/body/footer where body is increased but not the others. */
 nav.transaction-header {
     flex-shrink: 0;
 }
@@ -195,6 +196,50 @@ nav.transaction-header {
 #main-new-transaction {
     flex-shrink: 0;
 }
+
+/*
+ * Flexible new transaction form.
+ */
+#new-transaction {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+
+    -webkit-flex-flow: row wrap;
+}
+#new-transaction > .transaction-date {
+    min-width: 7em;
+}
+#new-transaction > .transaction-date,
+#new-transaction > .transaction-button {
+    flex: 0;
+}
+#new-transaction > .transaction-payee,
+#new-transaction > .transaction-category,
+#new-transaction > .transaction-amount {
+    flex: 1;
+}
+#new-transaction > .transaction-descr {
+    flex: 2;
+}
+#new-transaction > div > input {
+    width: 100%;
+}
+/* Override awesomplete css destroying the layout */
+#new-transaction .awesomplete,
+#new-transaction .awesomplete > input {
+    display: inline;
+    width: 100%;
+}
+
+#tmp-footer {
+    height: 150px;
+    width: 100%;
+    background: tomato;
+}
+
 
 /*
  * Mimic table
@@ -241,6 +286,7 @@ nav.transaction-header {
 
 /*
  * Awesomplete suggestion.
+ * Works with awesomplete util.
  */
 /*
 div.awesomplete {display: none}
@@ -248,7 +294,6 @@ div.awesomplete ul li p {display: block; font-size: small; margin-left: 1em}
 div.awesomplete .awe-found {border: 2px solid green}
 .hide-not-found div.awesomplete .awe-not-found {border-color: lightblue}
 div.awesomplete .awe-not-found {border: 2px solid red}
-*/
 
 /*
  * Kill the spin buttons for number fields!

@@ -83,6 +83,16 @@ function comes_before(a_date, a_id, b_date, b_id) {
     return a_id > b_id;
 }
 
+// Awesomplete util for payees.
+var payeeDatalist = document.getElementById('transaction_payee-list');
+AwesompleteUtil.start('#new-transaction-payee',
+    { },
+    {
+        minChars: 1,
+        list: payeeDatalist
+    }
+);
+
 // Change add functionality for new transaction.
 var new_form = document.querySelector('form#new-transaction');
 if (new_form) {
@@ -128,6 +138,19 @@ if (new_form) {
                     table.appendChild(newTransaction);
                 }
             }
+
+            // Augment datalists.
+            //var payeeDatalist = document.getElementById('transaction_payee-list');
+            var newPayee = document.createElement("option");
+            newPayee.innerHTML = response.data.payee;
+            payeeDatalist.appendChild(newPayee);
+
+            /*
+            var categoryDatalist = document.querySelector('#transaction_category-list');
+            var newCategory = document.createElement("option");
+            newCategory.innerHTML = response.data.category;
+            categoryDatalist.appendChild(newCategory);
+            */
         }, function(error) {
             // FIXME add in flash.
             console.error("Failed!", error);
@@ -157,3 +180,4 @@ function set_flash_error(text) {
     var p = document.querySelectorAll('.alert.alert-danger')[0];
     p.innerHTML = text;
 }
+

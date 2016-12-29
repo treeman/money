@@ -9,7 +9,7 @@ defmodule Money.ApiTransactionController do
 
   def transform_category(%{"category" => category_name} = params) do
     category = Repo.get_by(Category, name: category_name)
-    category_id = if category, do: category.id else: nil
+    category_id = if category do category.id else nil end
 
     unless category_id do IO.puts("new category not supported yet!") end
 
@@ -18,7 +18,7 @@ defmodule Money.ApiTransactionController do
   end
   def transform_category(params), do: params
 
-  def transform_date(%{"when" => date_string} = params) do
+  def transform_date(%{"when" => date_string} = params) when is_binary(date_string) do
     case Date.from_iso8601(date_string) do
       {:ok, date} ->
         Map.put(params, "when", {Date.to_erl(date), {0, 0, 0}})
