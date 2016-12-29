@@ -64,7 +64,7 @@ defmodule Money.BudgetController do
       # Simultaneously sum and generate budgeted categories.
       {budgeted, activity, budgeted_categories} =
         Enum.reduce g.categories,
-                    {0, 0, []},
+                    {Decimal.new(0), Decimal.new(0), []},
                     fn c, {budgeted_sum, activity_sum, categories} ->
 
           # All categories should exist!
@@ -74,8 +74,8 @@ defmodule Money.BudgetController do
                                        budgeted: budgeted, activity: activity,
                                        category_id: c.id, category: c}
 
-          {budgeted_sum + category.budgeted,
-           activity_sum + category.activity,
+          {Decimal.add(budgeted_sum, category.budgeted),
+           Decimal.add(activity_sum, category.activity),
            [category | categories]}
         end
 

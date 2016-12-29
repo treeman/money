@@ -2,7 +2,7 @@ defmodule Money.Transaction do
   use Money.Web, :model
 
   schema "transactions" do
-    field :amount, :integer
+    field :amount, :decimal
     field :when, Ecto.DateTime
     field :payee, :string
     field :description, :string

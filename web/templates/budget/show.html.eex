@@ -15,14 +15,14 @@
       <div class="tc"><%= group.name %></div>
       <div class="tc"><%= group.budgeted %></div>
       <div class="tc"><%= group.activity %></div>
-      <div class="tc"><%= group.budgeted + group.activity %></div>
+      <div class="tc"><%= Decimal.add(group.budgeted, group.activity) %></div>
     </div>
     <%= for c <- group.budgeted_categories do %>
       <div class="tr budgeted-category">
         <div class="tc"><%= c.category.name %></div>
         <div class="tc"><%= c.budgeted %></div>
         <div class="tc"><%= c.activity %></div>
-        <div class="tc"><%= c.budgeted + c.activity %></div>
+        <div class="tc"><%= Decimal.add(c.budgeted, c.activity) %></div>
       </div>
     <% end %>
   <% end %>
