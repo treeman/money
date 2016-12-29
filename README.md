@@ -8,10 +8,9 @@ C-]     Jump to definition
 C-t     Jump back
 
 # TODO
-1. Ajax transactions add/edit/remove
-    1. Need to update balance of all transactions after the one just added
-    1. Edit transactions inline in account view
-    1. Deletion still reloads the page
+1. Edit transactions inline in account view!
+1. Deletion still reloads the page
+1. Need to update balance of all transactions after the one just added
 1. Add/remove/edit categories
 
 1. Checkbox for transactions (delete a selection of transactions)
