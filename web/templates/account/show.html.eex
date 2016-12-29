@@ -22,6 +22,13 @@
   </ol>
 </nav>
 
+<div id="main-new-transaction">
+  <%= if assigns[:new_transaction] do %>
+    <%= render "new_transaction_form.html", transaction: @new_transaction, action: api_transaction_path(@conn, :create),
+               categories: @categories, transactions: @transactions %>
+  <% end %>
+</div>
+
 <div id="main-transactions">
   <!---
   <% new_transaction_form = if assigns[:new_transaction] do Phoenix.HTML.FormData.to_form(@new_transaction, []) else nil end %>
@@ -58,11 +65,4 @@
   <% end %>
   -->
 
-</div>
-
-<div id="main-new-transaction">
-  <%= if assigns[:new_transaction] do %>
-    <%= render "new_transaction_form.html", transaction: @new_transaction, action: api_transaction_path(@conn, :create),
-               categories: @categories, transactions: @transactions %>
-  <% end %>
 </div>

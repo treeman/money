@@ -1,0 +1,5 @@
+<%= form_for @conn, import_path(@conn, :parse, @account_id), [as: :data], fn f -> %>
+  <%= textarea f, :data %>
+  <%= submit "Submit" %>
+<% end %>
+

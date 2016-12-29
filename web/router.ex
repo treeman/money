@@ -36,6 +36,9 @@ defmodule Money.Router do
     resources "/transactions", TransactionController, except: [:index]
     get "/budget", BudgetController, :index
     get "/budget/:year/:month", BudgetController, :show
+
+    get "/accounts/:account_id/import", ImportController, :new
+    post "/accounts/:account_id/import", ImportController, :parse
   end
 
   # TODO post transaction and get html formated return.

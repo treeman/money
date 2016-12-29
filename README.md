@@ -14,13 +14,17 @@ C-t     Jump back
     1. Deletion still reloads the page
 1. Add/remove/edit categories
 
+1. Checkbox for transactions (delete a selection of transactions)
 1. Ability to add a category via category dropdown
     1. Need to be able to add/select category group as well
 1. Should be able to close flash with js
 1. Table header should always be visible
-1. Need autocomplete on payee as well
 
 1. Maybe should be able to specify datetime...?
+1. mix test for some reason isn't running import tests?!
+
+## Import text
+* In the future import using the api of banks, now just make a simple parser...
 
 ## Categories
 1. Need to be able to create a category
