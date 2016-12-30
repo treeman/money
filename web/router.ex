@@ -47,11 +47,13 @@ defmodule Money.Router do
     pipe_through [:api, :authenticate_user]
 
     delete "/accounts/:id/transactions", AccountController, :delete_transactions
-    post "/transactions", ApiTransactionController, :create
-    put "/transactions/:id", ApiTransactionController, :update
-    patch "/transactions/:id", ApiTransactionController, :update
-    #post "/transactions/:id", ApiTransactionController, :update
-    #get "/budget", BudgetController, :index
+
+    #resources "/transactions", ApiTransactionController, except: [:index, :show, :new, :edit]
+    resources "/transactions", ApiTransactionController, only: [:create, :update, :delete]
+    #post "/transactions", ApiTransactionController, :create
+    #put "/transactions/:id", ApiTransactionController, :update
+    #patch "/transactions/:id", ApiTransactionController, :update
+    #delete "/transactions/:id", ApiTransactionController, :delete
   end
 end
 

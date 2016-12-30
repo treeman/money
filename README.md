@@ -8,16 +8,9 @@ C-]     Jump to definition
 C-t     Jump back
 
 # TODO
-1. Refactor json insert/update transaction. Include proper update for all balances.
-    1. Now doesn't insert at the top anymore...
-
-1. Edit transactions inline in account view!
-1. Deletion still reloads the page
-1. Need to update balance of all transactions after the one just added
 1. Add/remove/edit categories
 1. Editing a transaction shouldn't change the width of the table columns. Annoying.
 
-1. Don't add duplicate dropdown options
 1. Checkbox for transactions (delete a selection of transactions)
 1. Ability to add a category via category dropdown
     1. Need to be able to add/select category group as well
@@ -26,8 +19,6 @@ C-t     Jump back
 
 1. Maybe should be able to specify datetime...?
 1. mix test for some reason isn't running import tests?!
-
-1. Rewrite all private js code to use camelCase, snake case for dom ids etc...
 
 ## Import text
 * In the future import using the api of banks, now just make a simple parser...

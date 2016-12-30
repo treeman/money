@@ -4,10 +4,12 @@
 var newForm = document.querySelector('form#new-transaction');
 var editForm = document.querySelector('form#edit-transaction');
 
-// Change edit functionality for all transactions.
+// Change edit and functionality for all transactions.
 var transactionRows = document.querySelectorAll('#transactions .tbody .tr');
 for (var i = 0; i < transactionRows.length; ++i) {
-    alterEditButton(transactionRows[i]);
+    var row = transactionRows[i];
+    alterEditButton(row);
+    alterDeleteButton(row);
 }
 
 // Awesomplete util for payees.
@@ -53,6 +55,7 @@ function submitNewTransaction(evt) {
 
             insertTransaction(newTransaction);
         }
+        updateAccountBalance(response.data.transaction_balance)
 
         // Augment datalists.
         // FIXME awesomplete doesn't update. This is fruitless atm.
@@ -76,6 +79,33 @@ function alterEditButton(row) {
         }
         edit.setAttribute('href', '#');
     }
+}
+
+function alterDeleteButton(row) {
+    var transaction = row.querySelector('.transaction-id');
+    var transaction_id = transaction.innerHTML;
+
+    var buttons = row.querySelector('.transaction-buttons');
+
+    var form = buttons.querySelector('form');
+    form.action = "/api/v1/transactions/" + transaction_id;
+
+    // Workaround data-submit, phoenix default uses some js here.
+    var btn = buttons.querySelector('.btn-danger');
+    btn.addEventListener('click', function(evt) {
+        evt.preventDefault();
+        if (window.confirm("Are you sure?")) {
+            var formData = new FormData(form);
+            jsonReq(form.action, formData, 200, true, 'DELETE').then(function(response) {
+                row.parentNode.removeChild(row);
+                updateAccountBalance(response.data.transaction_balance)
+            }, function(error) {
+                console.error("Failed!", error);
+                setFlashError(error)
+            });
+        }
+    });
+    btn.removeAttribute("data-submit");
 }
 
 function beginEditTransactionRow(row) {
@@ -209,6 +239,8 @@ function saveEditTransaction(formId, row, newRow) {
             row.parentNode.removeChild(newRow);
             row.parentNode.removeChild(row);
         }
+
+        updateAccountBalance(response.data.transaction_balance)
     }, function(error) {
         console.error("Failed!", error);
         setFlashError(error);
@@ -254,6 +286,21 @@ function insertTransaction(newRow) {
 
     if (!inserted) {
         table.appendChild(newRow);
+    }
+}
+
+function updateAccountBalance(balances) {
+    var table = document.querySelector('#transactions .tbody');
+    var rows = table.querySelectorAll('.tr.transaction');
+
+    for (var i = 0; i < rows.length; ++i) {
+        var row = rows[i];
+        var id = row.querySelector('.transaction-id').innerHTML;
+        var newBalance = balances[id];
+        if (newBalance) {
+            var balance = row.querySelector('.transaction-balance');
+            balance.innerHTML = newBalance;
+        }
     }
 }
 

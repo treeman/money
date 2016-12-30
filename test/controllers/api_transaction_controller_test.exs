@@ -161,6 +161,18 @@ defmodule ApiTransactionControllerTest do
   end
 
   @tag login_as: "max"
+  test "deletes chosen resource", %{conn: conn, user: user} do
+    account = insert_account(user)
+    transaction = insert_transaction(account)
+
+    conn = delete conn, api_transaction_path(conn, :delete, transaction)
+    json = json_response(conn, 200)
+    assert json["data"]["id"] == transaction.id
+    assert json["data"]["transaction_balance"]
+    refute Repo.get(Transaction, transaction.id)
+  end
+
+  @tag login_as: "max"
   test "authorizes actions against access by other users", %{conn: conn, user: owner} do
     account = insert_account(owner)
     transaction = insert_transaction(account)
@@ -171,6 +183,9 @@ defmodule ApiTransactionControllerTest do
     assert_error_sent :not_found, fn ->
       attrs = Dict.merge(%{account_id: account.id}, @valid_attrs)
       put(conn, api_transaction_path(conn, :update, transaction), transaction: attrs)
+    end
+    assert_error_sent :not_found, fn ->
+      delete(conn, api_transaction_path(conn, :delete, transaction))
     end
   end
 end

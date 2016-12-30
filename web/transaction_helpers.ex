@@ -1,6 +1,7 @@
 defmodule Money.TransactionHelpers do
   import Ecto.Query
   import Money.UserHelpers
+  alias Money.Account
   alias Money.Transaction
   alias Money.Repo
 
@@ -31,6 +32,9 @@ defmodule Money.TransactionHelpers do
     balance
   end
 
+  def transaction_balance(account_id: account_id) do
+    transaction_balance(account: Repo.get(Account, account_id))
+  end
   def transaction_balance(account: account) do
     balance = Repo.all(rolling_balance(account: account))
     Enum.reduce(balance, %{}, fn %{balance: balance, transaction: t}, acc ->

@@ -59,6 +59,19 @@ defmodule Money.ApiTransactionController do
     end
   end
 
+  def delete(conn, %{"id" => id}, user) do
+    transaction = Repo.get!(user_transactions(user), id)
+    account = transaction.account
+
+    Repo.delete!(transaction)
+
+    transaction_balance = transaction_balance(account_id: transaction.account_id)
+
+    conn
+    |> render(TransactionView, "delete.json", %{id: transaction.id,
+                                                transaction_balance: transaction_balance})
+  end
+
   def transform_category(%{"category" => category_name} = params) do
     category = Repo.get_by(Category, name: category_name)
     category_id = if category do category.id else nil end

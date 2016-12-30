@@ -69,9 +69,6 @@ defmodule Money.TransactionController do
 
   def delete(conn, %{"id" => id}, user) do
     transaction = Repo.get!(user_transactions(user), id)
-
-    # Here we use delete! (with a bang) because we expect
-    # it to always work (and if it does not, it will raise).
     Repo.delete!(transaction)
 
     conn

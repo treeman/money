@@ -16,11 +16,7 @@ defmodule Money.TransactionView do
                 balance: balance,
                 conn: conn
 
-    # Transform map keys to strings, json expects it.
-    transaction_balance = transaction_balance
-                          |> Enum.reduce(%{}, fn {id, v}, acc when is_integer(id) ->
-                               Map.put_new(acc, Integer.to_string(id), v);
-                          end)
+    transaction_balance = map_convert_keys transaction_balance
 
     %{id: transaction.id,
       account_id: transaction.account_id,
@@ -32,6 +28,19 @@ defmodule Money.TransactionView do
       balance: balance,
       transaction_balance: transaction_balance,
       html_row: html_row}
+  end
+
+  def render("delete.json", %{id: id, transaction_balance: transaction_balance}) do
+    transaction_balance = map_convert_keys transaction_balance
+
+    %{data: %{id: id, transaction_balance: transaction_balance}}
+  end
+
+  def map_convert_keys(map) do
+    map
+    |> Enum.reduce(%{}, fn {id, v}, acc when is_integer(id) ->
+                Map.put_new(acc, Integer.to_string(id), v);
+    end)
   end
 end
 
