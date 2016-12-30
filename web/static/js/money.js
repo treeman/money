@@ -1,23 +1,84 @@
-// Changing edit functionality for all transactions.
-var transaction_rows = document.querySelectorAll('#transactions .tbody .tr');
-for (var i = 0; i < transaction_rows.length; ++i) {
-    var row = transaction_rows[i];
-    alter_edit_button(row);
+/*
+ * Constant changes.
+ */
+var newForm = document.querySelector('form#new-transaction');
+var editForm = document.querySelector('form#edit-transaction');
+
+// Change edit functionality for all transactions.
+var transactionRows = document.querySelectorAll('#transactions .tbody .tr');
+for (var i = 0; i < transactionRows.length; ++i) {
+    alterEditButton(transactionRows[i]);
 }
 
-function alter_edit_button(row) {
+// Awesomplete util for payees.
+// FIXME do the same for categories.
+var payeeDatalist = document.getElementById('transaction_payee-list');
+AwesompleteUtil.start('#new-transaction-payee',
+    { }, { minChars: 1, list: payeeDatalist }
+);
+
+// Change add functionality for new transaction.
+if (newForm) {
+    newForm.addEventListener('submit', submitNewTransaction);
+}
+
+var datepickers = document.querySelectorAll('.datepicker');
+for (var i = 0; i < datepickers.length; ++i) {
+    // Date picking for new transaction.
+    var picker = new Pikaday({
+        field: datepickers[i],
+        firstDay: 1,
+        //minDate: new Date(),
+        //maxDate: new Date(2020, 12, 31),
+        //yearRange: [2000,2020]
+    });
+}
+
+
+/*
+ * Impl.
+ */
+function submitNewTransaction(evt) {
+    evt.preventDefault();
+    var formData = new FormData(newForm);
+
+    // FIXME validation on client side before we post.
+    jsonReq(newForm.action, formData, 201, true, 'POST').then(function(response) {
+        var html = response.data.html_row;
+        if (html) {
+            // Create an element from the returned string.
+            var newTransaction = document.createElement("div");
+            newTransaction.innerHTML = html;
+            newTransaction = newTransaction.firstChild;
+
+            insertTransaction(newTransaction);
+        }
+
+        // Augment datalists.
+        // FIXME awesomplete doesn't update. This is fruitless atm.
+        /*
+            var payeeDatalist = document.getElementById('transaction_payee-list');
+            var newPayee = document.createElement("option");
+            newPayee.innerHTML = response.data.payee;
+            payeeDatalist.appendChild(newPayee);
+            */
+    }, function(error) {
+        console.error("Failed!", error);
+        setFlashError(error)
+    });
+}
+
+function alterEditButton(row) {
     var edit = row.querySelectorAll('.btn-edit')[0];
     if (edit) {
         edit.onclick = function() {
-            begin_edit_transaction_row(row);
+            beginEditTransactionRow(row);
         }
         edit.setAttribute('href', '#');
     }
 }
 
-var editForm = document.querySelector('form#edit-transaction');
-
-function begin_edit_transaction_row(row) {
+function beginEditTransactionRow(row) {
     console.log('edit', row);
     var form = "edit-transaction";
 
@@ -111,7 +172,7 @@ function begin_edit_transaction_row(row) {
     save.setAttribute("form", form);
     save.onclick = function(evt) {
         evt.preventDefault();
-        save_edit_transaction(form, row, newRow);
+        saveEditTransaction(form, row, newRow);
     }
     buttons.appendChild(save);
     var cancel = document.createElement("input");
@@ -121,145 +182,79 @@ function begin_edit_transaction_row(row) {
     cancel.setAttribute("form", form);
     cancel.onclick = function(evt) {
         evt.preventDefault();
-        cancel_edit_transaction(row, newRow);
+        cancelEditTransaction(row, newRow);
     }
     buttons.appendChild(cancel);
 }
 
-function cancel_edit_transaction(row, newRow) {
+function cancelEditTransaction(row, newRow) {
     row.style.display = newRow.style.display;
     newRow.parentNode.removeChild(newRow);
 }
 
-function save_edit_transaction(formId, row, newRow) {
+function saveEditTransaction(formId, row, newRow) {
     var editForm = document.querySelector('form#' + formId);
-    console.log(editForm);
     var formData = new FormData(editForm);
-    console.log(formData);
 
     // FIXME validation on client side before we post.
-    json_req(editForm.action, formData, 200, true, 'PUT').then(function(response) {
-        console.log(response.data);
+    jsonReq(editForm.action, formData, 200, true, 'PUT').then(function(response) {
         var html = response.data.html_row;
         if (html) {
             // Create an element from the returned string.
             var newTransaction = document.createElement("div");
             newTransaction.innerHTML = html;
             newTransaction = newTransaction.firstChild;
-            row.parentNode.insertBefore(newTransaction, row);
+
+            insertTransaction(newTransaction);
             row.parentNode.removeChild(newRow);
             row.parentNode.removeChild(row);
         }
     }, function(error) {
         console.error("Failed!", error);
-        set_flash_error(error);
+        setFlashError(error);
     });
 }
 
-function comes_before(a_date, a_id, b_date, b_id) {
-    if (a_date > b_date) return true;
-    if (a_date < b_date) return false;
-    return a_id > b_id;
-}
-
-// Awesomplete util for payees.
-// FIXME do the same for categories.
-var payeeDatalist = document.getElementById('transaction_payee-list');
-AwesompleteUtil.start('#new-transaction-payee',
-    { }, { minChars: 1, list: payeeDatalist }
-);
-
-// Change add functionality for new transaction.
-var new_form = document.querySelector('form#new-transaction');
-if (new_form) {
-    new_form.addEventListener('submit', function(evt) {
-        evt.preventDefault();
-        var formData = new FormData(new_form);
-        console.log(new_form);
-        console.log(formData);
-
-        // FIXME validation on client side before we post.
-        json_req(new_form.action, formData, 201, true, 'POST').then(function(response) {
-            console.log(response.data);
-            var html = response.data.html_row;
-            if (html) {
-                // Create an element from the returned string.
-                var newTransaction = document.createElement("div");
-                newTransaction.innerHTML = html;
-                newTransaction = newTransaction.firstChild;
-
-                // FIXME maybe in the future use a sorting routine and just insert this somewhere.
-                // Should allow for different kinds of sorting.
-                var newId = response.data.id;
-                var newDate = response.data.when;
-
-                var table = document.querySelector('#transactions .tbody');
-                var rows = table.querySelectorAll('.tr.transaction');
-                var inserted = false;
-                for (var i = 0; i < rows.length; ++i) {
-                    var row = rows[i];
-                    //console.log(row);
-                    var id = row.querySelector('.transaction-id');
-                    var date = row.querySelector('.date');
-                    if (id && date) {
-                        id = id.innerHTML;
-                        date = date.innerHTML;
-
-                        if (comes_before(newDate, newId, date, id)) {
-                            row.parentNode.insertBefore(newTransaction, row);
-                            inserted = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (!inserted) {
-                    table.appendChild(newTransaction);
-                }
-            }
-
-            // Augment datalists.
-            // awesomplete doesn't update. This is fruitless atm.
-            //var payeeDatalist = document.getElementById('transaction_payee-list');
-            /*
-            var newPayee = document.createElement("option");
-            newPayee.innerHTML = response.data.payee;
-            payeeDatalist.appendChild(newPayee);
-            */
-
-            /*
-            var categoryDatalist = document.querySelector('#transaction_category-list');
-            var newCategory = document.createElement("option");
-            newCategory.innerHTML = response.data.category;
-            categoryDatalist.appendChild(newCategory);
-            */
-        }, function(error) {
-            console.error("Failed!", error);
-            set_flash_error(error)
-        });
-    });
-}
-
-var datepickers = document.querySelectorAll('.datepicker');
-for (var i = 0; i < datepickers.length; ++i) {
-    // Date picking for new transaction.
-    var picker = new Pikaday({
-        field: datepickers[i],
-        firstDay: 1,
-        //minDate: new Date(),
-        //maxDate: new Date(2020, 12, 31),
-        //yearRange: [2000,2020]
-    });
+function comesBefore(aDate, aId, bDate, bId) {
+    if (aDate > bDate) return true;
+    if (aDate < bDate) return false;
+    return aId > bId;
 }
 
 
-function set_flash_info(text) {
+function setFlashInfo(text) {
     var p = document.querySelectorAll('.alert.alert-info')[0];
     p.innerHTML = text;
 }
-function set_flash_error(text) {
+function setFlashError(text) {
     var p = document.querySelectorAll('.alert.alert-danger')[0];
     p.innerHTML = text;
+}
+
+function insertTransaction(newRow) {
+    var table = document.querySelector('#transactions .tbody');
+    var rows = table.querySelectorAll('.tr.transaction');
+    var inserted = false;
+
+    var newId = newRow.querySelector('.transaction-id').innerHTML;
+    var newDate = newRow.querySelector('.transaction-date').innerHTML;
+
+    for (var i = 0; i < rows.length; ++i) {
+        var row = rows[i];
+        var id = row.querySelector('.transaction-id').innerHTML;
+        var date = row.querySelector('.transaction-date').innerHTML;
+
+        // FIXME Should allow for different kinds of sorting.
+        if (comesBefore(newDate, newId, date, id)) {
+            row.parentNode.insertBefore(newRow, row);
+            inserted = true;
+            break;
+        }
+    }
+
+    if (!inserted) {
+        table.appendChild(newRow);
+    }
 }
 
 /*
@@ -287,7 +282,7 @@ function get(url) {
   });
 }
 
-function json_req(url, params, success_status = 200, binary = false, type = 'POST') {
+function jsonReq(url, params, successStatus = 200, binary = false, type = 'POST') {
   return new Promise(function(resolve, reject) {
     var req = new XMLHttpRequest();
     req.open(type, url);
@@ -299,7 +294,7 @@ function json_req(url, params, success_status = 200, binary = false, type = 'POS
     req.responseType = "json";
 
     req.onload = function() {
-      if (req.status == success_status) {
+      if (req.status == successStatus) {
         resolve(req.response)
       } else {
         // FIXME do something smarter here perhaps...?

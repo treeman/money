@@ -10,8 +10,6 @@ C-t     Jump back
 # TODO
 1. Refactor json insert/update transaction. Include proper update for all balances.
     1. Now doesn't insert at the top anymore...
-1. Refactor api transaction controller, duplicate code.
-1. Add update tests for json transaction.
 
 1. Edit transactions inline in account view!
 1. Deletion still reloads the page
