@@ -11,7 +11,6 @@ defmodule Money.ApiTransactionController do
      [conn, conn.params, conn.assigns.current_user])
   end
 
-  # FIXME need to filter on user
   def create(conn, %{"transaction" => params}, _user) do
     params = params |> transform_category
                     |> transform_date

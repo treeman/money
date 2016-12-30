@@ -82,7 +82,17 @@ defmodule ApiTransactionControllerTest do
     account = insert_account(user)
     category_group = insert_category_group()
     category = insert_category(category_group)
-    t1 = insert_transaction(account, amount: 12.34, when: Ecto.DateTime.from_erl({{2010, 10, 10}, {0, 0, 0}}))
+    t1 = insert_transaction(account,
+                            amount: 12.34,
+                            when: Ecto.DateTime.from_erl({{2010, 10, 10}, {0, 0, 0}}))
+
+    # Add in some other random data
+    early = Ecto.DateTime.from_erl({{1900, 10, 10}, {0, 0, 0}})
+    account2 = insert_account(user)
+    insert_transaction(account2, amonut: 99999.99, when: early)
+    user2 = insert_user(username: "alice")
+    user2account = insert_account(user2)
+    insert_transaction(user2account, amonut: 99999.99, when: early)
 
     params = Map.merge(@valid_attrs, %{account_id: account.id, category_id: category.id, amount: 13.37})
     conn = post conn, api_transaction_path(conn, :create), transaction: params
@@ -126,6 +136,14 @@ defmodule ApiTransactionControllerTest do
                when: t2.when,
                payee: "nowhere"}
 
+    # Add in some other random data
+    early = Ecto.DateTime.from_erl({{1900, 10, 10}, {0, 0, 0}})
+    account2 = insert_account(user)
+    insert_transaction(account2, amonut: 99999.99, when: early)
+    user2 = insert_user(username: "alice")
+    user2account = insert_account(user2)
+    insert_transaction(user2account, amonut: 99999.99, when: early)
+
     conn = put conn, api_transaction_path(conn, :update, t2.id), transaction: params
     json = json_response(conn, 200)
     t_balance = json["data"]["transaction_balance"]
@@ -142,10 +160,18 @@ defmodule ApiTransactionControllerTest do
     assert json_response(conn, 422)["errors"] != %{}
   end
 
-  #test "deletes chosen resource", %{conn: conn} do
-    #api_transaction = Repo.insert! %<%= alias %>{}
-    #conn = delete conn, api_transaction_path(conn, :delete, api_transaction)
-    #assert response(conn, 204)
-    #refute Repo.get(<%= alias %>, api_transaction.id)
-  #end
+  @tag login_as: "max"
+  test "authorizes actions against access by other users", %{conn: conn, user: owner} do
+    account = insert_account(owner)
+    transaction = insert_transaction(account)
+
+    non_owner = insert_user(username: "alice")
+    conn = assign(conn, :current_user, non_owner)
+
+    assert_error_sent :not_found, fn ->
+      attrs = Dict.merge(%{account_id: account.id}, @valid_attrs)
+      put(conn, api_transaction_path(conn, :update, transaction), transaction: attrs)
+    end
+  end
 end
+
