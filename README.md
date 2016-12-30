@@ -8,8 +8,11 @@ C-]     Jump to definition
 C-t     Jump back
 
 # TODO
-1. Add/remove/edit categories
-1. Editing a transaction shouldn't change the width of the table columns. Annoying.
+
+1. Add/edit categories/category groups
+1. Add "checked" transactions (read-only)
+1. Finish swedbank transaction importer
+1. Cleanup budget view
 
 1. Checkbox for transactions (delete a selection of transactions)
 1. Ability to add a category via category dropdown
@@ -20,28 +23,26 @@ C-t     Jump back
 1. Maybe should be able to specify datetime...?
 1. mix test for some reason isn't running import tests?!
 
+## Categories
+1. Need to be able to create a category and groups
+1. Need to be able to delete/rename a category and groups
+
 ## Import text
 * In the future import using the api of banks, now just make a simple parser...
-
-## Categories
-1. Need to be able to create a category
-1. Need to be able to delete/rename a category
 
 ## User
 1. When new user is created need to seed categories
 1. Need to associate categories/budgets with a single user
 
 ## Transactions
-1. JS enabled transaction view
-    1. Edit transactions needs to rebuild with forms and then conform with server
-    1. Delete transaction directly from account view
-1. Add/edit/new transaction support for the all account view
+1. new transaction support for the all account view
 
 1. No good error message if category isn't select (also it should be possible to create)
 1. Importer/Generator
 1. Store payees and info about them. Last Category and amount and others?
 1. Recurring transactions
 1. Transactions between accounts (with transaction fee support)
+1. Editing a transaction shouldn't change the width of the table columns. Annoying.
 
 ## Accounts
 1. Split amount -> inflow/outflow
