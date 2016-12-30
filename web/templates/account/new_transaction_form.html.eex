@@ -1,33 +1,32 @@
 <%= form_for @transaction, @action, [id: "new-transaction"], fn f -> %>
-  <%# FIXME rewrite and don't use a table for this... %>
-    <%= hidden_input f, :account_id %>
+  <%= hidden_input f, :account_id %>
 
-    <div class="transaction-date">
-      <%= date_input f, :when, class: "datepicker", value: DateTime.to_date(DateTime.utc_now) %>
-    </div>
+  <div class="transaction-date">
+    <%= date_input f, :when, class: "datepicker", value: DateTime.to_date(DateTime.utc_now) %>
+  </div>
 
-    <div class="transaction-payee">
-      <% payees = Enum.map(@transactions, fn %{transaction: t} -> t.payee end) %>
-      <%= text_input f, :payee, id: "new-transaction-payee" %>
-      <%= datalist payees, id: "transaction_payee-list" %>
-      <%#= awesomplete f, :payee, payees, data_minchars: 0 %>
-    </div>
+  <div class="transaction-payee">
+    <% payees = Enum.reduce(@transactions, %MapSet{}, fn %{transaction: t}, acc -> MapSet.put(acc, t.payee) end) %>
+    <%= text_input f, :payee, id: "new-transaction-payee" %>
+    <%= datalist payees, id: "transaction_payee-list" %>
+    <%#= awesomplete f, :payee, payees, data_minchars: 0 %>
+  </div>
 
-    <div class="transaction-category">
-      <%= awesomplete f, :category, @categories, data_minchars: 0 %>
-    </div>
+  <div class="transaction-category">
+    <%= awesomplete f, :category, @categories, data_minchars: 0 %>
+  </div>
 
-    <div class="transaction-descr">
-      <%= text_input f, :description %>
-    </div>
+  <div class="transaction-descr">
+    <%= text_input f, :description %>
+  </div>
 
-    <div class="transaction-amount">
-      <%= number_input f, :amount, value: 1337, step: 0.01 %>
-    </div>
+  <div class="transaction-amount">
+    <%= number_input f, :amount, value: 1337, step: 0.01 %>
+  </div>
 
-    <div class="transaction-button">
-      <%= submit "Submit", class: "btn btn-primary" %>
-    </div>
+  <div class="transaction-button">
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
 <% end %>
 
 <%#<div id="tmp-footer"></div>%>

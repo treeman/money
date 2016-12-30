@@ -183,6 +183,10 @@ nav.transaction-header ol li {
     padding-right: 0.4em;
 }
 
+.account-id, .transaction-id {
+    display: none;
+}
+
 /*
  * Flex style for header/body/footer where body is increased but not the others. */
 nav.transaction-header {

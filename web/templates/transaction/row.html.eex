@@ -1,14 +1,16 @@
 <div class="tr transaction">
-  <div class="tc account-id"><%= @transaction.account_id %></div>
-  <div class="tc transaction-id"><%= @transaction.id %></div>
-  <div class="tc date"><%= Ecto.DateTime.to_date(@transaction.when) %></div>
-  <div class="tc"><%= @transaction.payee %></div>
-  <div class="tc"><%= if @transaction.category do @transaction.category.name else "" end %></div>
-  <div class="tc"><%= @transaction.description %></div>
-  <div class="tc"><%= @transaction.amount %></div>
-  <div class="tc"><%= @balance %></div>
+  <!---<div class="tc account-id"><%= @transaction.account_id %></div>
+  <div class="tc transaction-id"><%= @transaction.id %></div>-->
+  <div class="account-id"><%= @transaction.account_id %></div>
+  <div class="transaction-id"><%= @transaction.id %></div>
+  <div class="tc transaction-date"><%= Ecto.DateTime.to_date(@transaction.when) %></div>
+  <div class="tc transaction-payee"><%= @transaction.payee %></div>
+  <div class="tc transaction-category"><%= if @transaction.category do @transaction.category.name else "" end %></div>
+  <div class="tc transaction-description"><%= @transaction.description %></div>
+  <div class="tc transaction-amount"><%= @transaction.amount %></div>
+  <div class="tc transaction-balance"><%= @balance %></div>
 
-  <div class="tc text-right">
+  <div class="tc text-right transaction-buttons">
     <%=# link "Show", to: transaction_path(@conn, :show, transaction), class: "btn btn-default btn-xs btn-show" %>
     <%= link "Edit", to: transaction_path(@conn, :edit, @transaction), class: "btn btn-default btn-xs btn-edit" %>
     <%= link "Delete", to: transaction_path(@conn, :delete, @transaction), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>

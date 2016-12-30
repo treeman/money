@@ -13,11 +13,6 @@ C-t     Jump back
 1. Need to update balance of all transactions after the one just added
 1. Add/remove/edit categories
 
-1. Need to move away from floats! use decimal postgres backend
-    Decimal in Elixir https://hexdocs.pm/decimal/readme.html
-    :decimal in Ecto
-    numeric in postgres
-
 1. Don't add duplicate dropdown options
 1. Checkbox for transactions (delete a selection of transactions)
 1. Ability to add a category via category dropdown

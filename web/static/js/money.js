@@ -67,14 +67,115 @@ function post(url, params, success_status = 200, binary = false) {
 var transaction_rows = document.querySelectorAll('#transactions .tbody .tr');
 for (var i = 0; i < transaction_rows.length; ++i) {
     var row = transaction_rows[i];
+    alter_edit_button(row);
+}
 
+function alter_edit_button(row) {
     var edit = row.querySelectorAll('.btn-edit')[0];
-    /*
-    edit.onclick = function() {
-        console.log('Edit');
+    if (edit) {
+        edit.onclick = function() {
+            begin_edit_transaction_row(row);
+        }
+        edit.setAttribute('href', '#');
     }
-    edit.setAttribute('href', '#');
-    */
+}
+
+function begin_edit_transaction_row(row) {
+    console.log('edit', row);
+    var form = "edit_transaction";
+
+    var date = row.querySelector('.transaction-date');
+    var dateInput = document.createElement("input");
+    dateInput.setAttribute("form", form);
+    dateInput.setAttribute("id", form + "_when");
+    dateInput.setAttribute("name", form + "[when]");
+    dateInput.setAttribute("type", "text");
+    dateInput.setAttribute("class", "datepicker");
+    dateInput.setAttribute("value", date.innerHTML);
+    date.innerHTML = "";
+    date.appendChild(dateInput);
+    var picker = new Pikaday({
+        field: dateInput,
+        firstDay: 1,
+    });
+
+    var payee = row.querySelector('.transaction-payee');
+    var payeeInput = document.createElement("input");
+    payeeInput.setAttribute("form", form);
+    payeeInput.setAttribute("id", form + "_payee");
+    payeeInput.setAttribute("name", form + "[payee]");
+    payeeInput.setAttribute("type", "text");
+    payeeInput.setAttribute("class", "awesomplete");
+    payeeInput.setAttribute("value", payee.innerHTML);
+    var awesompleteDiv = document.createElement("div");
+    awesompleteDiv.setAttribute("class", "awesomplete");
+    awesompleteDiv.appendChild(payeeInput);
+    payee.innerHTML = "";
+    payee.appendChild(awesompleteDiv);
+    AwesompleteUtil.start('#' + form + '_payee',
+        { }, { minChars: 1, list: payeeDatalist }
+    );
+
+    var category = row.querySelector('.transaction-category');
+    var categoryInput = document.createElement("input");
+    categoryInput.setAttribute("form", form);
+    categoryInput.setAttribute("id", form + "_category");
+    categoryInput.setAttribute("name", form + "[category]");
+    categoryInput.setAttribute("type", "text");
+    categoryInput.setAttribute("class", "awesomplete");
+    categoryInput.setAttribute("value", category.innerHTML);
+    var awesompleteDiv = document.createElement("div");
+    awesompleteDiv.setAttribute("class", "awesomplete");
+    awesompleteDiv.appendChild(categoryInput);
+    category.innerHTML = "";
+    category.appendChild(awesompleteDiv);
+    AwesompleteUtil.start('#' + form + '_category',
+        { }, { minChars: 1, list: document.getElementById('transaction_category-list') }
+    );
+
+    var descr = row.querySelector('.transaction-description');
+    var descrInput = document.createElement("input");
+    descrInput.setAttribute("form", form);
+    descrInput.setAttribute("id", form + "_description");
+    descrInput.setAttribute("name", form + "[description]");
+    descrInput.setAttribute("type", "text");
+    descrInput.setAttribute("value", descr.innerHTML);
+    descr.innerHTML = "";
+    descr.appendChild(descrInput);
+
+    var amount = row.querySelector('.transaction-amount');
+    var amountInput = document.createElement("input");
+    amountInput.setAttribute("form", form);
+    amountInput.setAttribute("id", form + "_amount");
+    amountInput.setAttribute("name", form + "[amount]");
+    amountInput.setAttribute("type", "number");
+    amountInput.setAttribute("step", "0.01");
+    amountInput.setAttribute("value", amount.innerHTML);
+    amount.innerHTML = "";
+    amount.appendChild(amountInput);
+
+    // Hide all existing children and then insert a new button.
+    var buttons = row.querySelector('.transaction-buttons');
+    var buttonChildren = buttons.childNodes;
+    for (var i = 0; i < buttonChildren.length; ++i) {
+        var child = buttonChildren[i];
+        if (child.style) {
+            child.style.display = 'none';
+            console.log(child);
+        }
+    }
+    var save = document.createElement("input");
+    save.setAttribute("class", "btn btn-default btn-xs save-edit");
+    save.setAttribute("value", "Save");
+    save.setAttribute("type", "submit");
+    save.setAttribute("form", form);
+    buttons.appendChild(save);
+    var abort = document.createElement("input");
+    abort.setAttribute("class", "btn btn-default btn-xs abort-edit");
+    abort.setAttribute("value", "Abort");
+    abort.setAttribute("type", "submit");
+    abort.setAttribute("form", form);
+    buttons.appendChild(abort);
 }
 
 function comes_before(a_date, a_id, b_date, b_id) {
@@ -84,13 +185,10 @@ function comes_before(a_date, a_id, b_date, b_id) {
 }
 
 // Awesomplete util for payees.
+// FIXME do the same for categories.
 var payeeDatalist = document.getElementById('transaction_payee-list');
 AwesompleteUtil.start('#new-transaction-payee',
-    { },
-    {
-        minChars: 1,
-        list: payeeDatalist
-    }
+    { }, { minChars: 1, list: payeeDatalist }
 );
 
 // Change add functionality for new transaction.
@@ -140,10 +238,13 @@ if (new_form) {
             }
 
             // Augment datalists.
+            // awesomplete doesn't update. This is fruitless atm.
             //var payeeDatalist = document.getElementById('transaction_payee-list');
+            /*
             var newPayee = document.createElement("option");
             newPayee.innerHTML = response.data.payee;
             payeeDatalist.appendChild(newPayee);
+            */
 
             /*
             var categoryDatalist = document.querySelector('#transaction_category-list');
