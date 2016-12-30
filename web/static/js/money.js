@@ -7,9 +7,7 @@ var editForm = document.querySelector('form#edit-transaction');
 // Change edit and functionality for all transactions.
 var transactionRows = document.querySelectorAll('#transactions .tbody .tr');
 for (var i = 0; i < transactionRows.length; ++i) {
-    var row = transactionRows[i];
-    alterEditButton(row);
-    alterDeleteButton(row);
+    alterTransactionRow(transactionRows[i]);
 }
 
 // Awesomplete util for payees.
@@ -54,6 +52,7 @@ function submitNewTransaction(evt) {
             newTransaction = newTransaction.firstChild;
 
             insertTransaction(newTransaction);
+            alterTransactionRow(newTransaction);
         }
         updateAccountBalance(response.data.transaction_balance)
 
@@ -69,6 +68,11 @@ function submitNewTransaction(evt) {
         console.error("Failed!", error);
         setFlashError(error)
     });
+}
+
+function alterTransactionRow(row) {
+    alterEditButton(row);
+    alterDeleteButton(row);
 }
 
 function alterEditButton(row) {
@@ -236,6 +240,8 @@ function saveEditTransaction(formId, row, newRow) {
             newTransaction = newTransaction.firstChild;
 
             insertTransaction(newTransaction);
+            alterTransactionRow(newTransaction);
+
             row.parentNode.removeChild(newRow);
             row.parentNode.removeChild(row);
         }
