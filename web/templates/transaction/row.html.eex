@@ -1,6 +1,4 @@
 <div class="tr transaction">
-  <!---<div class="tc account-id"><%= @transaction.account_id %></div>
-  <div class="tc transaction-id"><%= @transaction.id %></div>-->
   <div class="account-id"><%= @transaction.account_id %></div>
   <div class="transaction-id"><%= @transaction.id %></div>
   <div class="tc transaction-date"><%= Ecto.DateTime.to_date(@transaction.when) %></div>

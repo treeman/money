@@ -30,5 +30,12 @@ defmodule Money.TransactionHelpers do
     %{balance: balance} = Enum.find(transactions, fn x -> x.transaction.id == transaction.id end)
     balance
   end
+
+  def transaction_balance(account: account) do
+    balance = Repo.all(rolling_balance(account: account))
+    Enum.reduce(balance, %{}, fn %{balance: balance, transaction: t}, acc ->
+      Map.put_new(acc, t.id, balance)
+    end)
+  end
 end
 

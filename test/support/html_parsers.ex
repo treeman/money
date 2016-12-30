@@ -28,6 +28,7 @@ defmodule Money.HtmlParsers do
     trs = Floki.find(table, ".tbody") |> Floki.find(".tr")
 
     Enum.map(trs, fn {_, _, cols} ->
+      cols = cols |> Floki.find(".tc")
       {_, mapped} = Enum.reduce(cols, {0, %{}}, fn(
         {_, _, [val]}, {i, map}) ->
           head = Map.get(index2head, i)

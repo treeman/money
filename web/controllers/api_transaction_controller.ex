@@ -4,7 +4,6 @@ defmodule Money.ApiTransactionController do
   alias Money.TransactionView
   alias Money.Repo
   alias Money.Category
-  import Phoenix.View
   require Logger
 
   def action(conn, _) do
@@ -23,15 +22,37 @@ defmodule Money.ApiTransactionController do
       {:ok, transaction} ->
         transaction = Repo.preload(transaction, [:category, :account])
 
-        # FIXME should find the rolling balance for the whole account, it needs to be updated!
-        balance = rolling_balance(transaction: transaction)
-
-        # FIXME also figure out position (or client side...?)
-        html_row = render_to_string TransactionView, "row.html", transaction: transaction, balance: balance, conn: conn
+        transaction_balance = transaction_balance(account: transaction.account)
 
         conn
         |> put_status(:created)
-        |> render(TransactionView, "show.json", %{transaction: transaction, balance: balance, html_row: html_row})
+        |> render(TransactionView, "show.json", %{transaction: transaction,
+                                                  transaction_balance: transaction_balance,
+                                                  conn: conn})
+      {:error, changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(Transaction.ChangesetView, "error.json", changeset: changeset)
+    end
+  end
+
+  def update(conn, %{"id" => id, "transaction" => params}, user) do
+    params = params |> transform_category
+                    |> transform_date
+
+    transaction = Repo.get!(user_transactions(user), id)
+    changeset = Transaction.changeset(transaction, params)
+
+    case Repo.update(changeset) do
+      {:ok, transaction} ->
+        transaction = Repo.preload(transaction, [:category, :account])
+
+        transaction_balance = transaction_balance(account: transaction.account)
+
+        conn
+        |> render(TransactionView, "show.json", %{transaction: transaction,
+                                                  transaction_balance: transaction_balance,
+                                                  conn: conn})
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -60,31 +81,5 @@ defmodule Money.ApiTransactionController do
     end
   end
   def transform_date(params), do: params
-
-  def update(conn, %{"id" => id, "transaction" => params}, user) do
-    params = params |> transform_category
-                    |> transform_date
-
-    transaction = Repo.get!(user_transactions(user), id)
-    changeset = Transaction.changeset(transaction, params)
-
-    case Repo.update(changeset) do
-      {:ok, transaction} ->
-        transaction = Repo.preload(transaction, [:category, :account])
-
-        # FIXME should find the rolling balance for the whole account, it needs to be updated!
-        balance = rolling_balance(transaction: transaction)
-
-        # FIXME also figure out position (or client side...?)
-        html_row = render_to_string TransactionView, "row.html", transaction: transaction, balance: balance, conn: conn
-
-        conn
-        |> render(TransactionView, "show.json", %{transaction: transaction, balance: balance, html_row: html_row})
-      {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Transaction.ChangesetView, "error.json", changeset: changeset)
-    end
-  end
 end
 

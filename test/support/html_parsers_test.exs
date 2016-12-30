@@ -19,6 +19,7 @@ year: 2016 month: 7
   </div>
   <div class="tbody">
     <div class="tr budgeted-group">
+      <div class="other">meep</div>
       <div class="tc">Essentials</div> <div class="tc">1337</div> <div class="tc">122.12</div> <div class="tc">1459.12</div>
     </div>
     <div class="tr budgeted-category">

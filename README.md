@@ -17,6 +17,7 @@ C-t     Jump back
 1. Deletion still reloads the page
 1. Need to update balance of all transactions after the one just added
 1. Add/remove/edit categories
+1. Editing a transaction shouldn't change the width of the table columns. Annoying.
 
 1. Don't add duplicate dropdown options
 1. Checkbox for transactions (delete a selection of transactions)

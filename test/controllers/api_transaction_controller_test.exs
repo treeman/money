@@ -27,25 +27,6 @@ defmodule ApiTransactionControllerTest do
     end)
   end
 
-  #test "lists all entries on index", %{conn: conn} do
-    #conn = get conn, api_transaction_path(conn, :index)
-    #assert json_response(conn, 200)["data"] == []
-  #end
-
-  #test "shows chosen resource", %{conn: conn} do
-    #api_transaction = Repo.insert! %<%= alias %>{}
-    #conn = get conn, api_transaction_path(conn, :show, api_transaction)
-    #assert json_response(conn, 200)["data"] == %{"id" => api_transaction.id<%= for {k, _} <- attrs do %>,
-      #"<%= k %>" => api_transaction.<%= k %><% end %>}
-  #end
-
-  #@tag login_as: "max"
-  #test "renders page not found when id is nonexistent", %{conn: conn} do
-    #assert_error_sent 404, fn ->
-      #get conn, api_transaction_path(conn, :show, -1)
-    #end
-  #end
-
   @tag login_as: "max"
   test "creates and renders resource when data is valid", %{conn: conn, user: user} do
     account = insert_account(user)
@@ -96,18 +77,70 @@ defmodule ApiTransactionControllerTest do
     assert json_response(conn, 422)["errors"] != %{}
   end
 
-  #test "updates and renders chosen resource when data is valid", %{conn: conn} do
-    #api_transaction = Repo.insert! %<%= alias %>{}
-    #conn = put conn, api_transaction_path(conn, :update, api_transaction), api_transaction: @valid_attrs
-    #assert json_response(conn, 200)["data"]["id"]
-    #assert Repo.get_by(<%= alias %>, @valid_attrs)
-  #end
+  @tag login_as: "max"
+  test "returns all transaction balances on creation", %{conn: conn, user: user} do
+    account = insert_account(user)
+    category_group = insert_category_group()
+    category = insert_category(category_group)
+    t1 = insert_transaction(account, amount: 12.34, when: Ecto.DateTime.from_erl({{2010, 10, 10}, {0, 0, 0}}))
 
-  #test "does not update chosen resource and renders errors when data is invalid", %{conn: conn} do
-    #api_transaction = Repo.insert! %<%= alias %>{}
-    #conn = put conn, api_transaction_path(conn, :update, api_transaction), api_transaction: @invalid_attrs
-    #assert json_response(conn, 422)["errors"] != %{}
-  #end
+    params = Map.merge(@valid_attrs, %{account_id: account.id, category_id: category.id, amount: 13.37})
+    conn = post conn, api_transaction_path(conn, :create), transaction: params
+    json = json_response(conn, 201)
+    t_balance = json["data"]["transaction_balance"]
+    assert length(Map.keys(t_balance)) == 2
+    assert Map.fetch!(t_balance, Integer.to_string(t1.id)) == "12.34"
+
+    transaction = Repo.get_by(Transaction, params)
+    assert transaction
+    assert Map.fetch!(t_balance, Integer.to_string(transaction.id)) == "25.71"
+  end
+
+  @tag login_as: "max"
+  test "updates and renders resource when data is valid", %{conn: conn, user: user} do
+    account = insert_account(user)
+    t1 = insert_transaction(account, @valid_attrs)
+    params = %{amount: 1337,
+               description: t1.description,
+               when: t1.when,
+               payee: "nowhere"}
+
+    conn = put conn, api_transaction_path(conn, :update, t1.id), transaction: params
+    assert json_response(conn, 200)
+
+    transaction = Repo.get(Transaction, t1.id)
+    assert transaction
+    assert transaction.description == t1.description
+    assert transaction.amount == Decimal.new(1337)
+    assert transaction.payee == "nowhere"
+  end
+
+  @tag login_as: "max"
+  test "returns all transaction balances on update", %{conn: conn, user: user} do
+    account = insert_account(user)
+    t1 = insert_transaction(account, amount: 12.34, when: Ecto.DateTime.from_erl({{2010, 10, 10}, {0, 0, 0}}))
+
+    t2 = insert_transaction(account, @valid_attrs)
+    params = %{amount: 1337,
+               description: t2.description,
+               when: t2.when,
+               payee: "nowhere"}
+
+    conn = put conn, api_transaction_path(conn, :update, t2.id), transaction: params
+    json = json_response(conn, 200)
+    t_balance = json["data"]["transaction_balance"]
+    assert length(Map.keys(t_balance)) == 2
+    assert Map.fetch!(t_balance, Integer.to_string(t1.id)) == "12.34"
+    assert Map.fetch!(t_balance, Integer.to_string(t2.id)) == "1349.34"
+  end
+
+  @tag login_as: "max"
+  test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, user: user} do
+    account = insert_account(user)
+    t1 = insert_transaction(account)
+    conn = put conn, api_transaction_path(conn, :update, t1.id), transaction: @invalid_attrs
+    assert json_response(conn, 422)["errors"] != %{}
+  end
 
   #test "deletes chosen resource", %{conn: conn} do
     #api_transaction = Repo.insert! %<%= alias %>{}

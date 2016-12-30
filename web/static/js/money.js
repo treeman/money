@@ -139,6 +139,7 @@ function save_edit_transaction(formId, row, newRow) {
 
     // FIXME validation on client side before we post.
     json_req(editForm.action, formData, 200, true, 'PUT').then(function(response) {
+        console.log(response.data);
         var html = response.data.html_row;
         if (html) {
             // Create an element from the returned string.
@@ -179,6 +180,7 @@ if (new_form) {
 
         // FIXME validation on client side before we post.
         json_req(new_form.action, formData, 201, true, 'POST').then(function(response) {
+            console.log(response.data);
             var html = response.data.html_row;
             if (html) {
                 // Create an element from the returned string.
