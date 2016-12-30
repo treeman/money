@@ -9,6 +9,7 @@ C-t     Jump back
 
 # TODO
 
+1. Make categories user dependent
 1. Add/edit categories/category groups
 1. Add "checked" transactions (read-only)
 1. Finish swedbank transaction importer

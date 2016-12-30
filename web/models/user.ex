@@ -5,8 +5,9 @@ defmodule Money.User do
     field :name, :string
     field :username, :string
     field :password, :string, virtual: true
-    has_many :accounts, Money.Account
     field :password_hash, :string
+    has_many :accounts, Money.Account, on_delete: :delete_all
+    has_many :category_groups, Money.CategoryGroup, on_delete: :delete_all
 
     timestamps
   end
