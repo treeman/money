@@ -48,6 +48,8 @@ defmodule Money.Router do
 
     delete "/accounts/:id/transactions", AccountController, :delete_transactions
     post "/transactions", ApiTransactionController, :create
+    put "/transactions/:id", ApiTransactionController, :update
+    patch "/transactions/:id", ApiTransactionController, :update
     #post "/transactions/:id", ApiTransactionController, :update
     #get "/budget", BudgetController, :index
   end

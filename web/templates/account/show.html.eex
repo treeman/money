@@ -30,14 +30,8 @@
 </div>
 
 <div id="main-transactions">
-  <!---
-  <% new_transaction_form = if assigns[:new_transaction] do Phoenix.HTML.FormData.to_form(@new_transaction, []) else nil end %>
-  -->
-
   <div class="ctable" id="transactions">
     <div class="thead">
-      <%#<div class="th"></div>%>
-      <%#<div class="th"></div>%>
       <div class="th">Date</div>
       <div class="th">Payee</div>
       <div class="th">Category</div>
@@ -51,53 +45,9 @@
         <%= render Money.TransactionView, "row.html", transaction: transaction, balance: balance, conn: @conn %>
       <% end %>
 
-      <!---
-      <%= if new_transaction_form do %>
-        <%= render "new_transaction.html", form: new_transaction_form, form_id: "new-transaction", categories: @categories %>
-      <% end %>
-      -->
-
-      <div class="tr new-transaction-tr">
-        <%= hidden_input :asdf, :account_id %>
-
-        <div class="tc">
-          <%= date_input :asdf, :when, class: "datepicker", value: DateTime.to_date(DateTime.utc_now) %>
-        </div>
-
-        <div class="tc">
-          <%#= text_input :asdf, :payee, value: "Mr X" %>
-          <%= text_input :asdf, :payee %>
-        </div>
-
-        <div class="tc">
-          <%#= select :asdf, :category_id, @categories, prompt: "Choose a category", selected: 1 %>
-          <%= text_input :asdf, :category_id, class: :awesomplete %>
-        </div>
-
-        <div class="tc">
-          <%= text_input :asdf, :description %>
-        </div>
-
-        <div class="tc">
-          <%= number_input :asdf, :amount, value: 1337, step: 0.01 %>
-        </div>
-
-        <div class="tc">1234567.89</div>
-
-        <div class="tc text-right">
-          <%= submit "Save", class: "btn btn-primary" %>
-        </div>
-      </div>
-
-
-
     </div>
   </div>
 
-  <!---
-  <%= if new_transaction_form do %>
-    <%= form_tag(api_transaction_path(@conn, :create), id: "new-transaction") %></form>
-  <% end %>
-  -->
-
+  <%= form_tag("#", id: "edit-transaction") %></form>
 </div>
+

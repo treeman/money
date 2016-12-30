@@ -8,6 +8,11 @@ C-]     Jump to definition
 C-t     Jump back
 
 # TODO
+1. Refactor json insert/update transaction. Include proper update for all balances.
+    1. Now doesn't insert at the top anymore...
+1. Refactor api transaction controller, duplicate code.
+1. Add update tests for json transaction.
+
 1. Edit transactions inline in account view!
 1. Deletion still reloads the page
 1. Need to update balance of all transactions after the one just added
@@ -22,6 +27,8 @@ C-t     Jump back
 
 1. Maybe should be able to specify datetime...?
 1. mix test for some reason isn't running import tests?!
+
+1. Rewrite all private js code to use camelCase, snake case for dom ids etc...
 
 ## Import text
 * In the future import using the api of banks, now just make a simple parser...
