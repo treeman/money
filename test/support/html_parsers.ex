@@ -36,9 +36,8 @@ defmodule Money.HtmlParsers do
             {i + 1, map}
           else
             # Just a convenience conversion.
-            # FIXME need to be changed when we allow fraction calculations.
-            val = case Integer.parse(val) do
-              {int, ""} -> int
+            val = case Float.parse(val) do
+              {v, ""} -> v
               _ -> val
             end
 

@@ -60,10 +60,10 @@ defmodule Money.Import.Swedbank do
     x = x
         |> String.replace(" ", "")
         |> String.replace(",", ".")
-    case Integer.parse(x) do
+    case Float.parse(x) do
       {n, rest} ->
-        Logger.warn("unhandled rest: #{rest}")
-        {:ok, n}
+        if rest != "", do: Logger.warn("unhandled rest: '#{rest}'")
+        {:ok, Decimal.new(n)}
       _ -> {:error, "bad num: '#{x}'"}
     end
   end

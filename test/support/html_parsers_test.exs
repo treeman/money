@@ -19,7 +19,7 @@ year: 2016 month: 7
   </div>
   <div class="tbody">
     <div class="tr budgeted-group">
-      <div class="tc">Essentials</div> <div class="tc">1337</div> <div class="tc">122</div> <div class="tc">1459</div>
+      <div class="tc">Essentials</div> <div class="tc">1337</div> <div class="tc">122.12</div> <div class="tc">1459.12</div>
     </div>
     <div class="tr budgeted-category">
       <div class="tc">Food</div> <div class="tc">500</div> <div class="tc">100</div> <div class="tc">400</div>
@@ -36,7 +36,7 @@ year: 2016 month: 7
 """
     table = parse_table(html, ".ctable")
     assert table == [%{"Category" => "Essentials", "Budgeted" => 1337,
-                       "Activity" => 122, "Balance" => 1459},
+                       "Activity" => 122.12, "Balance" => 1459.12},
                      %{"Category" => "Food", "Budgeted" => 500,
                        "Activity" => 100, "Balance" => 400},
                      %{"Category" => "Rent", "Budgeted" => 0,

@@ -22,7 +22,7 @@
     </div>
 
     <div class="transaction-amount">
-      <%= number_input f, :amount, value: 1337 %>
+      <%= number_input f, :amount, value: 1337, step: 0.01 %>
     </div>
 
     <div class="transaction-button">

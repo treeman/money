@@ -3,7 +3,6 @@ defmodule Money.Import.SwedbankTest do
   import Money.Import.Swedbank
 
   test "to_date" do
-    IO.puts("===== TESTING =====")
     assert {:ok, _} = to_date("06-12-13")
     assert {:ok, _} = to_date("2006-12-13")
 
@@ -27,20 +26,29 @@ defmodule Money.Import.SwedbankTest do
 
   test "to_num" do
     assert {:error, _} = to_num("x123xyz")
-    assert {:ok, 123456} = to_num("123 456,789")
+    assert {:ok, res} = to_num("123 456,789")
+    assert res == Decimal.new(123456.789)
   end
 
   test "parse_transactions" do
     data = """
  Bokf.datum Klicka på pilen för att sortera listan i datumordning. 	Trans.datum Klicka på pilen för att sortera listan i datumordning. 	Kontohändelse Klicka på pilen för att sortera listan efter kontohändelse i bokstavsordning. 	  	Belopp Klicka på pilen för att sortera listan i beloppsordning. 	Saldo
 
-16-12-28 	16-12-28  	Expensive Stuff  	  	-99 129,00 	9 999,99
+16-12-24 	16-12-28  	Expensive Stuff  	  	99 129,00 	9 999,99
 16-12-23 	16-12-23  	FOOD EXPRESS  	  	-83,20 	2 222,22
     """
-
     transactions = parse_transactions(data)
-    #IO.inspect(transactions)
-    assert length(transactions) > 0
+
+    assert length(transactions) == 2
+    t1 = Enum.at(transactions, 0).changes
+    assert t1.when == Ecto.DateTime.cast!("2016-12-23T00:00:00")
+    assert t1.description == "FOOD EXPRESS"
+    assert t1.amount == Decimal.new(-83.20)
+
+    t2 = Enum.at(transactions, 1).changes
+    assert t2.when == Ecto.DateTime.cast!("2016-12-28T00:00:00")
+    assert t2.description == "Expensive Stuff"
+    assert t2.amount == Decimal.new(99129.0)
   end
 end
 

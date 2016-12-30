@@ -18,6 +18,7 @@ C-t     Jump back
     :decimal in Ecto
     numeric in postgres
 
+1. Don't add duplicate dropdown options
 1. Checkbox for transactions (delete a selection of transactions)
 1. Ability to add a category via category dropdown
     1. Need to be able to add/select category group as well
