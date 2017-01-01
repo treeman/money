@@ -8,20 +8,10 @@ C-]     Jump to definition
 C-t     Jump back
 
 # TODO
-
-1. Add/edit categories/category groups
-1. Add "checked" transactions (read-only)
+1. Categories
 1. Finish swedbank transaction importer
+1. Minor stuff for account view
 1. Cleanup budget view
-
-1. Checkbox for transactions (delete a selection of transactions)
-1. Ability to add a category via category dropdown
-    1. Need to be able to add/select category group as well
-1. Should be able to close flash with js
-1. Table header should always be visible
-
-1. Maybe should be able to specify datetime...?
-1. mix test for some reason isn't running import tests?!
 
 ## Categories
 1. UI for:
@@ -31,52 +21,51 @@ C-t     Jump back
 ## Import text
 * In the future import using the api of banks, now just make a simple parser...
 
-## User
-1. When new user is created need to seed categories
-1. Need to associate categories/budgets with a single user
+## Account view
+1. Checkbox for transactions (delete a selection of transactions)
+1. Add "checked" transactions (read-only)
+1. Maybe should be able to specify datetime...?
+1. Table header should always be visible
+1. Split amount to inflow/outflow
 
 ## Transactions
 1. new transaction support for the all account view
-
 1. No good error message if category isn't select (also it should be possible to create)
-1. Importer/Generator
 1. Store payees and info about them. Last Category and amount and others?
 1. Recurring transactions
 1. Transactions between accounts (with transaction fee support)
 1. Editing a transaction shouldn't change the width of the table columns. Annoying.
-
-## Accounts
-1. Split amount -> inflow/outflow
-1. Edit accounts
-1. Add transaction must be tied to an account (form generation/default account)
-
-Should be split up in budgeted/non-budgeted accounts. Or possibly generate several budgets? Hm.
-This is where we can track our investments.
-Allow us to track some things automatically. (cryptos)
+1. Custom sort/filter/search
 
 ## Budget view
 1. Support create/update
-1. Customized sort?
-1. Need to specify currency
-1. Need to support split budgets with another person/non-tracked account
 1. JS enabled budget view
     1. Everything should already be editable, just click and change.
 1. The budget shouldn't automatically operate on all accounts but should be configurable
+    Should be able to choose which categories/groups/accounts it's specific to
+    Should be able to split the amount between budgets
+1. Custom sort
+
+## Accounts
+1. Edit accounts
+1. Should be in a specific currency
+
+Should be able to automatically sync with external api's. (cryptos, banks)
 
 ## Investments Graphs/Repots
-1. Possibly just use a non-budget account as a base
+1. Generated for budgets?
 1. Need to manually create a planned split given percentages
 1. Need to create reports of shared expenses.
     Possibly ability to create customized filters for a report, which could track all tagged/split transactions.
 
 ## Misc
-1. Use a factory to generate test data. Find some library?
 1. Add behavior/tests for cascading deletion
 1. Graphs and shit
-1. Need to support fraction (use integers) calculations
 1. Login directly on homepage
 1. Better register/landing page
 1. Need a way to register debt/borrowing
+1. Should be able to close flash with js
+1. mix test for some reason isn't running import tests?!
 
 coincap API <https://github.com/CoinCapDev/CoinCap.io>
 
