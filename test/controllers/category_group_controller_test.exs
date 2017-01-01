@@ -77,7 +77,7 @@ defmodule Money.CategoryGroupControllerTest do
   @tag login_as: "max"
   test "does not update and render error when not unique", %{conn: conn, user: user} do
     insert_category_group(user, %{user_id: user.id, name: "New"})
-    category_group = insert_category_group(user, %{user_id: user.id, name: "Original"})
+    insert_category_group(user, %{user_id: user.id, name: "Original"})
     conn = post conn, category_group_path(conn, :create), category_group: %{user_id: user.id, name: "New"}
     assert json_response(conn, 422)["errors"] != %{}
   end
@@ -91,6 +91,22 @@ defmodule Money.CategoryGroupControllerTest do
     assert response(conn, 204)
     refute Repo.get(CategoryGroup, category_group.id)
     assert length(Repo.all(Category)) == 0
+  end
+
+  @tag login_as: "max"
+  test "authorizes actions against access by other users", %{conn: conn, user: owner} do
+    group = insert_category_group(owner)
+
+    non_owner = insert_user(username: "alice")
+    conn = assign(conn, :current_user, non_owner)
+
+    assert_error_sent :not_found, fn ->
+      attrs = Dict.merge(%{category_group_id: group.id}, @valid_attrs)
+      put(conn, category_group_path(conn, :update, group), category_group: attrs)
+    end
+    assert_error_sent :not_found, fn ->
+      delete(conn, category_group_path(conn, :delete, group))
+    end
   end
 end
 

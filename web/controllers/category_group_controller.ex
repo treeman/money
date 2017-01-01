@@ -3,7 +3,12 @@ defmodule Money.CategoryGroupController do
 
   alias Money.CategoryGroup
 
-  def create(conn, %{"category_group" => category_group_params}) do
+  def action(conn, _) do
+    apply(__MODULE__, action_name(conn),
+     [conn, conn.params, conn.assigns.current_user])
+  end
+
+  def create(conn, %{"category_group" => category_group_params}, _user) do
     changeset = CategoryGroup.changeset(%CategoryGroup{}, category_group_params)
 
     case Repo.insert(changeset) do
@@ -18,8 +23,8 @@ defmodule Money.CategoryGroupController do
     end
   end
 
-  def update(conn, %{"id" => id, "category_group" => category_group_params}) do
-    category_group = Repo.get!(CategoryGroup, id)
+  def update(conn, %{"id" => id, "category_group" => category_group_params}, user) do
+    category_group = Repo.get!(user_category_groups(user), id)
     changeset = CategoryGroup.changeset(category_group, category_group_params)
 
     case Repo.update(changeset) do
@@ -32,8 +37,8 @@ defmodule Money.CategoryGroupController do
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    category_group = Repo.get!(CategoryGroup, id)
+  def delete(conn, %{"id" => id}, user) do
+    category_group = Repo.get!(user_category_groups(user), id)
 
     # Here we use delete! (with a bang) because we expect
     # it to always work (and if it does not, it will raise).

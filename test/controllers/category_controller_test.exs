@@ -90,4 +90,21 @@ defmodule Money.CategoryControllerTest do
     assert response(conn, 204)
     refute Repo.get(Category, category.id)
   end
+
+  @tag login_as: "max"
+  test "authorizes actions against access by other users", %{conn: conn, user: owner} do
+    group = insert_category_group(owner)
+    category = insert_category(group)
+
+    non_owner = insert_user(username: "alice")
+    conn = assign(conn, :current_user, non_owner)
+
+    assert_error_sent :not_found, fn ->
+      attrs = Dict.merge(%{category_id: category.id}, @valid_attrs)
+      put(conn, category_path(conn, :update, category), category: attrs)
+    end
+    assert_error_sent :not_found, fn ->
+      delete(conn, category_path(conn, :delete, category))
+    end
+  end
 end

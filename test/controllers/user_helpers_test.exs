@@ -42,10 +42,10 @@ defmodule Money.UserHelpersTest do
   @tag login_as: "max"
   test "user categories", %{user: user} do
     g1 = insert_category_group(user, name: "g1")
-    insert_category(g1)
-    insert_category(g1)
+    insert_category(g1, name: "c1")
+    insert_category(g1, name: "c2")
     g2 = insert_category_group(user, name: "g2")
-    insert_category(g2)
+    insert_category(g2, name: "c3")
 
     other_user = insert_user(username: "alice")
     other_g = insert_category_group(other_user, name: "g1")

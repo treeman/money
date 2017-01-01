@@ -24,8 +24,9 @@ C-t     Jump back
 1. mix test for some reason isn't running import tests?!
 
 ## Categories
-1. Need to be able to create a category and groups
-1. Need to be able to delete/rename a category and groups
+1. UI for:
+    1. Need to be able to create a category and groups
+    1. Need to be able to delete/rename a category and groups
 
 ## Import text
 * In the future import using the api of banks, now just make a simple parser...
