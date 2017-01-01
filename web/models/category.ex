@@ -17,6 +17,7 @@ defmodule Money.Category do
     struct
     |> cast(params, @required_fields, @optional_fields)
     |> validate_required(@required_fields)
+    |> unique_constraint(:name, name: :categories_name_category_group_id_index)
   end
 
   def alphabetical(query) do

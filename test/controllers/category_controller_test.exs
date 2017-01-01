@@ -44,6 +44,19 @@ defmodule Money.CategoryControllerTest do
   end
 
   @tag login_as: "max"
+  test "does not create and render error when not unique", %{conn: conn, user: user} do
+    # Shouldn't key unique across users
+    other_user = insert_user(username: "alice")
+    og = insert_category_group(other_user)
+    insert_category(og, name: "Existing")
+
+    g = insert_category_group(user)
+    insert_category(g, name: "Existing")
+    conn = post conn, category_path(conn, :create), category: %{category_group_id: g.id, name: "Existing"}
+    assert json_response(conn, 422)["errors"] != %{}
+  end
+
+  @tag login_as: "max"
   test "updates and renders chosen resource when data is valid", %{conn: conn, user: user} do
     category_group = insert_category_group(user)
     category = insert_category(category_group)
@@ -57,6 +70,15 @@ defmodule Money.CategoryControllerTest do
     category_group = insert_category_group(user)
     category = insert_category(category_group)
     conn = put conn, category_path(conn, :update, category), category: @invalid_attrs
+    assert json_response(conn, 422)["errors"] != %{}
+  end
+
+  @tag login_as: "max"
+  test "does not update and renders error when not unique", %{conn: conn, user: user} do
+    g = insert_category_group(user)
+    insert_category(g, name: "Existing")
+    category = insert_category(g, name: "New")
+    conn = put conn, category_path(conn, :update, category), category: %{name: "Existing"}
     assert json_response(conn, 422)["errors"] != %{}
   end
 

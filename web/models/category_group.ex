@@ -16,5 +16,7 @@ defmodule Money.CategoryGroup do
     struct
     |> cast(params, @required_fields, @optional_fields)
     |> validate_required(@required_fields)
+    |> unique_constraint(:name, name: :category_groups_name_user_id_index)
   end
 end
+

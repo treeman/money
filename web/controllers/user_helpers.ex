@@ -4,6 +4,7 @@ defmodule Money.UserHelpers do
   import Ecto.Query
   alias Money.Repo
   alias Money.Category
+  alias Money.CategoryGroup
 
   def preload_user_data(conn, opts) do
     repo = Keyword.fetch!(opts, :repo)
@@ -24,6 +25,12 @@ defmodule Money.UserHelpers do
     from t in Money.Transaction,
     join: a in assoc(t, :account),
     join: u in assoc(a, :user),
+    where: u.id == ^user.id
+  end
+
+  def user_category_groups(user) do
+    from g in CategoryGroup,
+    join: u in assoc(g, :user),
     where: u.id == ^user.id
   end
 
