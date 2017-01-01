@@ -41,7 +41,7 @@ defmodule Money.TransactionControllerTest do
   @tag login_as: "max"
   test "creates resource and redirects when data is valid", %{conn: conn, user: user} do
     account = insert_account(user)
-    group = insert_category_group()
+    group = insert_category_group(user)
     category = insert_category(group)
     attrs = Dict.merge(%{account_id: account.id, category_id: category.id}, @valid_attrs)
 
@@ -53,7 +53,7 @@ defmodule Money.TransactionControllerTest do
   @tag login_as: "max"
   test "correctly associates with categories and accounts", %{conn: conn, user: user} do
     account = insert_account(user)
-    group = insert_category_group()
+    group = insert_category_group(user)
     category = insert_category(group)
     attrs = Dict.merge(%{account_id: account.id, category_id: category.id}, @valid_attrs)
 

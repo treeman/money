@@ -46,11 +46,11 @@ defmodule Money.BudgetControllerTest do
   test "test budget calculations", %{conn: conn, user: user} do
     account = insert_account(user)
 
-    essentials = insert_category_group(name: "Essentials")
+    essentials = insert_category_group(user, name: "Essentials")
     rent = insert_category(essentials, name: "Rent")
     food = insert_category(essentials, name: "Food")
 
-    fun = insert_category_group(name: "Fun")
+    fun = insert_category_group(user, name: "Fun")
     clothes = insert_category(fun, name: "Clothes")
     games = insert_category(fun, name: "Games")
     vacation = insert_category(fun, name: "Vacation")

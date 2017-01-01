@@ -48,12 +48,9 @@ defmodule Money.Router do
 
     delete "/accounts/:id/transactions", AccountController, :delete_transactions
 
-    #resources "/transactions", ApiTransactionController, except: [:index, :show, :new, :edit]
     resources "/transactions", ApiTransactionController, only: [:create, :update, :delete]
-    #post "/transactions", ApiTransactionController, :create
-    #put "/transactions/:id", ApiTransactionController, :update
-    #patch "/transactions/:id", ApiTransactionController, :update
-    #delete "/transactions/:id", ApiTransactionController, :delete
+    resources "/categories", CategoryController, only: [:create, :update, :delete]
+    resources "/categories_groups", CategoryGroupController, only: [:create, :update, :delete]
   end
 end
 

@@ -27,9 +27,18 @@ defmodule Money.UserHelpers do
     where: u.id == ^user.id
   end
 
+  def user_categories(user) do
+    from c in Category,
+    join: g in assoc(c, :category_group),
+    join: u in assoc(g, :user),
+    where: u.id == ^user.id
+  end
+
   def load_categories(conn, _) do
+    user = conn.assigns[:current_user]
+
     query =
-      Category
+      user_categories(user)
       |> Category.alphabetical
       |> Category.names_and_ids
     categories = Repo.all(query)

@@ -10,10 +10,13 @@ defmodule Money.Category do
     timestamps()
   end
 
+  @required_fields [:name, :category_group_id]
+  @optional_fields []
+
   def changeset(struct, params \\ %{}) do
     struct
-    |> cast(params, [:name])
-    |> validate_required([:name])
+    |> cast(params, @required_fields, @optional_fields)
+    |> validate_required(@required_fields)
   end
 
   def alphabetical(query) do

@@ -1,8 +1,9 @@
-defmodule Money.Transaction.ChangesetView do
+defmodule Money.ChangesetView do
   use Money.Web, :view
 
   @doc """
   Traverses and translates changeset errors.
+
   See `Ecto.Changeset.traverse_errors/2` and
   `Money.ErrorHelpers.translate_error/1` for more details.
   """
@@ -16,4 +17,3 @@ defmodule Money.Transaction.ChangesetView do
     %{errors: translate_errors(changeset)}
   end
 end
-

@@ -4,6 +4,7 @@ defmodule Money.ApiTransactionController do
   alias Money.TransactionView
   alias Money.Repo
   alias Money.Category
+  alias Money.ChangesetView
   require Logger
 
   def action(conn, _) do
@@ -31,7 +32,7 @@ defmodule Money.ApiTransactionController do
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> render(Transaction.ChangesetView, "error.json", changeset: changeset)
+        |> render(ChangesetView, "error.json", changeset: changeset)
     end
   end
 
@@ -55,13 +56,12 @@ defmodule Money.ApiTransactionController do
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> render(Transaction.ChangesetView, "error.json", changeset: changeset)
+        |> render(ChangesetView, "error.json", changeset: changeset)
     end
   end
 
   def delete(conn, %{"id" => id}, user) do
     transaction = Repo.get!(user_transactions(user), id)
-    account = transaction.account
 
     Repo.delete!(transaction)
 

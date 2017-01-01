@@ -14,13 +14,15 @@ defmodule ApiTransactionControllerTest do
       conn = assign(conn, :current_user, user)
       {:ok, conn: put_req_header(conn, "accept", "application/json"), user: user}
     else
-      :ok
+      {:ok, conn: put_req_header(conn, "accept", "application/json")}
     end
   end
 
   test "requries user authentication on all actions", %{conn: conn} do
     Enum.each([
+      put(conn, api_transaction_path(conn, :update, "123", %{})),
       post(conn, api_transaction_path(conn, :create, %{})),
+      delete(conn, api_transaction_path(conn, :delete, "123")),
     ], fn conn ->
       assert html_response(conn, 302)
       assert conn.halted
@@ -30,7 +32,7 @@ defmodule ApiTransactionControllerTest do
   @tag login_as: "max"
   test "creates and renders resource when data is valid", %{conn: conn, user: user} do
     account = insert_account(user)
-    category_group = insert_category_group()
+    category_group = insert_category_group(user)
     category = insert_category(category_group)
 
     params = Map.merge(@valid_attrs, %{account_id: account.id, category_id: category.id})
@@ -48,7 +50,7 @@ defmodule ApiTransactionControllerTest do
   @tag login_as: "max"
   test "parses category name", %{conn: conn, user: user} do
     account = insert_account(user)
-    category_group = insert_category_group()
+    category_group = insert_category_group(user)
     category = insert_category(category_group)
 
     params = Map.merge(@valid_attrs, %{account_id: account.id, category: category.name})
@@ -80,7 +82,7 @@ defmodule ApiTransactionControllerTest do
   @tag login_as: "max"
   test "returns all transaction balances on creation", %{conn: conn, user: user} do
     account = insert_account(user)
-    category_group = insert_category_group()
+    category_group = insert_category_group(user)
     category = insert_category(category_group)
     t1 = insert_transaction(account,
                             amount: 12.34,
