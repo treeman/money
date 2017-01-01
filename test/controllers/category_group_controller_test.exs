@@ -7,16 +7,6 @@ defmodule Money.CategoryGroupControllerTest do
   @valid_attrs %{name: "Fun"}
   @invalid_attrs %{name: nil}
 
-  setup %{conn: conn} = config do
-    if username = config[:login_as] do
-      user = insert_user(username: username)
-      conn = assign(conn, :current_user, user)
-      {:ok, conn: put_req_header(conn, "accept", "application/json"), user: user}
-    else
-      {:ok, conn: put_req_header(conn, "accept", "application/json")}
-    end
-  end
-
   test "requries user authentication on all actions", %{conn: conn} do
     Enum.each([
       put(conn, category_group_path(conn, :update, "123", %{})),
@@ -46,11 +36,11 @@ defmodule Money.CategoryGroupControllerTest do
   @tag login_as: "max"
   test "does not create and render error when not unique", %{conn: conn, user: user} do
     # Shouldn't key unique across users
-    other_user = insert_user(username: "alice")
-    insert_category_group(other_user, name: "Group")
+    other_user = insert(:user, username: "alice")
+    insert(:category_group, user: other_user, name: "Group")
 
     attrs = %{user_id: user.id, name: "Group"}
-    insert_category_group(user, attrs)
+    insert(:category_group, Map.merge(%{user: user}, attrs))
     conn = post conn, category_group_path(conn, :create), category_group: attrs
     assert json_response(conn, 422)["errors"] != %{}
   end
@@ -58,10 +48,10 @@ defmodule Money.CategoryGroupControllerTest do
   @tag login_as: "max"
   test "updates and renders chosen resource when data is valid", %{conn: conn, user: user} do
     # Shouldn't key unique across users
-    other_user = insert_user(username: "alice")
-    insert_category_group(other_user, @valid_attrs)
+    other_user = insert(:user, username: "alice")
+    insert(:category_group, Map.merge(%{user: other_user}, @valid_attrs))
 
-    category_group = insert_category_group(user)
+    category_group = insert(:category_group, user: user)
     conn = put conn, category_group_path(conn, :update, category_group), category_group: @valid_attrs
     assert json_response(conn, 200)["data"]["id"]
     assert Repo.get_by(user_category_groups(user), @valid_attrs)
@@ -69,24 +59,24 @@ defmodule Money.CategoryGroupControllerTest do
 
   @tag login_as: "max"
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, user: user} do
-    category_group = insert_category_group(user)
+    category_group = insert(:category_group, user: user)
     conn = put conn, category_group_path(conn, :update, category_group), category_group: @invalid_attrs
     assert json_response(conn, 422)["errors"] != %{}
   end
 
   @tag login_as: "max"
   test "does not update and render error when not unique", %{conn: conn, user: user} do
-    insert_category_group(user, %{user_id: user.id, name: "New"})
-    insert_category_group(user, %{user_id: user.id, name: "Original"})
+    insert(:category_group, user: user, user_id: user.id, name: "New")
+    insert(:category_group, user: user, user_id: user.id, name: "Original")
     conn = post conn, category_group_path(conn, :create), category_group: %{user_id: user.id, name: "New"}
     assert json_response(conn, 422)["errors"] != %{}
   end
 
   @tag login_as: "max"
   test "deletes chosen resource", %{conn: conn, user: user} do
-    category_group = insert_category_group(user)
-    insert_category(category_group, name: "c1")
-    insert_category(category_group, name: "c2")
+    category_group = insert(:category_group, user: user)
+    insert(:category, category_group: category_group, name: "c1")
+    insert(:category, category_group: category_group, name: "c2")
     conn = delete conn, category_group_path(conn, :delete, category_group)
     assert response(conn, 204)
     refute Repo.get(CategoryGroup, category_group.id)
@@ -95,9 +85,9 @@ defmodule Money.CategoryGroupControllerTest do
 
   @tag login_as: "max"
   test "authorizes actions against access by other users", %{conn: conn, user: owner} do
-    group = insert_category_group(owner)
+    group = insert(:category_group, user: owner)
 
-    non_owner = insert_user(username: "alice")
+    non_owner = insert(:user, username: "alice")
     conn = assign(conn, :current_user, non_owner)
 
     assert_error_sent :not_found, fn ->

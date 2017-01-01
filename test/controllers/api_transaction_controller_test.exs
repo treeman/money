@@ -9,13 +9,7 @@ defmodule ApiTransactionControllerTest do
   @invalid_attrs %{amount: nil}
 
   setup %{conn: conn} = config do
-    if username = config[:login_as] do
-      user = insert_user(username: username)
-      conn = assign(conn, :current_user, user)
-      {:ok, conn: put_req_header(conn, "accept", "application/json"), user: user}
-    else
-      {:ok, conn: put_req_header(conn, "accept", "application/json")}
-    end
+    %{config | conn: put_req_header(conn, "accept", "application/json")}
   end
 
   test "requries user authentication on all actions", %{conn: conn} do
@@ -31,11 +25,9 @@ defmodule ApiTransactionControllerTest do
 
   @tag login_as: "max"
   test "creates and renders resource when data is valid", %{conn: conn, user: user} do
-    account = insert_account(user)
-    category_group = insert_category_group(user)
-    category = insert_category(category_group)
+    account = insert(:account, user: user)
 
-    params = Map.merge(@valid_attrs, %{account_id: account.id, category_id: category.id})
+    params = Map.merge(@valid_attrs, %{account_id: account.id})
 
     conn = post conn, api_transaction_path(conn, :create), transaction: params
     json = json_response(conn, 201)
@@ -49,9 +41,9 @@ defmodule ApiTransactionControllerTest do
 
   @tag login_as: "max"
   test "parses category name", %{conn: conn, user: user} do
-    account = insert_account(user)
-    category_group = insert_category_group(user)
-    category = insert_category(category_group)
+    account = insert(:account, user: user)
+    category_group = insert(:category_group, user: user)
+    category = insert(:category, category_group: category_group)
 
     params = Map.merge(@valid_attrs, %{account_id: account.id, category: category.name})
 
@@ -65,7 +57,7 @@ defmodule ApiTransactionControllerTest do
 
   @tag login_as: "max"
   test "parses a date string", %{conn: conn, user: user} do
-    account = insert_account(user)
+    account = insert(:account, user: user)
     params = Map.merge(@valid_attrs, %{account_id: account.id, when: "2016-02-03"})
 
     conn = post conn, api_transaction_path(conn, :create), transaction: params
@@ -81,20 +73,20 @@ defmodule ApiTransactionControllerTest do
 
   @tag login_as: "max"
   test "returns all transaction balances on creation", %{conn: conn, user: user} do
-    account = insert_account(user)
-    category_group = insert_category_group(user)
-    category = insert_category(category_group)
-    t1 = insert_transaction(account,
+    account = insert(:account, user: user)
+    category_group = insert(:category_group, user: user)
+    category = insert(:category, category_group: category_group)
+    t1 = insert(:transaction, account: account,
                             amount: 12.34,
                             when: Ecto.DateTime.from_erl({{2010, 10, 10}, {0, 0, 0}}))
 
     # Add in some other random data
     early = Ecto.DateTime.from_erl({{1900, 10, 10}, {0, 0, 0}})
-    account2 = insert_account(user)
-    insert_transaction(account2, amonut: 99999.99, when: early)
-    user2 = insert_user(username: "alice")
-    user2account = insert_account(user2)
-    insert_transaction(user2account, amonut: 99999.99, when: early)
+    account2 = insert(:account, user: user)
+    insert(:transaction, account: account2, amount: 99999.99, when: early)
+    user2 = insert(:user, username: "alice")
+    user2account = insert(:account, user: user2)
+    insert(:transaction, account: user2account, amount: 99999.99, when: early)
 
     params = Map.merge(@valid_attrs, %{account_id: account.id, category_id: category.id, amount: 13.37})
     conn = post conn, api_transaction_path(conn, :create), transaction: params
@@ -110,8 +102,8 @@ defmodule ApiTransactionControllerTest do
 
   @tag login_as: "max"
   test "updates and renders resource when data is valid", %{conn: conn, user: user} do
-    account = insert_account(user)
-    t1 = insert_transaction(account, @valid_attrs)
+    account = insert(:account, user: user)
+    t1 = insert(:transaction, Map.merge(%{account: account}, @valid_attrs))
     params = %{amount: 1337,
                description: t1.description,
                when: t1.when,
@@ -129,10 +121,10 @@ defmodule ApiTransactionControllerTest do
 
   @tag login_as: "max"
   test "returns all transaction balances on update", %{conn: conn, user: user} do
-    account = insert_account(user)
-    t1 = insert_transaction(account, amount: 12.34, when: Ecto.DateTime.from_erl({{2010, 10, 10}, {0, 0, 0}}))
+    account = insert(:account, user: user)
+    t1 = insert(:transaction, account: account, amount: 12.34, when: Ecto.DateTime.from_erl({{2010, 10, 10}, {0, 0, 0}}))
 
-    t2 = insert_transaction(account, @valid_attrs)
+    t2 = insert(:transaction, Map.merge(%{account: account}, @valid_attrs))
     params = %{amount: 1337,
                description: t2.description,
                when: t2.when,
@@ -140,11 +132,11 @@ defmodule ApiTransactionControllerTest do
 
     # Add in some other random data
     early = Ecto.DateTime.from_erl({{1900, 10, 10}, {0, 0, 0}})
-    account2 = insert_account(user)
-    insert_transaction(account2, amonut: 99999.99, when: early)
-    user2 = insert_user(username: "alice")
-    user2account = insert_account(user2)
-    insert_transaction(user2account, amonut: 99999.99, when: early)
+    account2 = insert(:account, user: user)
+    insert(:transaction, account: account2, amount: 99999.99, when: early)
+    user2 = insert(:user, username: "alice")
+    user2account = insert(:account, user: user2)
+    insert(:transaction, account: user2account, amount: 99999.99, when: early)
 
     conn = put conn, api_transaction_path(conn, :update, t2.id), transaction: params
     json = json_response(conn, 200)
@@ -156,16 +148,16 @@ defmodule ApiTransactionControllerTest do
 
   @tag login_as: "max"
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, user: user} do
-    account = insert_account(user)
-    t1 = insert_transaction(account)
+    account = insert(:account, user: user)
+    t1 = insert(:transaction, account: account)
     conn = put conn, api_transaction_path(conn, :update, t1.id), transaction: @invalid_attrs
     assert json_response(conn, 422)["errors"] != %{}
   end
 
   @tag login_as: "max"
   test "deletes chosen resource", %{conn: conn, user: user} do
-    account = insert_account(user)
-    transaction = insert_transaction(account)
+    account = insert(:account, user: user)
+    transaction = insert(:transaction, account: account)
 
     conn = delete conn, api_transaction_path(conn, :delete, transaction)
     json = json_response(conn, 200)
@@ -176,10 +168,10 @@ defmodule ApiTransactionControllerTest do
 
   @tag login_as: "max"
   test "authorizes actions against access by other users", %{conn: conn, user: owner} do
-    account = insert_account(owner)
-    transaction = insert_transaction(account)
+    account = insert(:account, user: owner)
+    transaction = insert(:transaction, account: account)
 
-    non_owner = insert_user(username: "alice")
+    non_owner = insert(:user, username: "alice")
     conn = assign(conn, :current_user, non_owner)
 
     assert_error_sent :not_found, fn ->

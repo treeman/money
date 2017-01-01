@@ -9,6 +9,8 @@ C-t     Jump back
 
 # TODO
 
+1. Use the new test factory instead of the simple insertion functions
+
 1. Add/edit categories/category groups
 1. Add "checked" transactions (read-only)
 1. Finish swedbank transaction importer

@@ -1,16 +1,6 @@
 defmodule Money.ImportControllerTest do
   use Money.ConnCase
 
-  setup %{conn: conn} = config do
-    if username = config[:login_as] do
-      user = insert_user(username: username)
-      conn = assign(conn, :current_user, user)
-      {:ok, conn: conn, user: user}
-    else
-      :ok
-    end
-  end
-
   test "requries user authentication on all actions", %{conn: conn} do
     Enum.each([
       get(conn, import_path(conn, :new, 6)),
@@ -28,7 +18,7 @@ defmodule Money.ImportControllerTest do
 
 16-12-28 	16-12-28  	Expensive Stuff  	  	-99 129,00 	9 999,99
     """
-    account = insert_account(user)
+    account = insert(:account, user: user)
     conn = post conn, import_path(conn, :parse, account.id), data: data
     assert html_response(conn, 302)
   end

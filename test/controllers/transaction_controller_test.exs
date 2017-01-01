@@ -8,16 +8,6 @@ defmodule Money.TransactionControllerTest do
                  payee: "somewhere"}
   @invalid_attrs %{amount: nil}
 
-  setup %{conn: conn} = config do
-    if username = config[:login_as] do
-      user = insert_user(username: username)
-      conn = assign(conn, :current_user, user)
-      {:ok, conn: conn, user: user}
-    else
-      :ok
-    end
-  end
-
   test "requries user authentication on all actions", %{conn: conn} do
     Enum.each([
       get(conn, account_path(conn, :new)),
@@ -40,9 +30,9 @@ defmodule Money.TransactionControllerTest do
 
   @tag login_as: "max"
   test "creates resource and redirects when data is valid", %{conn: conn, user: user} do
-    account = insert_account(user)
-    group = insert_category_group(user)
-    category = insert_category(group)
+    account = insert(:account, user: user)
+    group = insert(:category_group, user: user)
+    category = insert(:category, category_group: group)
     attrs = Dict.merge(%{account_id: account.id, category_id: category.id}, @valid_attrs)
 
     conn = post conn, transaction_path(conn, :create), transaction: attrs
@@ -52,9 +42,9 @@ defmodule Money.TransactionControllerTest do
 
   @tag login_as: "max"
   test "correctly associates with categories and accounts", %{conn: conn, user: user} do
-    account = insert_account(user)
-    group = insert_category_group(user)
-    category = insert_category(group)
+    account = insert(:account, user: user)
+    group = insert(:category_group, user: user)
+    category = insert(:category, category_group: group)
     attrs = Dict.merge(%{account_id: account.id, category_id: category.id}, @valid_attrs)
 
     post conn, transaction_path(conn, :create), transaction: attrs
@@ -66,7 +56,7 @@ defmodule Money.TransactionControllerTest do
 
   @tag login_as: "max"
   test "does not create resource and renders errors when data is invalid", %{conn: conn, user: user} do
-    account = insert_account(user)
+    account = insert(:account, user: user)
     attrs = Dict.merge(%{account_id: account.id}, @invalid_attrs)
 
     conn = post conn, transaction_path(conn, :create), transaction: attrs
@@ -75,8 +65,8 @@ defmodule Money.TransactionControllerTest do
 
   @tag login_as: "max"
   test "shows chosen resource", %{conn: conn, user: user} do
-    account = insert_account(user)
-    transaction = insert_transaction(account)
+    account = insert(:account, user: user)
+    transaction = insert(:transaction, account: account)
 
     conn = get conn, transaction_path(conn, :show, transaction)
     assert html_response(conn, 200) =~ "Show transaction"
@@ -91,8 +81,8 @@ defmodule Money.TransactionControllerTest do
 
   @tag login_as: "max"
   test "renders form for editing chosen resource", %{conn: conn, user: user} do
-    account = insert_account(user)
-    transaction = insert_transaction(account)
+    account = insert(:account, user: user)
+    transaction = insert(:transaction, account: account)
 
     conn = get conn, transaction_path(conn, :edit, transaction)
     assert html_response(conn, 200) =~ "Edit transaction"
@@ -100,8 +90,8 @@ defmodule Money.TransactionControllerTest do
 
   @tag login_as: "max"
   test "updates chosen resource and redirects when data is valid", %{conn: conn, user: user} do
-    account = insert_account(user)
-    transaction = insert_transaction(account)
+    account = insert(:account, user: user)
+    transaction = insert(:transaction, account: account)
 
     conn = put conn, transaction_path(conn, :update, transaction), transaction: @valid_attrs
     assert redirected_to(conn) == transaction_path(conn, :show, transaction)
@@ -110,8 +100,8 @@ defmodule Money.TransactionControllerTest do
 
   @tag login_as: "max"
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, user: user} do
-    account = insert_account(user)
-    transaction = insert_transaction(account)
+    account = insert(:account, user: user)
+    transaction = insert(:transaction, account: account)
 
     conn = put conn, transaction_path(conn, :update, transaction), transaction: @invalid_attrs
     assert html_response(conn, 200) =~ "Edit transaction"
@@ -119,8 +109,8 @@ defmodule Money.TransactionControllerTest do
 
   @tag login_as: "max"
   test "deletes chosen resource", %{conn: conn, user: user} do
-    account = insert_account(user)
-    transaction = insert_transaction(account)
+    account = insert(:account, user: user)
+    transaction = insert(:transaction, account: account)
 
     conn = delete conn, transaction_path(conn, :delete, transaction)
     assert redirected_to(conn) == account_path(conn, :show, account.id)
@@ -129,10 +119,10 @@ defmodule Money.TransactionControllerTest do
 
   @tag login_as: "max"
   test "authorizes actions against access by other users", %{conn: conn, user: owner} do
-    account = insert_account(owner)
-    transaction = insert_transaction(account)
+    account = insert(:account, user: owner)
+    transaction = insert(:transaction, account: account)
 
-    non_owner = insert_user(username: "alice")
+    non_owner = insert(:user, username: "alice")
     conn = assign(conn, :current_user, non_owner)
 
     assert_error_sent :not_found, fn ->

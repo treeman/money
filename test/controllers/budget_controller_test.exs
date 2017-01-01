@@ -3,16 +3,6 @@ defmodule Money.BudgetControllerTest do
   import Money.HtmlParsers
   alias Ecto.DateTime
 
-  setup %{conn: conn} = config do
-    if username = config[:login_as] do
-      user = insert_user(username: username)
-      conn = assign(conn, :current_user, user)
-      {:ok, conn: conn, user: user}
-    else
-      :ok
-    end
-  end
-
   test "requries user authentication on all actions", %{conn: conn} do
     Enum.each([
       get(conn, account_path(conn, :new)),
@@ -29,7 +19,7 @@ defmodule Money.BudgetControllerTest do
   end
 
   @tag login_as: "max"
-  test "index redirects to current month", %{conn: conn, user: _user} do
+  test "index redirects to current month", %{conn: conn} do
     {{year, month, _}, _} = :calendar.local_time()
 
     conn = get conn, budget_path(conn, :index)
@@ -37,69 +27,69 @@ defmodule Money.BudgetControllerTest do
   end
 
   @tag login_as: "max"
-  test "show renders ok", %{conn: conn, user: _user} do
+  test "show renders ok", %{conn: conn} do
     conn = get conn, budget_path(conn, :show, 2016, 7)
     assert html_response(conn, 200)
   end
 
   @tag login_as: "max"
   test "test budget calculations", %{conn: conn, user: user} do
-    account = insert_account(user)
+    account = insert(:account, user: user)
 
-    essentials = insert_category_group(user, name: "Essentials")
-    rent = insert_category(essentials, name: "Rent")
-    food = insert_category(essentials, name: "Food")
+    essentials = insert(:category_group, user: user, name: "Essentials")
+    rent = insert(:category, category_group: essentials, name: "Rent")
+    food = insert(:category, category_group: essentials, name: "Food")
 
-    fun = insert_category_group(user, name: "Fun")
-    clothes = insert_category(fun, name: "Clothes")
-    games = insert_category(fun, name: "Games")
-    vacation = insert_category(fun, name: "Vacation")
+    fun = insert(:category_group, user: user, name: "Fun")
+    clothes = insert(:category, category_group: fun, name: "Clothes")
+    games = insert(:category, category_group: fun, name: "Games")
+    vacation = insert(:category, category_group: fun, name: "Vacation")
 
-    insert_budgeted_category(rent, year: 2015, month: 7, budgeted: 9999)
+    insert(:budgeted_category, category: rent, year: 2015, month: 7, budgeted: 9999)
 
-    insert_budgeted_category(rent, year: 2016, month: 6, budgeted: 5201)
-    insert_budgeted_category(food, year: 2016, month: 6, budgeted: 317)
-    insert_budgeted_category(clothes, year: 2016, month: 6, budgeted: 999999)
-    insert_budgeted_category(games, year: 2016, month: 6, budgeted: 1)
+    insert(:budgeted_category, category: rent, year: 2016, month: 6, budgeted: 5201)
+    insert(:budgeted_category, category: food, year: 2016, month: 6, budgeted: 317)
+    insert(:budgeted_category, category: clothes, year: 2016, month: 6, budgeted: 999999)
+    insert(:budgeted_category, category: games, year: 2016, month: 6, budgeted: 1)
 
-    insert_budgeted_category(rent, year: 2016, month: 7, budgeted: 5202)
-    insert_budgeted_category(food, year: 2016, month: 7, budgeted: 99)
-    insert_budgeted_category(clothes, year: 2016, month: 7, budgeted: 43)
-    insert_budgeted_category(games, year: 2016, month: 7, budgeted: 17)
+    insert(:budgeted_category, category: rent, year: 2016, month: 7, budgeted: 5202)
+    insert(:budgeted_category, category: food, year: 2016, month: 7, budgeted: 99)
+    insert(:budgeted_category, category: clothes, year: 2016, month: 7, budgeted: 43)
+    insert(:budgeted_category, category: games, year: 2016, month: 7, budgeted: 17)
 
-    insert_budgeted_category(rent, year: 2016, month: 8, budgeted: 5203)
-    insert_budgeted_category(food, year: 2016, month: 8, budgeted: 1)
-    insert_budgeted_category(clothes, year: 2016, month: 8, budgeted: 999999)
-    insert_budgeted_category(games, year: 2016, month: 8, budgeted: 5)
+    insert(:budgeted_category, category: rent, year: 2016, month: 8, budgeted: 5203)
+    insert(:budgeted_category, category: food, year: 2016, month: 8, budgeted: 1)
+    insert(:budgeted_category, category: clothes, year: 2016, month: 8, budgeted: 999999)
+    insert(:budgeted_category, category: games, year: 2016, month: 8, budgeted: 5)
 
-    insert_budgeted_category(rent, year: 2015, month: 9, budgeted: 9999)
+    insert(:budgeted_category, category: rent, year: 2015, month: 9, budgeted: 9999)
 
     {:ok, dt} = DateTime.cast("2016-06-30 00:01:00")
-    insert_transaction(account, category: rent, amount: -3570, payee: "Mr.T", when: dt)
+    insert(:transaction, account: account, category: rent, amount: -3570, payee: "Mr.T", when: dt)
     {:ok, dt} = DateTime.cast("2016-07-31 00:01:00")
-    insert_transaction(account, category: rent, amount: -3573, payee: "Mr.T", when: dt)
+    insert(:transaction, account: account, category: rent, amount: -3573, payee: "Mr.T", when: dt)
     {:ok, dt} = DateTime.cast("2016-08-31 00:01:00")
-    insert_transaction(account, category: rent, amount: -3579, payee: "Mr.T", when: dt)
+    insert(:transaction, account: account, category: rent, amount: -3579, payee: "Mr.T", when: dt)
 
     {:ok, dt} = DateTime.cast("2016-06-01 12:00:00")
-    insert_transaction(account, category: food, amount: -10, payee: "Sushi", when: dt)
-    insert_transaction(account, category: food, amount: -10, payee: "Sushi", when: dt)
+    insert(:transaction, account: account, category: food, amount: -10, payee: "Sushi", when: dt)
+    insert(:transaction, account: account, category: food, amount: -10, payee: "Sushi", when: dt)
     {:ok, dt} = DateTime.cast("2016-07-01 10:00:00")
-    insert_transaction(account, category: food, amount: -3, payee: "f1", when: dt)
-    insert_transaction(account, category: food, amount: -19, payee: "f2", when: dt)
-    insert_transaction(account, category: food, amount: -100, payee: "f3", when: dt)
+    insert(:transaction, account: account, category: food, amount: -3, payee: "f1", when: dt)
+    insert(:transaction, account: account, category: food, amount: -19, payee: "f2", when: dt)
+    insert(:transaction, account: account, category: food, amount: -100, payee: "f3", when: dt)
     {:ok, dt} = DateTime.cast("2016-08-01 00:00:00")
-    insert_transaction(account, category: food, amount: -999, payee: "9", when: dt)
+    insert(:transaction, account: account, category: food, amount: -999, payee: "9", when: dt)
 
     {:ok, dt} = DateTime.cast("2016-07-03 00:00:01")
-    insert_transaction(account, category: games, amount: -1, payee: "Casino Royale 1", when: dt)
+    insert(:transaction, account: account, category: games, amount: -1, payee: "Casino Royale 1", when: dt)
     {:ok, dt} = DateTime.cast("2016-07-03 00:00:02")
-    insert_transaction(account, category: games, amount: -1, payee: "Casino Royale 2", when: dt)
+    insert(:transaction, account: account, category: games, amount: -1, payee: "Casino Royale 2", when: dt)
     {:ok, dt} = DateTime.cast("2016-07-03 00:00:03")
-    insert_transaction(account, category: games, amount: -1, payee: "Casino Royale 3", when: dt)
+    insert(:transaction, account: account, category: games, amount: -1, payee: "Casino Royale 3", when: dt)
 
     {:ok, dt} = DateTime.cast("2016-07-17 12:00:03")
-    insert_transaction(account, category: vacation, amount: -10000, payee: "Abisko", when: dt)
+    insert(:transaction, account: account, category: vacation, amount: -10000, payee: "Abisko", when: dt)
 
     conn = get conn, budget_path(conn, :show, 2016, 7)
     html = html_response(conn, 200)

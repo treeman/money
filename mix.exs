@@ -19,7 +19,7 @@ defmodule Money.Mixfile do
   def application do
     [mod: {Money, []},
      applications: [:phoenix, :phoenix_pubsub, :phoenix_html, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :comeonin]]
+                    :phoenix_ecto, :postgrex, :comeonin, :ex_machina]]
   end
 
   # Specifies which paths to compile per environment.
@@ -39,7 +39,8 @@ defmodule Money.Mixfile do
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"},
      {:comeonin, "~> 2.0"},
-     {:floki, "~> 0.9.0"}]
+     {:floki, "~> 0.9.0"},
+     {:ex_machina, "~> 1.0.2"}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

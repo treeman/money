@@ -48,7 +48,7 @@ defmodule Money.AuthTest do
   end
 
   test "call places user from session into assigns", %{conn: conn} do
-    user = insert_user()
+    user = insert(:user)
     conn =
       conn
       |> put_session(:user_id, user.id)

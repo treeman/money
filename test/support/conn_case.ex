@@ -26,7 +26,7 @@ defmodule Money.ConnCase do
       import Ecto.Query
 
       import Money.Router.Helpers
-      import Money.TestHelpers
+      import Money.Factory
 
       # The default endpoint for testing
       @endpoint Money.Endpoint
@@ -40,6 +40,14 @@ defmodule Money.ConnCase do
       Ecto.Adapters.SQL.Sandbox.mode(Money.Repo, {:shared, self()})
     end
 
-    {:ok, conn: Phoenix.ConnTest.build_conn()}
+    conn = Phoenix.ConnTest.build_conn()
+    if username = tags[:login_as] do
+      user = Money.Factory.insert(:user, username: username)
+      conn = Plug.Conn.assign(conn, :current_user, user)
+      {:ok, conn: conn, user: user}
+    else
+      {:ok, conn: conn}
+    end
   end
 end
+
