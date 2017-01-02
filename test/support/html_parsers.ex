@@ -1,15 +1,15 @@
 defmodule Money.HtmlParsers do
 
-  def parse_table(html, identifier) do
+  def parse_grid(html, identifier) do
     # Floki creates [{type, [classes], [subtypes]}]
-    table = Floki.find(html, identifier)
+    grid = Floki.find(html, identifier)
 
     # Create a index->table_head map for use when traversing the table rows.
     headers =
-      table
-      |> Floki.find(".thead")
-      |> Floki.find(".th")
-    #IO.inspect(headers)
+      grid
+      |> Floki.find(".grid-header")
+      |> Floki.find(".grid-header-cell")
+
     # Need to keep nil for empty header stuff in budget
     {_, index2head} =
       headers
@@ -25,10 +25,10 @@ defmodule Money.HtmlParsers do
       # "Category" => "Essentials"},
     # %{"Activity" => 122, "Balance" => 1459, "Budgeted" => 1337,
       # "Category" => "Food"}]
-    trs = Floki.find(table, ".tbody") |> Floki.find(".tr")
+    trs = Floki.find(grid, ".grid-body") |> Floki.find(".grid-row")
 
     Enum.map(trs, fn {_, _, cols} ->
-      cols = cols |> Floki.find(".tc")
+      cols = cols |> Floki.find(".grid-cell")
       {_, mapped} = Enum.reduce(cols, {0, %{}}, fn
         {_, _, [val]}, {i, map} when is_binary(val) ->
           head = Map.get(index2head, i)

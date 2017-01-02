@@ -4,94 +4,64 @@ defmodule Money.HtmlParsersTest do
   use ExUnit.Case, async: true
   import Money.HtmlParsers
 
-  test "Parsing table" do
+  test "Parsing grid" do
     html = """
-<main role="main" class="right-main">
-<p class="alert alert-info" role="alert"></p>
-<p class="alert alert-danger" role="alert"></p>
-
-year: 2016 month: 7
-<div class="ctable">
-  <div class="thead">
-    <div class="tr">
-      <div class="th"> <input type="checkbox"> </div>
-      <div class="account-id">1</div>
-      <div class="transaction-id">15</div>
-      <div class="th">Category</div> <div class="th">Budgeted</div> <div class="th">Activity</div> <div class="th">Balance</div>
-    </div>
+<div id="transactions" class="grid">
+  <div class="grid-header">
+    <div class="grid-header-cell grid-transaction-cb"><input type="checkbox"></div>
+    <div class="grid-header-cell grid-transaction-date">Date</div>
+    <div class="grid-header-cell grid-transaction-payee">Payee</div>
+    <div class="grid-header-cell grid-transaction-category">Category</div>
+    <div class="grid-header-cell grid-transaction-description">Comment</div>
+    <div class="grid-header-cell grid-transaction-amount">Amount</div>
+    <div class="grid-header-cell grid-transaction-balance">Balance</div>
+    <div class="grid-header-cell grid-transaction-cleared">
+<a class="btn btn-default btn-xs" href="#">C</a>    </div>
+    <div class="grid-header-cell grid-transaction-buttons"></div>
   </div>
-  <div class="tbody">
-    <div class="tr budgeted-group">
-      <div class="other">meep</div>
-      <div class="tc transaction-cb"> <input type="checkbox"> </div>
-      <div class="tc">Essentials</div> <div class="tc">1337</div> <div class="tc">122.12</div> <div class="tc">1459.12</div>
+
+  <div class="grid-body">
+    <div class="grid-row transaction">
+      <div class="grid-cell grid-transaction-cb"><input type="checkbox"></div>
+      <div class="grid-account-id">1</div>
+      <div class="grid-transaction-id">15</div>
+      <div class="grid-cell grid-transaction-date">2017-01-02</div>
+      <div class="grid-cell grid-transaction-payee">xyz</div>
+      <div class="grid-cell grid-transaction-category">Giving</div>
+      <div class="grid-cell grid-transaction-description"></div>
+      <div class="grid-cell grid-transaction-amount">99</div>
+      <div class="grid-cell grid-transaction-balance">13177</div>
+      <div class="grid-cell grid-transaction-cleared"><a class="btn btn-default btn-xs" href="#">C</a></div>
     </div>
-    <div class="tr budgeted-category">
-      <div class="tc transaction-cb"> <input type="checkbox"> </div>
-      <div class="tc">Food</div> <div class="tc">500</div> <div class="tc">100</div> <div class="tc">400</div>
-    </div>
-    <div class="tr budgeted-category">
-      <div class="tc transaction-cb"> <input type="checkbox"> </div>
-      <div class="tc">Rent</div> <div class="tc">0</div> <div class="tc">0</div> <div class="tc">0</div>
-    </div>
-    <div class="tr budgeted-group">
-      <div class="tc transaction-cb"> <input type="checkbox"> </div>
-      <div class="tc">Fun</div> <div class="tc">10</div> <div class="tc">3</div> <div class="tc">7</div>
+
+    <div class="grid-row transaction">
+      <div class="grid-cell grid-transaction-cb"><input type="checkbox"></div>
+      <div class="grid-account-id">2</div>
+      <div class="grid-transaction-id">16</div>
+      <div class="grid-cell grid-transaction-date">2017-01-03</div>
+      <div class="grid-cell grid-transaction-payee">John Doe .X</div>
+      <div class="grid-cell grid-transaction-category">Rent</div>
+      <div class="grid-cell grid-transaction-description">No descr</div>
+      <div class="grid-cell grid-transaction-amount">13.37</div>
+      <div class="grid-cell grid-transaction-balance">-2003</div>
+      <div class="grid-cell grid-transaction-cleared"><a class="btn btn-default btn-xs" href="#">C</a></div>
     </div>
   </div>
 </div>
-</main>
 """
-    table = parse_table(html, ".ctable")
-    assert table == [%{"Category" => "Essentials", "Budgeted" => 1337,
-                       "Activity" => 122.12, "Balance" => 1459.12},
-                     %{"Category" => "Food", "Budgeted" => 500,
-                       "Activity" => 100, "Balance" => 400},
-                     %{"Category" => "Rent", "Budgeted" => 0,
-                       "Activity" => 0, "Balance" => 0},
-                     %{"Category" => "Fun", "Budgeted" => 10,
-                       "Activity" => 3, "Balance" => 7}]
-  end
+    grid = parse_grid(html, ".grid")
+    assert grid == [%{"Date" => "2017-01-02",
+                      "Payee" => "xyz",
+                      "Category" => "Giving",
+                      "Amount" => 99.0,
+                      "Balance" => 13177.0},
+                    %{"Date" => "2017-01-03",
+                      "Payee" => "John Doe .X",
+                      "Category" => "Rent",
+                      "Comment" => "No descr",
+                      "Amount" => 13.37,
+                      "Balance" => -2003.0}]
 
-  test "Parsing table skip empty headers" do
-    html = """
-<main role="main" class="right-main">
-<p class="alert alert-info" role="alert"></p>
-<p class="alert alert-danger" role="alert"></p>
-
-year: 2016 month: 7
-<div class="ctable">
-  <div class="thead">
-    <div class="tr">
-      <div class="th"></div> <div class="th">Category</div> <div class="th">Budgeted</div> <div class="th">Activity</div> <div class="th">Balance</div> <div class="th"></div>
-    </div>
-  </div>
-  <div class="tbody">
-    <div class="tr budgeted-group">
-      <div class="tc">1</div><div class="tc">Essentials</div> <div class="tc">1337</div> <div class="tc">122</div> <div class="tc">1459</div><div class="tc">1</div>
-    </div>
-    <div class="tr budgeted-category">
-      <div class="tc">1</div><div class="tc">Food</div> <div class="tc">500</div> <div class="tc">100</div> <div class="tc">400</div><div class="tc">1</div>
-    </div>
-    <div class="tr budgeted-category">
-      <div class="tc">1</div><div class="tc">Rent</div> <div class="tc">0</div> <div class="tc">0</div> <div class="tc">0</div><div class="tc">1</div>
-    </div>
-    <div class="tr budgeted-group">
-      <div class="tc">1</div><div class="tc">Fun</div> <div class="tc">10</div> <div class="tc">3</div> <div class="tc">7</div><div class="tc">1</div>
-    </div>
-  </div>
-</div>
-</main>
-"""
-    table = parse_table(html, ".ctable")
-    assert table == [%{"Category" => "Essentials", "Budgeted" => 1337,
-                       "Activity" => 122, "Balance" => 1459},
-                     %{"Category" => "Food", "Budgeted" => 500,
-                       "Activity" => 100, "Balance" => 400},
-                     %{"Category" => "Rent", "Budgeted" => 0,
-                       "Activity" => 0, "Balance" => 0},
-                     %{"Category" => "Fun", "Budgeted" => 10,
-                       "Activity" => 3, "Balance" => 7}]
   end
 end
 

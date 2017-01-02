@@ -94,7 +94,7 @@ defmodule Money.BudgetControllerTest do
     conn = get conn, budget_path(conn, :show, 2016, 7)
     html = html_response(conn, 200)
 
-    table = parse_table(html, ".ctable")
+    table = parse_grid(html, ".grid")
 
     essentials_budget = find_category(table, "Essentials")
     assert essentials_budget["Activity"] == -3695
