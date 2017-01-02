@@ -1,19 +1,19 @@
-<div class="tr transaction">
-  <div class="tc transaction-cb"><input type="checkbox"></div>
-  <div class="account-id"><%= @transaction.account_id %></div>
-  <div class="transaction-id"><%= @transaction.id %></div>
+<div class="grid-row transaction">
+  <div class="grid-cell grid-transaction-cb"><input type="checkbox"></div>
+  <div class="grid-account-id"><%= @transaction.account_id %></div>
+  <div class="grid-transaction-id"><%= @transaction.id %></div>
   <%= if @render_account_title do %>
-    <div class="tc account-title"><%= @transaction.account.title %></div>
+    <div class="grid-cell grid-account-title"><%= @transaction.account.title %></div>
   <% end %>
-  <div class="tc transaction-date"><%= Ecto.DateTime.to_date(@transaction.when) %></div>
-  <div class="tc transaction-payee"><%= @transaction.payee %></div>
-  <div class="tc transaction-category"><%= if @transaction.category do @transaction.category.name else "" end %></div>
-  <div class="tc transaction-description"><%= @transaction.description %></div>
-  <div class="tc transaction-amount"><%= @transaction.amount %></div>
-  <div class="tc transaction-balance"><%= @balance %></div>
-  <div class="tc transaction-cleared"><%= link "C", to: "#", class: "btn btn-default btn-xs" %></div>
+  <div class="grid-cell grid-transaction-date"><%= Ecto.DateTime.to_date(@transaction.when) %></div>
+  <div class="grid-cell grid-transaction-payee"><%= @transaction.payee %></div>
+  <div class="grid-cell grid-transaction-category"><%= if @transaction.category do @transaction.category.name else "" end %></div>
+  <div class="grid-cell grid-transaction-description"><%= @transaction.description %></div>
+  <div class="grid-cell grid-transaction-amount"><%= @transaction.amount %></div>
+  <div class="grid-cell grid-transaction-balance"><%= @balance %></div>
+  <div class="grid-cell grid-transaction-cleared"><%= link "C", to: "#", class: "btn btn-default btn-xs" %></div>
 
-  <div class="tc text-right transaction-buttons">
+  <div class="grid-cell text-right grid-transaction-buttons">
     <%=# link "Show", to: transaction_path(@conn, :show, transaction), class: "btn btn-default btn-xs btn-show" %>
     <%= link "Edit", to: transaction_path(@conn, :update, @transaction), class: "btn btn-default btn-xs btn-edit" %>
     <%= link "Delete", to: transaction_path(@conn, :delete, @transaction), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %>

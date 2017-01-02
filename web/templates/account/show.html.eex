@@ -4,61 +4,59 @@
 <%= link "Back", to: account_path(@conn, :index) %>
 -->
 
-<nav class="transaction-header">
-  <ol>
-    <%= case Access.fetch(assigns, :account) do %>
-      <%= {:ok, account} -> %>
+<div id="transaction-header">
+  <nav>
+    <ol>
+      <%= case Access.fetch(assigns, :account) do %>
+        <%= {:ok, account} -> %>
         <li><%= link "New transaction", to: transaction_path(@conn, :create, account_id: account.id) %></li>
-      <%= _ -> %>
+        <%= _ -> %>
         <li><%= link "New transaction", to: transaction_path(@conn, :create) %></li>
-    <% end %>
-    <li><%= link "Edit", to: "#" %></li>
-    <li><%= link "Undo", to: "#" %></li>
-    <li><%= link "Redo", to: "#" %></li>
-    <%= if assigns[:account] do %>
-      <li><%= link "Delete all transactions", to: account_path(@conn, :delete_transactions, @account),
-                   method: :delete, data: [confirm: "Are you sure?"] %></li>
-    <% end %>
-  </ol>
-</nav>
+      <% end %>
+      <li><%= link "Edit", to: "#" %></li>
+      <li><%= link "Undo", to: "#" %></li>
+      <li><%= link "Redo", to: "#" %></li>
+      <%= if assigns[:account] do %>
+        <li><%= link "Delete all transactions", to: account_path(@conn, :delete_transactions, @account),
+        method: :delete, data: [confirm: "Are you sure?"] %></li>
+      <% end %>
+    </ol>
+  </nav>
 
-<div id="main-new-transaction">
-  <%= if assigns[:new_transaction] do %>
-    <%= render "new_transaction_form.html",
-               transaction: @new_transaction,
-               action: transaction_path(@conn, :create),
-               categories: @categories,
-               transactions: @transactions,
-               origin: Path.join(["/" | @conn.path_info]) %>
+    <div id="main-new-transaction">
+    <%= if assigns[:new_transaction] do %>
+      <%= render "new_transaction_form.html",
+      transaction: @new_transaction,
+      action: transaction_path(@conn, :create),
+      categories: @categories,
+      transactions: @transactions,
+      origin: Path.join(["/" | @conn.path_info]) %>
+    <% end %>
+    </div>
+
+  <div class="grid-header">
+    <div class="grid-header-cell grid-transaction-cb"><input type="checkbox"></div>
+    <%= if !assigns[:account] do %>
+      <div class="grid-header-cell grid-account-title">Account</div>
+    <% end %>
+    <div class="grid-header-cell grid-transaction-date">Date</div>
+    <div class="grid-header-cell grid-transaction-payee">Payee</div>
+    <div class="grid-header-cell grid-transaction-category">Category</div>
+    <div class="grid-header-cell grid-transaction-description">Comment</div>
+    <div class="grid-header-cell grid-transaction-amount">Amount</div>
+    <div class="grid-header-cell grid-transaction-balance">Balance</div>
+    <div class="grid-header-cell grid-transaction-cleared">
+      <%= link "C", to: "#", class: "btn btn-default btn-xs" %>
+    </div>
+    <div class="grid-header-cell grid-transaction-buttons"></div>
+  </div>
+</div>
+
+<div id="transactions" class="grid-body">
+  <%= for %{transaction: transaction, balance: balance} <- @transactions do %>
+    <%= render Money.TransactionView, "row.html", transaction: transaction, balance: balance, render_account_title: render_account_title(@conn), conn: @conn %>
   <% end %>
 </div>
 
-<div id="main-transactions">
-  <div class="ctable" id="transactions">
-    <div class="thead">
-      <div class="th"><input type="checkbox"></div>
-      <%= if !assigns[:account] do %>
-        <div class="th">Account</div>
-      <% end %>
-      <div class="th">Date</div>
-      <div class="th">Payee</div>
-      <div class="th">Category</div>
-      <div class="th">Comment</div>
-      <div class="th">Amount</div>
-      <div class="th">Balance</div>
-      <div class="th">
-        <%= link "C", to: "#", class: "btn btn-default btn-xs" %>
-      </div>
-      <div class="th"></div>
-    </div>
-    <div class="tbody">
-      <%= for %{transaction: transaction, balance: balance} <- @transactions do %>
-        <%= render Money.TransactionView, "row.html", transaction: transaction, balance: balance, render_account_title: render_account_title(@conn), conn: @conn %>
-      <% end %>
-
-    </div>
-  </div>
-
-  <%= form_tag("#", id: "edit-transaction") %></form>
-</div>
+<%= form_tag("#", id: "edit-transaction") %></form>
 
