@@ -22,6 +22,14 @@ if (newForm) {
     newForm.addEventListener('submit', submitNewTransaction);
 }
 
+document.onkeypress = function(evt) {
+    evt = evt || window.event;
+    // Escape should cancel our current edit.
+    if (evt.keyCode == 27) {
+        cancelTransactionInEdit();
+    }
+};
+
 var datepickers = document.querySelectorAll('.datepicker');
 for (var i = 0; i < datepickers.length; ++i) {
     // Date picking for new transaction.
@@ -127,18 +135,18 @@ function beginEditTransactionRow(row) {
     var form = "edit-transaction";
 
     // Copy the row and modify it in place. Hide the old one for easy cancel.
-    var newRow = document.createElement("div");
-    newRow.setAttribute("class", "grid-row transaction");
-    newRow.innerHTML = row.innerHTML;
-    row.parentNode.insertBefore(newRow, row);
+    var editRow = document.createElement("div");
+    editRow.setAttribute("class", "grid-row transaction in-edit");
+    editRow.innerHTML = row.innerHTML;
+    row.parentNode.insertBefore(editRow, row);
     row.style.display = 'none';
-    console.log('newRow: ', newRow);
+    console.log('editRow: ', editRow);
 
-    var transaction = newRow.querySelector('.grid-transaction-id');
+    var transaction = editRow.querySelector('.grid-transaction-id');
     var transaction_id = transaction.innerHTML;
     editForm.action = "/api/v1/transactions/" + transaction_id;
 
-    var date = newRow.querySelector('.grid-transaction-date');
+    var date = editRow.querySelector('.grid-transaction-date');
     var dateInput = document.createElement("input");
     dateInput.setAttribute("form", form);
     dateInput.setAttribute("id", form + "_when");
@@ -153,7 +161,7 @@ function beginEditTransactionRow(row) {
         firstDay: 1,
     });
 
-    var payee = newRow.querySelector('.grid-transaction-payee');
+    var payee = editRow.querySelector('.grid-transaction-payee');
     var payeeInput = document.createElement("input");
     payeeInput.setAttribute("form", form);
     payeeInput.setAttribute("id", form + "_payee");
@@ -170,7 +178,7 @@ function beginEditTransactionRow(row) {
         { }, { minChars: 1, list: payeeDatalist }
     );
 
-    var category = newRow.querySelector('.grid-transaction-category');
+    var category = editRow.querySelector('.grid-transaction-category');
     var categoryInput = document.createElement("input");
     categoryInput.setAttribute("form", form);
     categoryInput.setAttribute("id", form + "_category");
@@ -187,7 +195,7 @@ function beginEditTransactionRow(row) {
         { }, { minChars: 1, list: document.getElementById('transaction_category-list') }
     );
 
-    var descr = newRow.querySelector('.grid-transaction-description');
+    var descr = editRow.querySelector('.grid-transaction-description');
     var descrInput = document.createElement("input");
     descrInput.setAttribute("form", form);
     descrInput.setAttribute("id", form + "_description");
@@ -197,7 +205,7 @@ function beginEditTransactionRow(row) {
     descr.innerHTML = "";
     descr.appendChild(descrInput);
 
-    var amount = newRow.querySelector('.grid-transaction-amount');
+    var amount = editRow.querySelector('.grid-transaction-amount');
     var amountInput = document.createElement("input");
     amountInput.setAttribute("form", form);
     amountInput.setAttribute("id", form + "_amount");
@@ -208,7 +216,7 @@ function beginEditTransactionRow(row) {
     amount.innerHTML = "";
     amount.appendChild(amountInput);
 
-    var buttons = newRow.querySelector('.grid-transaction-buttons');
+    var buttons = editRow.querySelector('.grid-transaction-buttons');
     buttons.innerHTML = ""; // Kill em all! :)
     var save = document.createElement("input");
     save.setAttribute("class", "btn btn-default btn-xs save-edit");
@@ -217,7 +225,7 @@ function beginEditTransactionRow(row) {
     save.setAttribute("form", form);
     save.onclick = function(evt) {
         evt.preventDefault();
-        saveEditTransaction(form, row, newRow);
+        saveEditTransaction(form, row, editRow);
     }
     buttons.appendChild(save);
     var cancel = document.createElement("input");
@@ -227,17 +235,26 @@ function beginEditTransactionRow(row) {
     cancel.setAttribute("form", form);
     cancel.onclick = function(evt) {
         evt.preventDefault();
-        cancelEditTransaction(row, newRow);
+        cancelEditTransaction(row, editRow);
     }
     buttons.appendChild(cancel);
 }
 
-function cancelEditTransaction(row, newRow) {
-    row.style.display = newRow.style.display;
-    newRow.parentNode.removeChild(newRow);
+function cancelTransactionInEdit() {
+    var formEditRows = document.querySelectorAll('.grid-row.transaction.in-edit');
+    for (var i = 0; i < formEditRows.length; ++i) {
+        var editRow = formEditRows[i];
+        var hiddenRow = editRow.nextSibling;
+        cancelEditTransaction(hiddenRow, editRow);
+    }
 }
 
-function saveEditTransaction(formId, row, newRow) {
+function cancelEditTransaction(hiddenRow, editRow) {
+    hiddenRow.style.display = editRow.style.display;
+    editRow.parentNode.removeChild(editRow);
+}
+
+function saveEditTransaction(formId, hiddenRow, editRow) {
     var editForm = document.querySelector('form#' + formId);
     var formData = new FormData(editForm);
 
@@ -253,8 +270,8 @@ function saveEditTransaction(formId, row, newRow) {
             insertTransaction(newTransaction);
             alterTransactionRow(newTransaction);
 
-            row.parentNode.removeChild(newRow);
-            row.parentNode.removeChild(row);
+            hiddenRow.parentNode.removeChild(editRow);
+            hiddenRow.parentNode.removeChild(hiddenRow);
         }
 
         updateAccountBalance(response.data.transaction_balance)
