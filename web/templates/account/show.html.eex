@@ -36,6 +36,7 @@
 <div id="main-transactions">
   <div class="ctable" id="transactions">
     <div class="thead">
+      <div class="th"><input type="checkbox"></div>
       <%= if !assigns[:account] do %>
         <div class="th">Account</div>
       <% end %>
@@ -45,6 +46,9 @@
       <div class="th">Comment</div>
       <div class="th">Amount</div>
       <div class="th">Balance</div>
+      <div class="th">
+        <%= link "C", to: "#", class: "btn btn-default btn-xs" %>
+      </div>
       <div class="th"></div>
     </div>
     <div class="tbody">

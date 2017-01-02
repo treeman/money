@@ -23,11 +23,9 @@ C-t     Jump back
 
 ## Account view
 1. Add new fields for a transaction:
-    (account)
-    checked
-    account
+    (account)                           DONE
     outflow/inflow instead of amount
-    'cleared'
+    'cleared'                           DONE
 1. Table header should always be visible
 1. Use explicit width for table display, flex is useful
 1. Clicking on new account should insert a row into the table at the top instead

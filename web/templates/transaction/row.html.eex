@@ -1,4 +1,5 @@
 <div class="tr transaction">
+  <div class="tc transaction-cb"><input type="checkbox"></div>
   <div class="account-id"><%= @transaction.account_id %></div>
   <div class="transaction-id"><%= @transaction.id %></div>
   <%= if @render_account_title do %>
@@ -10,6 +11,7 @@
   <div class="tc transaction-description"><%= @transaction.description %></div>
   <div class="tc transaction-amount"><%= @transaction.amount %></div>
   <div class="tc transaction-balance"><%= @balance %></div>
+  <div class="tc transaction-cleared"><%= link "C", to: "#", class: "btn btn-default btn-xs" %></div>
 
   <div class="tc text-right transaction-buttons">
     <%=# link "Show", to: transaction_path(@conn, :show, transaction), class: "btn btn-default btn-xs btn-show" %>
