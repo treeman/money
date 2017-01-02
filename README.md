@@ -26,9 +26,10 @@ C-t     Jump back
     (account)                           DONE
     outflow/inflow instead of amount
     'cleared'                           DONE
-1. Table header should always be visible
-1. Use explicit width for table display, flex is useful
 1. Clicking on new account should insert a row into the table at the top instead
+    + Cancel when double clicking and start editing something else
+    + Show explicit cancel button
+    + Esc should cancel
 1. Search/filter/sort
 1. Edit a transaction should reveal:
     clear/unclear
@@ -36,7 +37,7 @@ C-t     Jump back
     move to account
     delete
 1. Make the all account view add/edit transactions work as intended
-1. Editing a transaction shouldn't change the width of the table columns. Annoying.
+1. Arrows on category/payees
 
 ## Transactions
 1. No good error message if category isn't select (also it should be possible to create)

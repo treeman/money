@@ -5,7 +5,7 @@ var newForm = document.querySelector('form#new-transaction');
 var editForm = document.querySelector('form#edit-transaction');
 
 // Change edit and functionality for all transactions.
-var transactionRows = document.querySelectorAll('#transactions .tbody .tr');
+var transactionRows = document.querySelectorAll('#transactions .grid-body .grid-row');
 for (var i = 0; i < transactionRows.length; ++i) {
     alterTransactionRow(transactionRows[i]);
 }
@@ -71,10 +71,19 @@ function submitNewTransaction(evt) {
 }
 
 function alterTransactionRow(row) {
-    alterEditButton(row);
-    alterDeleteButton(row);
+    //alterEditButton(row);
+    //alterDeleteButton(row);
+    addEditAction(row);
 }
 
+function addEditAction(row) {
+    row.ondblclick = function(evt) {
+        evt.preventDefault();
+        beginEditTransactionRow(row);
+    }
+}
+
+/*
 function alterEditButton(row) {
     var edit = row.querySelectorAll('.btn-edit')[0];
     if (edit) {
@@ -111,23 +120,25 @@ function alterDeleteButton(row) {
     });
     btn.removeAttribute("data-submit");
 }
+*/
 
 function beginEditTransactionRow(row) {
-    console.log('edit', row);
+    console.log('edit ', row);
     var form = "edit-transaction";
 
     // Copy the row and modify it in place. Hide the old one for easy cancel.
     var newRow = document.createElement("div");
-    newRow.setAttribute("class", "tr transaction");
+    newRow.setAttribute("class", "grid-row transaction");
     newRow.innerHTML = row.innerHTML;
     row.parentNode.insertBefore(newRow, row);
     row.style.display = 'none';
+    console.log('newRow: ', newRow);
 
-    var transaction = newRow.querySelector('.transaction-id');
+    var transaction = newRow.querySelector('.grid-transaction-id');
     var transaction_id = transaction.innerHTML;
     editForm.action = "/api/v1/transactions/" + transaction_id;
 
-    var date = newRow.querySelector('.transaction-date');
+    var date = newRow.querySelector('.grid-transaction-date');
     var dateInput = document.createElement("input");
     dateInput.setAttribute("form", form);
     dateInput.setAttribute("id", form + "_when");
@@ -142,7 +153,7 @@ function beginEditTransactionRow(row) {
         firstDay: 1,
     });
 
-    var payee = newRow.querySelector('.transaction-payee');
+    var payee = newRow.querySelector('.grid-transaction-payee');
     var payeeInput = document.createElement("input");
     payeeInput.setAttribute("form", form);
     payeeInput.setAttribute("id", form + "_payee");
@@ -159,7 +170,7 @@ function beginEditTransactionRow(row) {
         { }, { minChars: 1, list: payeeDatalist }
     );
 
-    var category = newRow.querySelector('.transaction-category');
+    var category = newRow.querySelector('.grid-transaction-category');
     var categoryInput = document.createElement("input");
     categoryInput.setAttribute("form", form);
     categoryInput.setAttribute("id", form + "_category");
@@ -176,7 +187,7 @@ function beginEditTransactionRow(row) {
         { }, { minChars: 1, list: document.getElementById('transaction_category-list') }
     );
 
-    var descr = newRow.querySelector('.transaction-description');
+    var descr = newRow.querySelector('.grid-transaction-description');
     var descrInput = document.createElement("input");
     descrInput.setAttribute("form", form);
     descrInput.setAttribute("id", form + "_description");
@@ -186,7 +197,7 @@ function beginEditTransactionRow(row) {
     descr.innerHTML = "";
     descr.appendChild(descrInput);
 
-    var amount = newRow.querySelector('.transaction-amount');
+    var amount = newRow.querySelector('.grid-transaction-amount');
     var amountInput = document.createElement("input");
     amountInput.setAttribute("form", form);
     amountInput.setAttribute("id", form + "_amount");
@@ -197,7 +208,7 @@ function beginEditTransactionRow(row) {
     amount.innerHTML = "";
     amount.appendChild(amountInput);
 
-    var buttons = newRow.querySelector('.transaction-buttons');
+    var buttons = newRow.querySelector('.grid-transaction-buttons');
     buttons.innerHTML = ""; // Kill em all! :)
     var save = document.createElement("input");
     save.setAttribute("class", "btn btn-default btn-xs save-edit");
@@ -270,17 +281,17 @@ function setFlashError(text) {
 }
 
 function insertTransaction(newRow) {
-    var table = document.querySelector('#transactions .tbody');
-    var rows = table.querySelectorAll('.tr.transaction');
+    var table = document.querySelector('#transactions .grid-body');
+    var rows = table.querySelectorAll('.grid-row.transaction');
     var inserted = false;
 
-    var newId = newRow.querySelector('.transaction-id').innerHTML;
-    var newDate = newRow.querySelector('.transaction-date').innerHTML;
+    var newId = newRow.querySelector('.grid-transaction-id').innerHTML;
+    var newDate = newRow.querySelector('.grid-transaction-date').innerHTML;
 
     for (var i = 0; i < rows.length; ++i) {
         var row = rows[i];
-        var id = row.querySelector('.transaction-id').innerHTML;
-        var date = row.querySelector('.transaction-date').innerHTML;
+        var id = row.querySelector('.grid-transaction-id').innerHTML;
+        var date = row.querySelector('.grid-transaction-date').innerHTML;
 
         // FIXME Should allow for different kinds of sorting.
         if (comesBefore(newDate, newId, date, id)) {
@@ -296,15 +307,15 @@ function insertTransaction(newRow) {
 }
 
 function updateAccountBalance(balances) {
-    var table = document.querySelector('#transactions .tbody');
-    var rows = table.querySelectorAll('.tr.transaction');
+    var table = document.querySelector('#transactions .grid-body');
+    var rows = table.querySelectorAll('.grid-row.transaction');
 
     for (var i = 0; i < rows.length; ++i) {
         var row = rows[i];
-        var id = row.querySelector('.transaction-id').innerHTML;
+        var id = row.querySelector('.grid-transaction-id').innerHTML;
         var newBalance = balances[id];
         if (newBalance) {
-            var balance = row.querySelector('.transaction-balance');
+            var balance = row.querySelector('.grid-transaction-balance');
             balance.innerHTML = newBalance;
         }
     }
