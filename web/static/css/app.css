@@ -260,22 +260,31 @@ form#edit-transaction {
 .grid-budget-cb { flex: 0; }
 .grid-budget-category { flex: 2; }
 
-#budget-header {
-    flex-shrink: 0;
+#main-budget {
+    overflow: auto;
+    display: flex;
+    flex-direction: row;
 }
 #budget {
-    /*overflow: auto;*/
-    min-height: 2em;
-    flex-grow: 1;
-    display: flex;
-}
-#budget .grid-body {
-    overflow: auto;
-    /*min-width: 60em;*/
     flex: 3;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
 }
 #budget-info {
     background-color: #7887AB;
+    overflow: auto;
+    flex: 1;
+    font-size: 1.8em;
+    padding: 10px;
+    color: white;
+}
+
+
+#budget .grid-header {
+    flex-shrink: 0;
+}
+#budget .grid-body {
     overflow: auto;
     flex: 1;
 }

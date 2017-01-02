@@ -8,40 +8,62 @@
       <li><%= link "Redo", to: "#" %></li>
     </ol>
   </nav>
-
-  <div class="grid-header">
-    <div class="grid-header-cell grid-budget-cb"><input type="checkbox"></div>
-    <div class="grid-header-cell grid-budget-category">Category</div>
-    <div class="grid-header-cell grid-budget-budgeted">Budgeted</div>
-    <div class="grid-header-cell grid-budget-activity">Activity</div>
-    <div class="grid-header-cell grid-budget-balance">Balance</div>
-  </div>
 </div>
 
-<div id="budget">
-  <div class="grid-body">
-    <%= for group <- @budget do %>
-      <div class="grid-row budgeted-group">
-        <div class="grid-cell grid-budget-cb"><input type="checkbox"></div>
-        <div class="grid-cell grid-budget-category"><%= group.name %></div>
-        <div class="grid-cell grid-budget-budgeted"><%= group.budgeted %></div>
-        <div class="grid-cell grid-budget-activity"><%= group.activity %></div>
-        <div class="grid-cell grid-budget-balance"><%= Decimal.add(group.budgeted, group.activity) %></div>
+<!---
+<div id="main-budget">
+  <div id="budget">
+    <div class="test-header">
+      a b c
+    </div>
+    <div class="test-body">
+      <div class="large-thing">
+        LARGE
       </div>
-      <%= for c <- group.budgeted_categories do %>
-        <div class="grid-row budgeted-category">
+    </div>
+  </div>
+  <div id="budget-info">
+    <div class="large-thing">
+      LARGE
+    </div>
+  </div>
+</div>
+-->
+
+<div id="main-budget">
+  <div id="budget">
+    <div class="grid-header">
+      <div class="grid-header-cell grid-budget-cb"><input type="checkbox"></div>
+      <div class="grid-header-cell grid-budget-category">Category</div>
+      <div class="grid-header-cell grid-budget-budgeted">Budgeted</div>
+      <div class="grid-header-cell grid-budget-activity">Activity</div>
+      <div class="grid-header-cell grid-budget-balance">Balance</div>
+    </div>
+
+    <div class="grid-body">
+      <%= for group <- @budget do %>
+        <div class="grid-row budgeted-group">
           <div class="grid-cell grid-budget-cb"><input type="checkbox"></div>
-          <div class="grid-cell grid-budget-category"><%= c.category.name %></div>
-          <div class="grid-cell grid-budget-budgeted"><%= c.budgeted %></div>
-          <div class="grid-cell grid-budget-activity"><%= c.activity %></div>
-          <div class="grid-cell grid-budget-balance"><%= Decimal.add(c.budgeted, c.activity) %></div>
+          <div class="grid-cell grid-budget-category"><%= group.name %></div>
+          <div class="grid-cell grid-budget-budgeted"><%= group.budgeted %></div>
+          <div class="grid-cell grid-budget-activity"><%= group.activity %></div>
+          <div class="grid-cell grid-budget-balance"><%= Decimal.add(group.budgeted, group.activity) %></div>
         </div>
+        <%= for c <- group.budgeted_categories do %>
+          <div class="grid-row budgeted-category">
+            <div class="grid-cell grid-budget-cb"><input type="checkbox"></div>
+            <div class="grid-cell grid-budget-category"><%= c.category.name %></div>
+            <div class="grid-cell grid-budget-budgeted"><%= c.budgeted %></div>
+            <div class="grid-cell grid-budget-activity"><%= c.activity %></div>
+            <div class="grid-cell grid-budget-balance"><%= Decimal.add(c.budgeted, c.activity) %></div>
+          </div>
+        <% end %>
       <% end %>
-    <% end %>
+    </div>
   </div>
 
-  <%#<div id="budget-info">%>
-    <%#[>asdf<]%>
-  <%#</div>%>
+  <div id="budget-info">
+    Some Info
+  </div>
 </div>
 
