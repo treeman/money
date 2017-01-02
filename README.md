@@ -29,7 +29,8 @@ C-t     Jump back
 1. Clicking on new account should insert a row into the table at the top instead
     + Cancel when double clicking and start editing something else
     + Show explicit cancel button
-    + Esc should cancel
+    + Finish form creation refactoring
+    + Submit a new transaction should close or reorder the form row
 1. Search/filter/sort
 1. Edit a transaction should reveal:
     clear/unclear
@@ -37,6 +38,9 @@ C-t     Jump back
     move to account
     delete
 1. Make the all account view add/edit transactions work as intended
+    + Add an account dropdown for edit and new transaction
+    + Need to parse the accont name in backend
+    + Rewrite origin/show account title
 1. Arrows on category/payees
 
 ## Transactions

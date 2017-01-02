@@ -7,12 +7,8 @@
 <div id="transaction-header">
   <nav>
     <ol>
-      <%= case Access.fetch(assigns, :account) do %>
-        <%= {:ok, account} -> %>
-        <li><%= link "New transaction", to: transaction_path(@conn, :create, account_id: account.id) %></li>
-        <%= _ -> %>
-        <li><%= link "New transaction", to: transaction_path(@conn, :create) %></li>
-      <% end %>
+      <li><%= link "New transaction", to: "#", id: "new-transaction-link" %></li>
+
       <li class="dropdown"><%= link "Edit", to: "#" %>
         <div class="edit-dropdown-content">
           <ol>
@@ -28,6 +24,7 @@
           </ol>
         </div>
       </li>
+
       <li><%= link "Undo", to: "#" %></li>
       <li><%= link "Redo", to: "#" %></li>
       <%= if assigns[:account] do %>
@@ -37,6 +34,7 @@
     </ol>
   </nav>
 
+    <!---
     <div id="main-new-transaction">
     <%= if assigns[:new_transaction] do %>
       <%= render "new_transaction_form.html",
@@ -47,6 +45,7 @@
       origin: Path.join(["/" | @conn.path_info]) %>
     <% end %>
     </div>
+    -->
 </div>
 
 <div id="transactions" class="grid">
@@ -69,10 +68,28 @@
 
   <div class="grid-body">
     <%= for %{transaction: transaction, balance: balance} <- @transactions do %>
-      <%= render Money.TransactionView, "row.html", transaction: transaction, balance: balance, render_account_title: render_account_title(@conn), conn: @conn %>
+      <%= render Money.TransactionView, "row.html",
+                                        transaction: transaction,
+                                        balance: balance,
+                                        render_account_title: render_account_title(@conn),
+                                        conn: @conn %>
     <% end %>
   </div>
 
-  <%= form_tag("#", id: "edit-transaction") %></form>
+  <div class="hidden">
+    <%= if assigns[:account] do %>
+      <div id="active-account-id"><%= @account.id %></div>
+    <% end %>
+    <% payees = Enum.reduce(@transactions, %MapSet{}, fn %{transaction: t}, acc ->
+                                                        MapSet.put(acc, t.payee) end) %>
+    <%= datalist payees, id: "transaction_payee-list" %>
+
+    <% categories = Enum.reduce(@categories, %MapSet{}, fn {c, _id}, acc ->
+                                                          MapSet.put(acc, c) end) %>
+    <%= datalist categories, id: "transaction_category-list" %>
+
+    <%= form_tag(transaction_path(@conn, :create), id: "new-transaction") %></form>
+    <%= form_tag("#", id: "edit-transaction") %></form>
+  </div>
 </div>
 

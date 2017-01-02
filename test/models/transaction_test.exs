@@ -5,6 +5,7 @@ defmodule Money.TransactionTest do
 
   @valid_attrs %{
     amount: 42,
+    account_id: 1,
     category: "some content",
     description: "some content",
     when: %{day: 17, hour: 14, min: 0, month: 4, sec: 0, year: 2010},

@@ -12,8 +12,8 @@ defmodule Money.Transaction do
     timestamps
   end
 
-  @required_fields [:amount, :when, :payee]
-  @optional_fields [:description, :account_id, :category_id]
+  @required_fields [:amount, :when, :payee, :account_id]
+  @optional_fields [:description, :category_id]
 
   def changeset(struct, params \\ %{}) do
     struct

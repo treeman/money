@@ -238,9 +238,7 @@ html {
 
 .grid-transaction-buttons { display: none; }
 
-form#edit-transaction {
-    display: none;
-}
+.hidden { display: none; }
 
 /*
  * Budget view

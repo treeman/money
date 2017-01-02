@@ -4,6 +4,9 @@
 var newForm = document.querySelector('form#new-transaction');
 var editForm = document.querySelector('form#edit-transaction');
 
+var activeAccountId = document.querySelector('#active-account-id');
+if (activeAccountId) activeAccountId = activeAccountId.innerHTML;
+
 // Change edit and functionality for all transactions.
 var transactionRows = document.querySelectorAll('#transactions .grid-body .grid-row');
 for (var i = 0; i < transactionRows.length; ++i) {
@@ -13,13 +16,17 @@ for (var i = 0; i < transactionRows.length; ++i) {
 // Awesomplete util for payees.
 // FIXME do the same for categories.
 var payeeDatalist = document.getElementById('transaction_payee-list');
-AwesompleteUtil.start('#new-transaction-payee',
-    { }, { minChars: 1, list: payeeDatalist }
-);
+var categoryDatalist = document.getElementById('transaction_category-list');
 
 // Change add functionality for new transaction.
 if (newForm) {
     newForm.addEventListener('submit', submitNewTransaction);
+}
+
+// Add transaction inside the transaction grid
+var newTransaction = document.querySelector('#new-transaction-link');
+if (newTransaction) {
+    newTransaction.addEventListener('click', addNewTransaction);
 }
 
 document.onkeypress = function(evt) {
@@ -46,7 +53,37 @@ for (var i = 0; i < datepickers.length; ++i) {
 /*
  * Impl.
  */
+function addNewTransaction(evt) {
+    evt.preventDefault();
+    var row = createTransactionRowForm(newForm);
+    var grid = document.querySelector('#transactions .grid-body');
+    grid.insertBefore(row, grid.firstChild);
+
+    if (activeAccountId) {
+        var accountId = row.querySelector('.grid-account-id input');
+        accountId.setAttribute("value", activeAccountId);
+    }
+
+    var dateInput = row.querySelector('.grid-transaction-date input');
+    dateInput.setAttribute("value", currentDate());
+    var picker = new Pikaday({
+        field: dateInput,
+        firstDay: 1,
+    });
+
+    var payeeInput = row.querySelector('.grid-transaction-payee input');
+    AwesompleteUtil.start(payeeInput,
+        { }, { minChars: 1, list: payeeDatalist }
+    );
+
+    var categoryInput = row.querySelector('.grid-transaction-category input');
+    AwesompleteUtil.start(categoryInput,
+        { }, { minChars: 1, list: categoryDatalist }
+    );
+}
+
 function submitNewTransaction(evt) {
+    console.log("submitting new transaction!?!?")
     evt.preventDefault();
     var formData = new FormData(newForm);
 
@@ -129,9 +166,69 @@ function alterDeleteButton(row) {
     btn.removeAttribute("data-submit");
 }
 */
+function createTransactionRowForm(form) {
+    var row = document.createElement("div");
+    row.setAttribute("class", "grid-row transaction in-edit");
+    row.innerHTML = "<div class=\"grid-cell grid-transaction-cb\">\
+  <input type=\"checkbox\">\
+</div>\
+<div class=\"grid-account-id\">\
+  <input name=\"transaction[account_id]\" type=\"hidden\">\
+</div>\
+<div class=\"grid-transaction-id\"></div>\
+<div class=\"grid-cell grid-transaction-date\">\
+  <input id=\"edit-transaction_when\" class=\"datepicker\" name=\"transaction[when]\" type=\"text\">\
+</div>\
+<div class=\"grid-cell grid-transaction-payee\">\
+  <div class=\"awesomplete\">\
+    <input id=\"edit-transaction_payee\" class=\"awesomplete\" name=\"transaction[payee]\" type=\"text\">\
+  </div>\
+</div>\
+<div class=\"grid-cell grid-transaction-category\">\
+  <div class=\"awesomplete\">\
+    <input id=\"edit-transaction_category\" class=\"awesomplete\" name=\"transaction[category]\" type=\"text\">\
+  </div>\
+</div>\
+<div class=\"grid-cell grid-transaction-description\">\
+  <input id=\"edit-transaction_description\" name=\"transaction[description]\" type=\"text\">\
+</div>\
+<div class=\"grid-cell grid-transaction-amount\">\
+  <input id=\"edit-transaction_amount\" name=\"transaction[amount]\" step=\"0.01\" type=\"number\">\
+</div>\
+<div class=\"grid-cell grid-transaction-balance\"></div>\
+<div class=\"grid-cell grid-transaction-cleared\">\
+  <a class=\"btn btn-default btn-xs\" href=\"#\">C</a>\
+</div>\
+<div class=\"grid-transaction-buttons\">\
+  <input type=\"submit\">submit</input>\
+</div>";
+    var inputs = row.querySelectorAll('input');
+    if (form) {
+        for (var i = 0; i < inputs.length; ++i) {
+            inputs[i].setAttribute("form", form.id);
+        }
+    }
+    return row;
+
+/*
+<div class="grid-cell grid-transaction-cb">
+<input type="checkbox">
+</div>
+<div class="grid-account-id">1</div>
+<div class="grid-transaction-id">1</div>
+<div class="grid-cell grid-transaction-date">2017-01-31</div>
+<div class="grid-cell grid-transaction-payee">ASAD</div>
+<div class="grid-cell grid-transaction-category">Rent</div>
+<div class="grid-cell grid-transaction-description">asdfasd</div>
+<div class="grid-cell grid-transaction-amount">999</div>
+<div class="grid-cell grid-transaction-balance">11640</div>
+<div class="grid-cell grid-transaction-cleared">
+<a class="btn btn-default btn-xs" href="#">C</a>
+</div>
+*/
+}
 
 function beginEditTransactionRow(row) {
-    console.log('edit ', row);
     var form = "edit-transaction";
 
     // Copy the row and modify it in place. Hide the old one for easy cancel.
@@ -140,7 +237,6 @@ function beginEditTransactionRow(row) {
     editRow.innerHTML = row.innerHTML;
     row.parentNode.insertBefore(editRow, row);
     row.style.display = 'none';
-    console.log('editRow: ', editRow);
 
     var transaction = editRow.querySelector('.grid-transaction-id');
     var transaction_id = transaction.innerHTML;
@@ -174,7 +270,7 @@ function beginEditTransactionRow(row) {
     awesompleteDiv.appendChild(payeeInput);
     payee.innerHTML = "";
     payee.appendChild(awesompleteDiv);
-    AwesompleteUtil.start('#' + form + '_payee',
+    AwesompleteUtil.start(payeeInput,
         { }, { minChars: 1, list: payeeDatalist }
     );
 
@@ -245,12 +341,18 @@ function cancelTransactionInEdit() {
     for (var i = 0; i < formEditRows.length; ++i) {
         var editRow = formEditRows[i];
         var hiddenRow = editRow.nextSibling;
-        cancelEditTransaction(hiddenRow, editRow);
+        if (hiddenRow.nodeType == Node.ELEMENT_NODE) {
+            cancelEditTransaction(hiddenRow, editRow);
+        } else {
+            cancelEditTransaction(null, editRow);
+        }
     }
 }
 
 function cancelEditTransaction(hiddenRow, editRow) {
-    hiddenRow.style.display = editRow.style.display;
+    if (hiddenRow) {
+        hiddenRow.style.display = editRow.style.display;
+    }
     editRow.parentNode.removeChild(editRow);
 }
 
@@ -298,8 +400,8 @@ function setFlashError(text) {
 }
 
 function insertTransaction(newRow) {
-    var table = document.querySelector('#transactions .grid-body');
-    var rows = table.querySelectorAll('.grid-row.transaction');
+    var grid = document.querySelector('#transactions .grid-body');
+    var rows = grid.querySelectorAll('.grid-row.transaction');
     var inserted = false;
 
     var newId = newRow.querySelector('.grid-transaction-id').innerHTML;
@@ -319,13 +421,13 @@ function insertTransaction(newRow) {
     }
 
     if (!inserted) {
-        table.appendChild(newRow);
+        grid.appendChild(newRow);
     }
 }
 
 function updateAccountBalance(balances) {
-    var table = document.querySelector('#transactions .grid-body');
-    var rows = table.querySelectorAll('.grid-row.transaction');
+    var grid = document.querySelector('#transactions .grid-body');
+    var rows = grid.querySelectorAll('.grid-row.transaction');
 
     for (var i = 0; i < rows.length; ++i) {
         var row = rows[i];
@@ -338,58 +440,92 @@ function updateAccountBalance(balances) {
     }
 }
 
+function currentDate() {
+    var currentDate = new Date()
+    var day = currentDate.getDate()
+    var month = currentDate.getMonth() + 1
+    var year = currentDate.getFullYear()
+    return year + "-" + month + "-" + day;
+}
+
 /*
  * Ajax with promises.
  * See http://www.html5rocks.com/en/tutorials/es6/promises/
  */
 function get(url) {
-  return new Promise(function(resolve, reject) {
-    var req = new XMLHttpRequest();
-    req.open('GET', url);
+    return new Promise(function(resolve, reject) {
+        var req = new XMLHttpRequest();
+        req.open('GET', url);
 
-    req.onload = function() {
-      if (req.status == 200) {
-        resolve(req.response)
-      } else {
-        reject(Error(req.statusText));
-      }
-    };
+        req.onload = function() {
+            if (req.status == 200) {
+                resolve(req.response)
+            } else {
+                reject(Error(req.statusText));
+            }
+        };
 
-    req.onerror = function() {
-      reject(Error("Network Error"));
-    };
+        req.onerror = function() {
+            reject(Error("Network Error"));
+        };
 
-    req.send();
-  });
+        req.send();
+    });
 }
 
 function jsonReq(url, params, successStatus = 200, binary = false, type = 'POST') {
-  return new Promise(function(resolve, reject) {
-    var req = new XMLHttpRequest();
-    req.open(type, url);
-    if (!binary) {
-        req.setRequestHeader("Content-type", "application/json; charset=utf-8");
-        req.setRequestHeader("Content-length", params.length);
-        req.setRequestHeader("Connection", "close");
+    return new Promise(function(resolve, reject) {
+        var req = new XMLHttpRequest();
+        req.open(type, url);
+        if (!binary) {
+            req.setRequestHeader("Content-type", "application/json; charset=utf-8");
+            req.setRequestHeader("Content-length", params.length);
+            req.setRequestHeader("Connection", "close");
+        }
+        req.responseType = "json";
+
+        req.onload = function() {
+            if (req.status == successStatus) {
+                resolve(req.response)
+            } else {
+                reject(formatJsonError(req.response, req.statusText));
+            }
+        };
+
+        req.onerror = function() {
+            reject(Error("Network Error"));
+        };
+
+        req.send(params);
+    });
+}
+
+var humanErrors = new Map([
+    ["amount", "Amount"],
+    ["when", "Date"],
+    ["payee", "Payee"],
+    ["description", "Comment"],
+    ["account_id", "Account"],
+    ["category_id", "Category"]
+]);
+
+// Still not really suitable for humans. Need better js prevention
+// and better css/html for the errors.
+function formatJsonError(response, internalStatus) {
+    var errors = response["errors"];
+    if (errors) {
+        var error = "";
+        for (var key in errors) {
+            var human = humanErrors.get(key);
+            var descr = errors[key];
+            if (humanErrors.has(key)) {
+                error += human + " " + descr + "<br/>";
+            } else {
+                error += key + " " + descr + "<br/>";
+            }
+        }
+        if (error) return error;
     }
-    req.responseType = "json";
-
-    req.onload = function() {
-      if (req.status == successStatus) {
-        resolve(req.response)
-      } else {
-        // FIXME do something smarter here perhaps...?
-        reject(Error(req.statusText));
-        //console.log(req.statusText);
-        //reject(req.response);
-      }
-    };
-
-    req.onerror = function() {
-      reject(Error("Network Error"));
-    };
-
-    req.send(params);
-  });
+    return internalStatus;
 }
 
