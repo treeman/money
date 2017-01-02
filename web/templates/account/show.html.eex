@@ -13,7 +13,21 @@
         <%= _ -> %>
         <li><%= link "New transaction", to: transaction_path(@conn, :create) %></li>
       <% end %>
-      <li><%= link "Edit", to: "#" %></li>
+      <li class="dropdown"><%= link "Edit", to: "#" %>
+        <div class="edit-dropdown-content">
+          <ol>
+            <li><a href="#">Link 1</a></li>
+            <li class="dropdown2">
+              <a href="#">Link 2</a>
+              <div class="dropdown-content2">
+                <a href="#">A</a>
+                <a href="#">B</a>
+              </div>
+            </li>
+            <li><a href="#">Link 3</a></li>
+          </ol>
+        </div>
+      </li>
       <li><%= link "Undo", to: "#" %></li>
       <li><%= link "Redo", to: "#" %></li>
       <%= if assigns[:account] do %>
