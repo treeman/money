@@ -175,7 +175,7 @@ defmodule Money.AccountControllerTest do
     {:ok, dt} = DateTime.cast("2016-07-03 11:11:11")
     insert(:transaction, account: other_account, amount: -99999, payee: "Alice", when: dt)
 
-    acc1 = insert(:account, user: user)
+    acc1 = insert(:account, user: user, title: "Account 1")
     {:ok, dt} = DateTime.cast("2016-06-30 00:01:00")
     insert(:transaction, account: acc1, amount: 1000, payee: "Income", when: dt)
     {:ok, dt} = DateTime.cast("2016-06-30 00:01:01")
@@ -191,11 +191,11 @@ defmodule Money.AccountControllerTest do
     {:ok, dt} = DateTime.cast("2016-08-01 00:10:00")
     insert(:transaction, account: acc1, amount: -3, payee: "Gum5", when: dt)
 
-    acc2 = insert(:account, user: user)
+    acc2 = insert(:account, user: user, title: "Account 2")
     {:ok, dt} = DateTime.cast("2016-06-30 00:02:00")
     insert(:transaction, account: acc2, amount: 37, payee: "Food Income", when: dt)
     {:ok, dt} = DateTime.cast("2016-07-02 23:59:59")
-    insert(:transaction, account: acc2, amount: -3, payee: "Food1", when: dt)
+    insert(:transaction, account: acc2, amount: -3.3, payee: "Food1", when: dt)
     {:ok, dt} = DateTime.cast("2016-07-10 01:00:00")
     insert(:transaction, account: acc2, amount: -7, payee: "Food2", when: dt)
     {:ok, dt} = DateTime.cast("2016-08-01 00:00:00")
@@ -208,17 +208,17 @@ defmodule Money.AccountControllerTest do
     table = parse_table(html, ".ctable") |> Enum.reverse
 
     expected = [
-      %{"Amount" => 1000, "Balance" => 1000, "Payee" => "Income", "Date" => "2016-06-30"},
-      %{"Amount" => -23, "Balance" => 977, "Payee" => "Gum1", "Date" => "2016-06-30"},
-      %{"Amount" => 37, "Balance" => 37, "Payee" => "Food Income", "Date" => "2016-06-30"},
-      %{"Amount" => -13, "Balance" => 964, "Payee" => "Gum2", "Date" => "2016-07-01"},
-      %{"Amount" => -3, "Balance" => 34, "Payee" => "Food1", "Date" => "2016-07-02"},
-      %{"Amount" => -102, "Balance" => 862, "Payee" => "Gum3", "Date" => "2016-07-03"},
-      %{"Amount" => -1017, "Balance" => -155, "Payee" => "Gum4", "Date" => "2016-07-03"},
-      %{"Amount" => -7, "Balance" => 27, "Payee" => "Food2", "Date" => "2016-07-10"},
-      %{"Amount" => 1000, "Balance" => 845, "Payee" => "Income", "Date" => "2016-07-31"},
-      %{"Amount" => -31, "Balance" => -4, "Payee" => "Food3", "Date" => "2016-08-01"},
-      %{"Amount" => -3, "Balance" => 842, "Payee" => "Gum5", "Date" => "2016-08-01"}
+      %{"Account" => "Account 1", "Amount" => 1000, "Balance" => 1000, "Payee" => "Income", "Date" => "2016-06-30"},
+      %{"Account" => "Account 1", "Amount" => -23, "Balance" => 977, "Payee" => "Gum1", "Date" => "2016-06-30"},
+      %{"Account" => "Account 2", "Amount" => 37, "Balance" => 37, "Payee" => "Food Income", "Date" => "2016-06-30"},
+      %{"Account" => "Account 1", "Amount" => -13, "Balance" => 964, "Payee" => "Gum2", "Date" => "2016-07-01"},
+      %{"Account" => "Account 2", "Amount" => -3.3, "Balance" => 33.7, "Payee" => "Food1", "Date" => "2016-07-02"},
+      %{"Account" => "Account 1", "Amount" => -102, "Balance" => 862, "Payee" => "Gum3", "Date" => "2016-07-03"},
+      %{"Account" => "Account 1", "Amount" => -1017, "Balance" => -155, "Payee" => "Gum4", "Date" => "2016-07-03"},
+      %{"Account" => "Account 2", "Amount" => -7, "Balance" => 26.7, "Payee" => "Food2", "Date" => "2016-07-10"},
+      %{"Account" => "Account 1", "Amount" => 1000, "Balance" => 845, "Payee" => "Income", "Date" => "2016-07-31"},
+      %{"Account" => "Account 2", "Amount" => -31, "Balance" => -4.3, "Payee" => "Food3", "Date" => "2016-08-01"},
+      %{"Account" => "Account 1", "Amount" => -3, "Balance" => 842, "Payee" => "Gum5", "Date" => "2016-08-01"}
     ]
     for {want, have} <- Enum.zip(expected, table) do
       assert want == have

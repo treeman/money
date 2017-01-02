@@ -6,20 +6,23 @@ defmodule Money.TransactionView do
     %{data: render_one(transaction, TransactionView, "transaction.json", params)}
   end
 
-  def render("transaction.json", %{transaction: transaction, transaction_balance: transaction_balance, conn: conn}) do
+  def render("transaction.json", %{transaction: transaction, transaction_balance: transaction_balance, origin: origin, conn: conn}) do
     category = if transaction.category do transaction.category.name else "" end
     balance = Map.fetch!(transaction_balance, transaction.id)
 
-    # FIXME For now always render this... But maybe should ignore and update on js side...?
+    render_account_title = origin == account_path(conn, :index)
+
     html_row = render_to_string TransactionView, "row.html",
                 transaction: transaction,
                 balance: balance,
+                render_account_title: render_account_title,
                 conn: conn
 
     transaction_balance = map_convert_keys transaction_balance
 
     %{id: transaction.id,
       account_id: transaction.account_id,
+      account_title: transaction.account.title,
       amount: transaction.amount,
       when: transaction.when,
       payee: transaction.payee,

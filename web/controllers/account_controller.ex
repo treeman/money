@@ -12,7 +12,7 @@ defmodule Money.AccountController do
   end
 
   def index(conn, _params, user) do
-    transactions = Repo.all(rolling_balance(user: user))
+    transactions = Repo.all(rolling_balance(user: user) |> preload(:account))
     render(conn, "show.html", transactions: transactions)
   end
 

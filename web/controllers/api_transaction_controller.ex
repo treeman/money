@@ -13,6 +13,7 @@ defmodule Money.ApiTransactionController do
   end
 
   def create(conn, %{"transaction" => params}, _user) do
+    {origin, params} = Map.pop(params, "origin")
     params = params |> transform_category
                     |> transform_date
 
@@ -28,6 +29,7 @@ defmodule Money.ApiTransactionController do
         |> put_status(:created)
         |> render(TransactionView, "show.json", %{transaction: transaction,
                                                   transaction_balance: transaction_balance,
+                                                  origin: origin,
                                                   conn: conn})
       {:error, changeset} ->
         conn
@@ -37,6 +39,7 @@ defmodule Money.ApiTransactionController do
   end
 
   def update(conn, %{"id" => id, "transaction" => params}, user) do
+    {origin, params} = Map.pop(params, "origin")
     params = params |> transform_category
                     |> transform_date
 
@@ -52,6 +55,7 @@ defmodule Money.ApiTransactionController do
         conn
         |> render(TransactionView, "show.json", %{transaction: transaction,
                                                   transaction_balance: transaction_balance,
+                                                  origin: origin,
                                                   conn: conn})
       {:error, changeset} ->
         conn

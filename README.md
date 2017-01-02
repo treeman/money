@@ -22,11 +22,21 @@ C-t     Jump back
 * In the future import using the api of banks, now just make a simple parser...
 
 ## Account view
-1. Checkbox for transactions (delete a selection of transactions)
-1. Add "checked" transactions (read-only)
-1. Maybe should be able to specify datetime...?
+1. Add new fields for a transaction:
+    (account)
+    checked
+    account
+    outflow/inflow instead of amount
+    'cleared'
 1. Table header should always be visible
-1. Split amount to inflow/outflow
+1. Use explicit width for table display, flex is useful
+1. Clicking on new account should insert a row into the table at the top instead
+1. Search/filter/sort
+1. Edit a transaction should reveal:
+    clear/unclear
+    categorize as
+    move to account
+    delete
 
 ## Transactions
 1. new transaction support for the all account view
@@ -36,15 +46,16 @@ C-t     Jump back
 1. Transactions between accounts (with transaction fee support)
 1. Editing a transaction shouldn't change the width of the table columns. Annoying.
 1. Custom sort/filter/search
+1. Remove transaction controller, move over methods from api transaction controller.
 
 ## Budget view
+1. Should support adding/removing categories/groups
 1. Support create/update
 1. JS enabled budget view
     1. Everything should already be editable, just click and change.
 1. The budget shouldn't automatically operate on all accounts but should be configurable
     Should be able to choose which categories/groups/accounts it's specific to
     Should be able to split the amount between budgets
-1. Custom sort
 
 ## Accounts
 1. Edit accounts

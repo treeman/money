@@ -1,5 +1,6 @@
 <%= form_for @transaction, @action, [id: "new-transaction"], fn f -> %>
   <%= hidden_input f, :account_id %>
+  <%= hidden_input f, :origin, value: @origin %>
 
   <div class="transaction-date">
     <%= date_input f, :when, class: "datepicker", value: DateTime.to_date(DateTime.utc_now) %>
