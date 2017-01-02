@@ -29,8 +29,8 @@ defmodule Money.HtmlParsers do
 
     Enum.map(trs, fn {_, _, cols} ->
       cols = cols |> Floki.find(".tc")
-      {_, mapped} = Enum.reduce(cols, {0, %{}}, fn(
-        {_, _, [val]}, {i, map}) ->
+      {_, mapped} = Enum.reduce(cols, {0, %{}}, fn
+        {_, _, [val]}, {i, map} when is_binary(val) ->
           head = Map.get(index2head, i)
 
           if Kernel.is_nil(head) do

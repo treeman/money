@@ -43,7 +43,6 @@ C-t     Jump back
 1. Store payees and info about them. Last Category and amount and others?
 1. Recurring transactions
 1. Transactions between accounts (with transaction fee support)
-1. Remove transaction controller, move over methods from api transaction controller.
 
 ## Budget view
 1. Should support adding/removing categories/groups

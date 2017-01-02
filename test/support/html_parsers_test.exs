@@ -14,21 +14,28 @@ year: 2016 month: 7
 <div class="ctable">
   <div class="thead">
     <div class="tr">
+      <div class="th"> <input type="checkbox"> </div>
+      <div class="account-id">1</div>
+      <div class="transaction-id">15</div>
       <div class="th">Category</div> <div class="th">Budgeted</div> <div class="th">Activity</div> <div class="th">Balance</div>
     </div>
   </div>
   <div class="tbody">
     <div class="tr budgeted-group">
       <div class="other">meep</div>
+      <div class="tc transaction-cb"> <input type="checkbox"> </div>
       <div class="tc">Essentials</div> <div class="tc">1337</div> <div class="tc">122.12</div> <div class="tc">1459.12</div>
     </div>
     <div class="tr budgeted-category">
+      <div class="tc transaction-cb"> <input type="checkbox"> </div>
       <div class="tc">Food</div> <div class="tc">500</div> <div class="tc">100</div> <div class="tc">400</div>
     </div>
     <div class="tr budgeted-category">
+      <div class="tc transaction-cb"> <input type="checkbox"> </div>
       <div class="tc">Rent</div> <div class="tc">0</div> <div class="tc">0</div> <div class="tc">0</div>
     </div>
     <div class="tr budgeted-group">
+      <div class="tc transaction-cb"> <input type="checkbox"> </div>
       <div class="tc">Fun</div> <div class="tc">10</div> <div class="tc">3</div> <div class="tc">7</div>
     </div>
   </div>
