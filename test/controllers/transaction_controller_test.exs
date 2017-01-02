@@ -8,14 +8,15 @@ defmodule Money.TransactionControllerTest do
                  payee: "somewhere"}
   @invalid_attrs %{amount: nil}
 
+  setup %{conn: conn} = config do
+    %{config | conn: put_req_header(conn, "accept", "application/json")}
+  end
+
   test "requries user authentication on all actions", %{conn: conn} do
     Enum.each([
-      get(conn, account_path(conn, :new)),
-      get(conn, account_path(conn, :show, "123")),
-      get(conn, account_path(conn, :edit, "123")),
-      put(conn, account_path(conn, :update, "123", %{})),
-      post(conn, account_path(conn, :create, %{})),
-      delete(conn, account_path(conn, :delete, "123")),
+      put(conn, transaction_path(conn, :update, "123", %{})),
+      post(conn, transaction_path(conn, :create, %{})),
+      delete(conn, transaction_path(conn, :delete, "123")),
     ], fn conn ->
       assert html_response(conn, 302)
       assert conn.halted
@@ -23,88 +24,134 @@ defmodule Money.TransactionControllerTest do
   end
 
   @tag login_as: "max"
-  test "renders form for new resources", %{conn: conn, user: _user} do
-    conn = get conn, transaction_path(conn, :new, %{"account_id" => 3})
-    assert html_response(conn, 200) =~ "New transaction"
-  end
-
-  @tag login_as: "max"
-  test "creates resource and redirects when data is valid", %{conn: conn, user: user} do
+  test "creates and renders resource when data is valid", %{conn: conn, user: user} do
     account = insert(:account, user: user)
-    group = insert(:category_group, user: user)
-    category = insert(:category, category_group: group)
-    attrs = Dict.merge(%{account_id: account.id, category_id: category.id}, @valid_attrs)
 
-    conn = post conn, transaction_path(conn, :create), transaction: attrs
-    assert redirected_to(conn) == account_path(conn, :show, account.id)
-    assert Repo.get_by(Transaction, @valid_attrs)
+    params = Map.merge(@valid_attrs, %{account_id: account.id})
+
+    conn = post conn, transaction_path(conn, :create), transaction: params
+    json = json_response(conn, 201)
+    assert json["data"]["id"]
+    assert json["data"]["html_row"]
+
+    transaction = Repo.get_by(Transaction, @valid_attrs)
+    assert transaction
+    assert transaction.account_id == account.id
   end
 
   @tag login_as: "max"
-  test "correctly associates with categories and accounts", %{conn: conn, user: user} do
+  test "parses category name", %{conn: conn, user: user} do
     account = insert(:account, user: user)
-    group = insert(:category_group, user: user)
-    category = insert(:category, category_group: group)
-    attrs = Dict.merge(%{account_id: account.id, category_id: category.id}, @valid_attrs)
+    category_group = insert(:category_group, user: user)
+    category = insert(:category, category_group: category_group)
 
-    post conn, transaction_path(conn, :create), transaction: attrs
-    t = Repo.get_by(Transaction, @valid_attrs)
+    params = Map.merge(@valid_attrs, %{account_id: account.id, category: category.name})
 
-    assert category.id == t.category_id
-    assert account.id == t.account_id
+    conn = post conn, transaction_path(conn, :create), transaction: params
+    json = json_response(conn, 201)
+    assert json["data"]["category"] == category.name
+
+    transaction = Repo.get_by(Transaction, @valid_attrs)
+    assert transaction.category_id == category.id
   end
 
   @tag login_as: "max"
-  test "does not create resource and renders errors when data is invalid", %{conn: conn, user: user} do
+  test "parses a date string", %{conn: conn, user: user} do
     account = insert(:account, user: user)
-    attrs = Dict.merge(%{account_id: account.id}, @invalid_attrs)
+    params = Map.merge(@valid_attrs, %{account_id: account.id, when: "2016-02-03"})
 
-    conn = post conn, transaction_path(conn, :create), transaction: attrs
-    assert html_response(conn, 200) =~ "New transaction"
+    conn = post conn, transaction_path(conn, :create), transaction: params
+    json = json_response(conn, 201)
+    assert json["data"]["when"] == "2016-02-03T00:00:00";
   end
 
   @tag login_as: "max"
-  test "shows chosen resource", %{conn: conn, user: user} do
+  test "does not create resource and renders errors when data is invalid", %{conn: conn} do
+    conn = post conn, transaction_path(conn, :create), transaction: @invalid_attrs
+    assert json_response(conn, 422)["errors"] != %{}
+  end
+
+  @tag login_as: "max"
+  test "returns all transaction balances on creation", %{conn: conn, user: user} do
     account = insert(:account, user: user)
-    transaction = insert(:transaction, account: account)
+    category_group = insert(:category_group, user: user)
+    category = insert(:category, category_group: category_group)
+    t1 = insert(:transaction, account: account,
+                            amount: 12.34,
+                            when: Ecto.DateTime.from_erl({{2010, 10, 10}, {0, 0, 0}}))
 
-    conn = get conn, transaction_path(conn, :show, transaction)
-    assert html_response(conn, 200) =~ "Show transaction"
+    # Add in some other random data
+    early = Ecto.DateTime.from_erl({{1900, 10, 10}, {0, 0, 0}})
+    account2 = insert(:account, user: user)
+    insert(:transaction, account: account2, amount: 99999.99, when: early)
+    user2 = insert(:user, username: "alice")
+    user2account = insert(:account, user: user2)
+    insert(:transaction, account: user2account, amount: 99999.99, when: early)
+
+    params = Map.merge(@valid_attrs, %{account_id: account.id, category_id: category.id, amount: 13.37})
+    conn = post conn, transaction_path(conn, :create), transaction: params
+    json = json_response(conn, 201)
+    t_balance = json["data"]["transaction_balance"]
+    assert length(Map.keys(t_balance)) == 2
+    assert Map.fetch!(t_balance, Integer.to_string(t1.id)) == "12.34"
+
+    transaction = Repo.get_by(Transaction, params)
+    assert transaction
+    assert Map.fetch!(t_balance, Integer.to_string(transaction.id)) == "25.71"
   end
 
   @tag login_as: "max"
-  test "renders page not found when id is nonexistent", %{conn: conn, user: _user} do
-    assert_error_sent 404, fn ->
-      get conn, transaction_path(conn, :show, -1)
-    end
-  end
-
-  @tag login_as: "max"
-  test "renders form for editing chosen resource", %{conn: conn, user: user} do
+  test "updates and renders resource when data is valid", %{conn: conn, user: user} do
     account = insert(:account, user: user)
-    transaction = insert(:transaction, account: account)
+    t1 = insert(:transaction, Map.merge(%{account: account}, @valid_attrs))
+    params = %{amount: 1337,
+               description: t1.description,
+               when: t1.when,
+               payee: "nowhere"}
 
-    conn = get conn, transaction_path(conn, :edit, transaction)
-    assert html_response(conn, 200) =~ "Edit transaction"
+    conn = put conn, transaction_path(conn, :update, t1.id), transaction: params
+    assert json_response(conn, 200)
+
+    transaction = Repo.get(Transaction, t1.id)
+    assert transaction
+    assert transaction.description == t1.description
+    assert transaction.amount == Decimal.new(1337)
+    assert transaction.payee == "nowhere"
   end
 
   @tag login_as: "max"
-  test "updates chosen resource and redirects when data is valid", %{conn: conn, user: user} do
+  test "returns all transaction balances on update", %{conn: conn, user: user} do
     account = insert(:account, user: user)
-    transaction = insert(:transaction, account: account)
+    t1 = insert(:transaction, account: account, amount: 12.34, when: Ecto.DateTime.from_erl({{2010, 10, 10}, {0, 0, 0}}))
 
-    conn = put conn, transaction_path(conn, :update, transaction), transaction: @valid_attrs
-    assert redirected_to(conn) == transaction_path(conn, :show, transaction)
-    assert Repo.get_by(Transaction, @valid_attrs)
+    t2 = insert(:transaction, Map.merge(%{account: account}, @valid_attrs))
+    params = %{amount: 1337,
+               description: t2.description,
+               when: t2.when,
+               payee: "nowhere"}
+
+    # Add in some other random data
+    early = Ecto.DateTime.from_erl({{1900, 10, 10}, {0, 0, 0}})
+    account2 = insert(:account, user: user)
+    insert(:transaction, account: account2, amount: 99999.99, when: early)
+    user2 = insert(:user, username: "alice")
+    user2account = insert(:account, user: user2)
+    insert(:transaction, account: user2account, amount: 99999.99, when: early)
+
+    conn = put conn, transaction_path(conn, :update, t2.id), transaction: params
+    json = json_response(conn, 200)
+    t_balance = json["data"]["transaction_balance"]
+    assert length(Map.keys(t_balance)) == 2
+    assert Map.fetch!(t_balance, Integer.to_string(t1.id)) == "12.34"
+    assert Map.fetch!(t_balance, Integer.to_string(t2.id)) == "1349.34"
   end
 
   @tag login_as: "max"
   test "does not update chosen resource and renders errors when data is invalid", %{conn: conn, user: user} do
     account = insert(:account, user: user)
-    transaction = insert(:transaction, account: account)
-
-    conn = put conn, transaction_path(conn, :update, transaction), transaction: @invalid_attrs
-    assert html_response(conn, 200) =~ "Edit transaction"
+    t1 = insert(:transaction, account: account)
+    conn = put conn, transaction_path(conn, :update, t1.id), transaction: @invalid_attrs
+    assert json_response(conn, 422)["errors"] != %{}
   end
 
   @tag login_as: "max"
@@ -113,7 +160,9 @@ defmodule Money.TransactionControllerTest do
     transaction = insert(:transaction, account: account)
 
     conn = delete conn, transaction_path(conn, :delete, transaction)
-    assert redirected_to(conn) == account_path(conn, :show, account.id)
+    json = json_response(conn, 200)
+    assert json["data"]["id"] == transaction.id
+    assert json["data"]["transaction_balance"]
     refute Repo.get(Transaction, transaction.id)
   end
 
@@ -125,12 +174,6 @@ defmodule Money.TransactionControllerTest do
     non_owner = insert(:user, username: "alice")
     conn = assign(conn, :current_user, non_owner)
 
-    assert_error_sent :not_found, fn ->
-      get(conn, transaction_path(conn, :show, transaction))
-    end
-    assert_error_sent :not_found, fn ->
-      get(conn, transaction_path(conn, :edit, transaction))
-    end
     assert_error_sent :not_found, fn ->
       attrs = Dict.merge(%{account_id: account.id}, @valid_attrs)
       put(conn, transaction_path(conn, :update, transaction), transaction: attrs)

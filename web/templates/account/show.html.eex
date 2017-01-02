@@ -8,9 +8,9 @@
   <ol>
     <%= case Access.fetch(assigns, :account) do %>
       <%= {:ok, account} -> %>
-        <li><%= link "New transaction", to: transaction_path(@conn, :new, account_id: account.id) %></li>
+        <li><%= link "New transaction", to: transaction_path(@conn, :create, account_id: account.id) %></li>
       <%= _ -> %>
-        <li><%= link "New transaction", to: transaction_path(@conn, :new) %></li>
+        <li><%= link "New transaction", to: transaction_path(@conn, :create) %></li>
     <% end %>
     <li><%= link "Edit", to: "#" %></li>
     <li><%= link "Undo", to: "#" %></li>
@@ -26,7 +26,7 @@
   <%= if assigns[:new_transaction] do %>
     <%= render "new_transaction_form.html",
                transaction: @new_transaction,
-               action: api_transaction_path(@conn, :create),
+               action: transaction_path(@conn, :create),
                categories: @categories,
                transactions: @transactions,
                origin: Path.join(["/" | @conn.path_info]) %>

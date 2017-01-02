@@ -1,6 +1,11 @@
 defmodule Money.TransactionController do
   use Money.Web, :controller
   alias Money.Transaction
+  alias Money.TransactionView
+  alias Money.Repo
+  alias Money.Category
+  alias Money.ChangesetView
+  require Logger
 
   plug :load_categories when action in [:new, :create, :edit, :update]
 
@@ -9,71 +14,90 @@ defmodule Money.TransactionController do
      [conn, conn.params, conn.assigns.current_user])
   end
 
-  def index(conn, _params, user) do
-    transactions = Repo.all(user_transactions(user))
-                   |> Repo.preload(:category)
-    render(conn, "index.html", transactions: transactions)
-  end
+  def create(conn, %{"transaction" => params}, _user) do
+    {origin, params} = Map.pop(params, "origin")
+    params = params |> transform_category
+                    |> transform_date
 
-  def new(conn, %{"account_id" => account_id}, _user) do
-    changeset = Transaction.changeset(%Transaction{}, %{account_id: account_id})
-    render(conn, "new.html", changeset: changeset)
-  end
-  # Cannot do it yet.
-  #def new(conn, _params, _user) do
-    #changeset = Transaction.changeset(%Transaction{}, %{})
-    #render(conn, "new.html", changeset: changeset)
-  #end
-
-  def create(conn, %{"transaction" => transaction_params}, _user) do
-    changeset = Transaction.changeset(%Transaction{}, transaction_params)
+    changeset = Transaction.changeset(%Transaction{}, params)
 
     case Repo.insert(changeset) do
-      {:ok, _transaction} ->
-        # TODO handle redirects in a cleaner way.
-        account_id = Map.get(transaction_params, "account_id")
+      {:ok, transaction} ->
+        transaction = Repo.preload(transaction, [:category, :account])
+
+        transaction_balance = transaction_balance(account: transaction.account)
+
         conn
-        |> put_flash(:info, "Transaction created successfully.")
-        |> redirect(to: account_path(conn, :show, account_id))
+        |> put_status(:created)
+        |> render(TransactionView, "show.json", %{transaction: transaction,
+                                                  transaction_balance: transaction_balance,
+                                                  origin: origin,
+                                                  conn: conn})
       {:error, changeset} ->
-        render(conn, "new.html", changeset: changeset)
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(ChangesetView, "error.json", changeset: changeset)
     end
   end
 
-  def show(conn, %{"id" => id}, user) do
-    transaction = Repo.get!(user_transactions(user), id)
-                  |> Repo.preload(:category)
+  def update(conn, %{"id" => id, "transaction" => params}, user) do
+    {origin, params} = Map.pop(params, "origin")
+    params = params |> transform_category
+                    |> transform_date
 
-    render(conn, "show.html", transaction: transaction)
-  end
-
-  def edit(conn, %{"id" => id}, user) do
     transaction = Repo.get!(user_transactions(user), id)
-    changeset = Transaction.changeset(transaction)
-    render(conn, "edit.html", transaction: transaction, changeset: changeset)
-  end
-
-  def update(conn, %{"id" => id, "transaction" => transaction_params}, user) do
-    transaction = Repo.get!(user_transactions(user), id)
-    changeset = Transaction.changeset(transaction, transaction_params)
+    changeset = Transaction.changeset(transaction, params)
 
     case Repo.update(changeset) do
       {:ok, transaction} ->
+        transaction = Repo.preload(transaction, [:category, :account])
+
+        transaction_balance = transaction_balance(account: transaction.account)
+
         conn
-        |> put_flash(:info, "Transaction updated successfully.")
-        |> redirect(to: transaction_path(conn, :show, transaction))
+        |> render(TransactionView, "show.json", %{transaction: transaction,
+                                                  transaction_balance: transaction_balance,
+                                                  origin: origin,
+                                                  conn: conn})
       {:error, changeset} ->
-        render(conn, "edit.html", transaction: transaction, changeset: changeset)
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(ChangesetView, "error.json", changeset: changeset)
     end
   end
 
   def delete(conn, %{"id" => id}, user) do
     transaction = Repo.get!(user_transactions(user), id)
+
     Repo.delete!(transaction)
 
+    transaction_balance = transaction_balance(account_id: transaction.account_id)
+
     conn
-    |> put_flash(:info, "Transaction deleted successfully.")
-    |> redirect(to: account_path(conn, :show, transaction.account_id))
+    |> render(TransactionView, "delete.json", %{id: transaction.id,
+                                                transaction_balance: transaction_balance})
   end
+
+  def transform_category(%{"category" => category_name} = params) do
+    category = Repo.get_by(Category, name: category_name)
+    category_id = if category do category.id else nil end
+
+    unless category_id do IO.puts("new category not supported yet!") end
+
+    params |> Map.delete("category")
+           |> Map.put_new("category_id", category_id)
+  end
+  def transform_category(params), do: params
+
+  def transform_date(%{"when" => date_string} = params) when is_binary(date_string) do
+    case Date.from_iso8601(date_string) do
+      {:ok, date} ->
+        Map.put(params, "when", {Date.to_erl(date), {0, 0, 0}})
+      {:error, reason} ->
+        Logger.warn "Failed to transform date: #{IO.inspect(date_string)} #{IO.inspect(reason)}"
+        params
+    end
+  end
+  def transform_date(params), do: params
 end
 
