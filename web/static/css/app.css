@@ -169,34 +169,23 @@ html {
  * http://paletton.com/#uid=33L0u1kllll2NRLc3utuCcdSF35kllll1rWJboviviboWJ1rkllll1rWJboviviboWJ1r
  */
 
-#budget-header nav ol,
-#budget-header nav ol li,
-#transaction-header nav ol,
-#transaction-header nav ol li {
-    display: inline-block;
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-#budget-header nav ol li,
-#transaction-header nav ol li {
-    padding-right: 0.4em;
-}
-
 /*
  * Grid
  */
 .grid {
-    width: 100%;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
 }
 .grid-header {
     width: 100%;
     display: flex;
+    flex-shrink: 0;
 }
 .grid-body {
     width: 100%;
-    /*display: flex;*/
+    overflow: auto;
+    flex: 1;
 }
 .grid-header-cell {
     flex: 1;
@@ -219,6 +208,24 @@ html {
 }
 
 /*
+ * Common navigation
+ */
+#budget-header nav ol,
+#budget-header nav ol li,
+#transaction-header nav ol,
+#transaction-header nav ol li {
+    display: inline-block;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+#budget-header nav ol li,
+#transaction-header nav ol li {
+    padding-right: 0.4em;
+}
+
+/*
  * Account view
  */
 .grid-account-id, .grid-transaction-id { display: none; }
@@ -228,18 +235,8 @@ html {
 .grid-transaction-payee { flex: 2; }
 .grid-transaction-category { flex: 2; }
 .grid-transaction-description { flex: 2; }
-/*.grid-transactoin-category { flex: 2; }*/
 
 .grid-transaction-buttons { display: none; }
-
-#transaction-header {
-    flex-shrink: 0;
-}
-#transactions {
-    overflow: auto;
-    min-height: 2em;
-    flex-grow: 1;
-}
 
 form#edit-transaction {
     display: none;
@@ -248,15 +245,8 @@ form#edit-transaction {
 /*
  * Budget view
  */
-.grid-row.budgeted-group {
-    /*background-color: #FFF0AA;*/
-    /*background-color: #7887AB;*/
-    background-color: #D5DAE7;
-    /*background-color: #D49A6A;*/
-}
-.grid-row.budgeted-category {
-
-}
+.grid-row.budgeted-group { background-color: #D5DAE7; }
+.grid-row.budgeted-category { }
 .grid-budget-cb { flex: 0; }
 .grid-budget-category { flex: 2; }
 
@@ -267,9 +257,6 @@ form#edit-transaction {
 }
 #budget {
     flex: 3;
-    overflow: auto;
-    display: flex;
-    flex-direction: column;
 }
 #budget-info {
     background-color: #7887AB;
@@ -278,15 +265,6 @@ form#edit-transaction {
     font-size: 1.8em;
     padding: 10px;
     color: white;
-}
-
-
-#budget .grid-header {
-    flex-shrink: 0;
-}
-#budget .grid-body {
-    overflow: auto;
-    flex: 1;
 }
 
 

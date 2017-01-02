@@ -31,7 +31,7 @@
 -->
 
 <div id="main-budget">
-  <div id="budget">
+  <div id="budget" class="grid">
     <div class="grid-header">
       <div class="grid-header-cell grid-budget-cb"><input type="checkbox"></div>
       <div class="grid-header-cell grid-budget-category">Category</div>

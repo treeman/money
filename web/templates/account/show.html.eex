@@ -33,7 +33,9 @@
       origin: Path.join(["/" | @conn.path_info]) %>
     <% end %>
     </div>
+</div>
 
+<div id="transactions" class="grid">
   <div class="grid-header">
     <div class="grid-header-cell grid-transaction-cb"><input type="checkbox"></div>
     <%= if !assigns[:account] do %>
@@ -50,13 +52,13 @@
     </div>
     <div class="grid-header-cell grid-transaction-buttons"></div>
   </div>
-</div>
 
-<div id="transactions" class="grid-body">
-  <%= for %{transaction: transaction, balance: balance} <- @transactions do %>
-    <%= render Money.TransactionView, "row.html", transaction: transaction, balance: balance, render_account_title: render_account_title(@conn), conn: @conn %>
-  <% end %>
-</div>
+  <div class="grid-body">
+    <%= for %{transaction: transaction, balance: balance} <- @transactions do %>
+      <%= render Money.TransactionView, "row.html", transaction: transaction, balance: balance, render_account_title: render_account_title(@conn), conn: @conn %>
+    <% end %>
+  </div>
 
-<%= form_tag("#", id: "edit-transaction") %></form>
+  <%= form_tag("#", id: "edit-transaction") %></form>
+</div>
 
