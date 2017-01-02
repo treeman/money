@@ -37,15 +37,14 @@ C-t     Jump back
     categorize as
     move to account
     delete
+1. Make the all account view add/edit transactions work as intended
+1. Editing a transaction shouldn't change the width of the table columns. Annoying.
 
 ## Transactions
-1. new transaction support for the all account view
 1. No good error message if category isn't select (also it should be possible to create)
 1. Store payees and info about them. Last Category and amount and others?
 1. Recurring transactions
 1. Transactions between accounts (with transaction fee support)
-1. Editing a transaction shouldn't change the width of the table columns. Annoying.
-1. Custom sort/filter/search
 1. Remove transaction controller, move over methods from api transaction controller.
 
 ## Budget view
