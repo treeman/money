@@ -16,6 +16,7 @@ for (var i = 0; i < transactionRows.length; ++i) {
 // Awesomplete util for payees.
 var payeeDatalist = document.getElementById('transaction_payee-list');
 var categoryDatalist = document.getElementById('transaction_category-list');
+var accountDatalist = document.getElementById('transaction_accounts-list');
 
 // Change add functionality for new transaction.
 if (newForm) {
@@ -48,13 +49,16 @@ function addNewTransaction(evt) {
     var grid = document.querySelector('#transactions .grid-body');
     grid.insertBefore(row, grid.firstChild);
 
-    if (activeAccountId) {
-        var accountId = row.querySelector('.grid-account-id input');
-        accountId.setAttribute("value", activeAccountId);
+    if (!activeAccountId) {
+        var accountInput = row.querySelector('.grid-account-title input');
+        // FIXME find the latest submitted account somewhere.
+        var account = accountDatalist.firstChild.innerHTML;
+        accountInput.setAttribute("value", account);
     }
 
     var dateInput = row.querySelector('.grid-transaction-date input');
     dateInput.setAttribute("value", currentDate());
+    console.log(row);
 }
 
 function submitNewTransaction(evt) {
@@ -113,9 +117,11 @@ function beginEditTransactionRow(row) {
     var transaction_id = transaction.innerHTML;
     editForm.action = "/api/v1/transactions/" + transaction_id;
 
-    // Account id will be taken care of via action, don't send this and distrupt.
-    var accountId = editRow.querySelector('.grid-account-id');
-    accountId.remove();
+    if (!activeAccountId) {
+        var accountInput = editRow.querySelector('.grid-account-title input');
+        var account = row.querySelector('.grid-account-title');
+        accountInput.setAttribute("value", account.innerHTML);
+    }
 
     var date = row.querySelector('.grid-transaction-date');
     var dateInput = editRow.querySelector('.grid-transaction-date input');
@@ -196,21 +202,22 @@ function createTransactionRowForm(form) {
     row.innerHTML = "<div class=\"grid-cell grid-transaction-cb\">\
   <input type=\"checkbox\">\
 </div>\
-<div class=\"grid-account-id\">\
-  <input name=\"transaction[account_id]\" type=\"hidden\">\
+<div class=\"grid-cell grid-account-title\">\
+  <div class=\"awesomplete\">\
+    <input name=\"transaction[account]\">\
+  </div>\
 </div>\
-<div class=\"grid-transaction-id\"></div>\
 <div class=\"grid-cell grid-transaction-date\">\
   <input id=\"edit-transaction_when\" class=\"datepicker\" name=\"transaction[when]\" type=\"text\">\
 </div>\
 <div class=\"grid-cell grid-transaction-payee\">\
   <div class=\"awesomplete\">\
-    <input id=\"edit-transaction_payee\" class=\"awesomplete\" name=\"transaction[payee]\" type=\"text\">\
+    <input id=\"edit-transaction_payee\" name=\"transaction[payee]\" type=\"text\">\
   </div>\
 </div>\
 <div class=\"grid-cell grid-transaction-category\">\
   <div class=\"awesomplete\">\
-    <input id=\"edit-transaction_category\" class=\"awesomplete\" name=\"transaction[category]\" type=\"text\">\
+    <input id=\"edit-transaction_category\" name=\"transaction[category]\" type=\"text\">\
   </div>\
 </div>\
 <div class=\"grid-cell grid-transaction-description\">\
@@ -226,11 +233,19 @@ function createTransactionRowForm(form) {
 <div class=\"grid-transaction-buttons\">\
   <input type=\"submit\">submit</input>\
 </div>";
-    var inputs = row.querySelectorAll('input');
-    if (form) {
-        for (var i = 0; i < inputs.length; ++i) {
-            inputs[i].setAttribute("form", form.id);
-        }
+    if (activeAccountId) {
+        var accountGrid = row.querySelector('.grid-account-title');
+        accountGrid.remove();
+        var accountId = document.createElement("input");
+        accountId.setAttribute("name", "transaction[account_id]");
+        accountId.setAttribute("type", "hidden");
+        accountId.setAttribute("value", activeAccountId);
+        row.appendChild(accountId);
+    } else {
+        var accountInput = row.querySelector('.grid-account-title input');
+        AwesompleteUtil.start(accountInput,
+            { }, { minChars: 0, list: accountDatalist }
+        );
     }
 
     var dateInput = row.querySelector('.grid-transaction-date input');
@@ -248,6 +263,13 @@ function createTransactionRowForm(form) {
     AwesompleteUtil.start(categoryInput,
         { }, { minChars: 1, list: categoryDatalist }
     );
+
+    var inputs = row.querySelectorAll('input');
+    if (form) {
+        for (var i = 0; i < inputs.length; ++i) {
+            inputs[i].setAttribute("form", form.id);
+        }
+    }
 
     return row;
 }

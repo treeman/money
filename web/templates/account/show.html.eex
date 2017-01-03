@@ -58,7 +58,7 @@
       <%= render Money.TransactionView, "row.html",
                                         transaction: transaction,
                                         balance: balance,
-                                        render_account_title: render_account_title(@conn),
+                                        render_account_title: !assigns[:account],
                                         conn: @conn %>
     <% end %>
   </div>

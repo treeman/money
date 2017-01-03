@@ -35,9 +35,7 @@ C-t     Jump back
     move to account
     delete
 1. Make the all account view add/edit transactions work as intended
-    + Add an account dropdown for edit and new transaction
-    + Need to parse the accont name in backend
-    + Rewrite origin/show account title
+    + Rewrite origin/show account title !! Add transaction will get the account title rendered.
 1. Arrows on category/payees
 
 ## Transactions

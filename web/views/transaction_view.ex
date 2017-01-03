@@ -6,11 +6,12 @@ defmodule Money.TransactionView do
     %{data: render_one(transaction, TransactionView, "transaction.json", params)}
   end
 
-  def render("transaction.json", %{transaction: transaction, transaction_balance: transaction_balance, origin: origin, conn: conn}) do
+  def render("transaction.json", %{transaction: transaction,
+                                   transaction_balance: transaction_balance,
+                                   render_account_title: render_account_title,
+                                   conn: conn}) do
     category = if transaction.category do transaction.category.name else "" end
     balance = Map.fetch!(transaction_balance, transaction.id)
-
-    render_account_title = origin == account_path(conn, :index)
 
     html_row = render_to_string TransactionView, "row.html",
                 transaction: transaction,

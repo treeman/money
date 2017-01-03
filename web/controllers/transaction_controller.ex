@@ -14,9 +14,6 @@ defmodule Money.TransactionController do
   end
 
   def create(conn, %{"transaction" => params}, user) do
-    # FIXME remove origin...? Or what does it do?
-    {origin, params} = Map.pop(params, "origin")
-
     changeset = Transaction.changeset(%Transaction{}, params)
                 |> transform_category(params, user)
                 |> transform_account(params, user)
@@ -31,7 +28,7 @@ defmodule Money.TransactionController do
         |> put_status(:created)
         |> render(TransactionView, "show.json", %{transaction: transaction,
                                                   transaction_balance: transaction_balance,
-                                                  origin: origin,
+                                                  render_account_title: Map.has_key?(params, "account"),
                                                   conn: conn})
       {:error, changeset} ->
         conn
@@ -41,8 +38,6 @@ defmodule Money.TransactionController do
   end
 
   def update(conn, %{"id" => id, "transaction" => params}, user) do
-    {origin, params} = Map.pop(params, "origin")
-
     transaction = Repo.get!(user_transactions(user), id)
     changeset = Transaction.changeset(transaction, params)
                 |> transform_category(params, user)
@@ -57,7 +52,7 @@ defmodule Money.TransactionController do
         conn
         |> render(TransactionView, "show.json", %{transaction: transaction,
                                                   transaction_balance: transaction_balance,
-                                                  origin: origin,
+                                                  render_account_title: Map.has_key?(params, "account"),
                                                   conn: conn})
       {:error, changeset} ->
         conn
