@@ -8,7 +8,6 @@ C-]     Jump to definition
 C-t     Jump back
 
 # TODO
-1. Make delete work with checked transactions
 1. Give budget view a little love
     1. Should be able to add categories and groups
 1. Finish swedbank transaction importer
@@ -32,8 +31,6 @@ C-t     Jump back
     * Option to insert and continue to insert another transaction
 1. Search/filter/sort
 1. Checkbox handling
-    + alter appearance to be selected
-    + ability to delete all selected
     + ability to change category for all selected
     + ability to clear/unclear all selected
 1. Edit a transaction should reveal:
