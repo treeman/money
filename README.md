@@ -22,6 +22,18 @@ C-t     Jump back
 ## Import text
 * In the future import using the api of banks, now just make a simple parser...
 
+## Budget view
+1. Should support adding/removing categories/groups
+1. Support create/update
+1. JS enabled budget view
+    + Everything should already be editable, just click and change.
+    + Minimize a group and categories below
+    + Checkbox support
+1. Show info on the right side
+1. The budget shouldn't automatically operate on all accounts but should be configurable
+    Should be able to choose which categories/groups/accounts it's specific to
+    Should be able to split the amount between budgets
+
 ## Account view
 1. Add new fields for a transaction:
     (account)                           DONE
@@ -47,19 +59,9 @@ C-t     Jump back
     + Amount not null
 
 ## Transactions
-1. No good error message if category isn't select (also it should be possible to create)
 1. Store payees and info about them. Last Category and amount and others?
 1. Recurring transactions
 1. Transactions between accounts (with transaction fee support)
-
-## Budget view
-1. Should support adding/removing categories/groups
-1. Support create/update
-1. JS enabled budget view
-    1. Everything should already be editable, just click and change.
-1. The budget shouldn't automatically operate on all accounts but should be configurable
-    Should be able to choose which categories/groups/accounts it's specific to
-    Should be able to split the amount between budgets
 
 ## Accounts
 1. Edit accounts
