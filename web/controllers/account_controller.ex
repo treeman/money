@@ -13,7 +13,10 @@ defmodule Money.AccountController do
 
   def index(conn, _params, user) do
     transactions = Repo.all(rolling_balance(user: user) |> preload(:account))
-    render(conn, "show.html", transactions: transactions)
+    accounts = Repo.all(user_accounts(user))
+    render(conn, "show.html",
+           transactions: transactions,
+           accounts: accounts)
   end
 
   def new(conn, _params, user) do
@@ -44,12 +47,12 @@ defmodule Money.AccountController do
   def show(conn, %{"id" => id}, user) do
     account = Repo.get!(user_accounts(user), id)
     transactions = Repo.all(rolling_balance(account: account))
-    new_transaction = Transaction.changeset(%Transaction{}, %{account_id: account.id})
+    accounts = Repo.all(user_accounts(user))
 
     render(conn, "show.html",
            account: account,
            transactions: transactions,
-           new_transaction: new_transaction)
+           accounts: accounts)
   end
 
   def edit(conn, %{"id" => id}, user) do

@@ -33,19 +33,6 @@
       <% end %>
     </ol>
   </nav>
-
-    <!---
-    <div id="main-new-transaction">
-    <%= if assigns[:new_transaction] do %>
-      <%= render "new_transaction_form.html",
-      transaction: @new_transaction,
-      action: transaction_path(@conn, :create),
-      categories: @categories,
-      transactions: @transactions,
-      origin: Path.join(["/" | @conn.path_info]) %>
-    <% end %>
-    </div>
-    -->
 </div>
 
 <div id="transactions" class="grid">
@@ -87,6 +74,10 @@
     <% categories = Enum.reduce(@categories, %MapSet{}, fn {c, _id}, acc ->
                                                           MapSet.put(acc, c) end) %>
     <%= datalist categories, id: "transaction_category-list" %>
+
+    <% accounts = Enum.reduce(@accounts, %MapSet{}, fn a, acc ->
+                                                      MapSet.put(acc, a.title) end) %>
+    <%= datalist accounts, id: "transaction_accounts-list" %>
 
     <%= form_tag(transaction_path(@conn, :create), id: "new-transaction") %></form>
     <%= form_tag("#", id: "edit-transaction") %></form>

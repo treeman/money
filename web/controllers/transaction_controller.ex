@@ -3,7 +3,6 @@ defmodule Money.TransactionController do
   alias Money.Transaction
   alias Money.TransactionView
   alias Money.Repo
-  alias Money.Category
   alias Money.ChangesetView
   require Logger
 
@@ -14,12 +13,13 @@ defmodule Money.TransactionController do
      [conn, conn.params, conn.assigns.current_user])
   end
 
-  def create(conn, %{"transaction" => params}, _user) do
+  def create(conn, %{"transaction" => params}, user) do
+    # FIXME remove origin...? Or what does it do?
     {origin, params} = Map.pop(params, "origin")
-    params = params |> transform_category
-                    |> transform_date
 
     changeset = Transaction.changeset(%Transaction{}, params)
+                |> transform_category(params, user)
+                |> transform_account(params, user)
 
     case Repo.insert(changeset) do
       {:ok, transaction} ->
@@ -42,11 +42,11 @@ defmodule Money.TransactionController do
 
   def update(conn, %{"id" => id, "transaction" => params}, user) do
     {origin, params} = Map.pop(params, "origin")
-    params = params |> transform_category
-                    |> transform_date
 
     transaction = Repo.get!(user_transactions(user), id)
     changeset = Transaction.changeset(transaction, params)
+                |> transform_category(params, user)
+                |> transform_account(params, user)
 
     case Repo.update(changeset) do
       {:ok, transaction} ->
@@ -78,26 +78,33 @@ defmodule Money.TransactionController do
                                                 transaction_balance: transaction_balance})
   end
 
-  def transform_category(%{"category" => category_name} = params) do
-    category = Repo.get_by(Category, name: category_name)
-    category_id = if category do category.id else nil end
+  defp transform_category(changeset, %{"category" => category_name}, user) do
+    %{changes: changes, errors: errors} = changeset
 
-    unless category_id do IO.puts("new category not supported yet!") end
-
-    params |> Map.delete("category")
-           |> Map.put_new("category_id", category_id)
-  end
-  def transform_category(params), do: params
-
-  def transform_date(%{"when" => date_string} = params) when is_binary(date_string) do
-    case Date.from_iso8601(date_string) do
-      {:ok, date} ->
-        Map.put(params, "when", {Date.to_erl(date), {0, 0, 0}})
-      {:error, reason} ->
-        Logger.warn "Failed to transform date: #{IO.inspect(date_string)} #{IO.inspect(reason)}"
-        params
+    category = Repo.get_by(user_categories(user), name: category_name)
+    if category do
+      %{changeset | changes: Map.put_new(changes, :category_id, category.id)}
+    else
+      %{changeset | errors: [{:category, {"unknown category: '" <> category_name <> "'", []}} | errors],
+                      valid?: false}
     end
   end
-  def transform_date(params), do: params
+  defp transform_category(changeset, _, _), do: changeset
+
+  defp transform_account(changeset, %{"account" => account_title}, user) do
+    %{changes: changes, errors: errors} = changeset
+
+    account = Repo.get_by(user_accounts(user), title: account_title)
+    if account do
+      errors = Keyword.delete(errors, :account_id)
+      %{changeset | changes: Map.put_new(changes, :account_id, account.id),
+                    errors: errors,
+                    valid?: length(errors) == 0}
+    else
+      %{changeset | errors: [{:account, {"unknown account: '" <> account_title <> "'", []}} | errors],
+                      valid?: false}
+    end
+  end
+  defp transform_account(changeset, _, _), do: changeset
 end
 

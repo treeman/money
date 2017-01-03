@@ -43,7 +43,7 @@ defmodule Money.TransactionControllerTest do
   test "parses category name", %{conn: conn, user: user} do
     account = insert(:account, user: user)
     category_group = insert(:category_group, user: user)
-    category = insert(:category, category_group: category_group)
+    category = insert(:category, category_group: category_group, name: "Cat 1")
 
     params = Map.merge(@valid_attrs, %{account_id: account.id, category: category.name})
 
@@ -56,6 +56,19 @@ defmodule Money.TransactionControllerTest do
   end
 
   @tag login_as: "max"
+  test "parses category name, error on not found", %{conn: conn, user: user} do
+    other_user = insert(:user, username: "alice")
+    other_group = insert(:category_group, user: other_user)
+    category = insert(:category, category_group: other_group, name: "Cat 1")
+
+    account = insert(:account, user: user)
+    params = Map.merge(@valid_attrs, %{account_id: account.id, category: category.name})
+
+    conn = post conn, transaction_path(conn, :create), transaction: params
+    assert json_response(conn, 422)["errors"] != %{}
+  end
+
+  @tag login_as: "max"
   test "parses a date string", %{conn: conn, user: user} do
     account = insert(:account, user: user)
     params = Map.merge(@valid_attrs, %{account_id: account.id, when: "2016-02-03"})
@@ -63,6 +76,36 @@ defmodule Money.TransactionControllerTest do
     conn = post conn, transaction_path(conn, :create), transaction: params
     json = json_response(conn, 201)
     assert json["data"]["when"] == "2016-02-03T00:00:00";
+  end
+
+  @tag login_as: "max"
+  test "parses a date string, renders error when invalid", %{conn: conn, user: user} do
+    account = insert(:account, user: user)
+    params = Map.merge(@valid_attrs, %{account_id: account.id, when: "20X6-2-03"})
+
+    conn = post conn, transaction_path(conn, :create), transaction: params
+    assert json_response(conn, 422)["errors"] != %{}
+  end
+
+  @tag login_as: "max"
+  test "parses account title", %{conn: conn, user: user} do
+    account = insert(:account, user: user, title: "Account Title")
+    params = Map.merge(@valid_attrs, %{account: account.title})
+
+    conn = post conn, transaction_path(conn, :create), transaction: params
+    json = json_response(conn, 201)
+    assert json["data"]["account_id"] == account.id
+  end
+
+  @tag login_as: "max"
+  test "parses account title, renders error when not found", %{conn: conn} do
+    other_user = insert(:user, username: "alice")
+    account = insert(:account, user: other_user, title: "Account Title")
+
+    params = Map.merge(@valid_attrs, %{account: account.title})
+
+    conn = post conn, transaction_path(conn, :create), transaction: params
+    assert json_response(conn, 422)["errors"] != %{}
   end
 
   @tag login_as: "max"
