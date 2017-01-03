@@ -20,16 +20,24 @@ if (transactionHeader) {
     alterTransactionHeader(transactionHeader);
 }
 
-/*
-var deleteTransactionsLink = document.querySelector('#delete-transactions');
+var deleteTransactionsLink = document.querySelector("#delete-transactions input[type='submit']");
 if (deleteTransactionsLink) {
-    var form = deleteTransactionsLink.parentNode;
-    deleteTransactionsLink.addEventListener('click', function(evt) {
+    alterDeleteTransactionsLink(deleteTransactionsLink);
+}
+
+function alterDeleteTransactionsLink(link) {
+    console.log("altering!");
+    var form = link.parentNode;
+    link.addEventListener('click', function(evt) {
         evt.preventDefault();
         if (window.confirm("Are you sure?")) {
+            var ids = collectCheckedTransactionIds();
+            var idsInput = form.querySelector('#transactions_ids');
+            idsInput.setAttribute("value", ids);
             var formData = new FormData(form);
             jsonReq(form.action, formData, 200, true, 'DELETE').then(function(response) {
-                updateAccountBalance(response.data.transaction_balance)
+                removeTransactionRows(ids);
+                updateAccountBalance(response.data.transaction_balance);
             }, function(error) {
                 console.error("Failed!", error);
                 setFlashError(error)
@@ -37,7 +45,6 @@ if (deleteTransactionsLink) {
         }
     });
 }
-*/
 
 // Lists for awesomplete
 var payeeDatalist = document.getElementById('transaction_payee-list');
@@ -160,16 +167,42 @@ function updateTransactionCBState(row, checked) {
 }
 
 function collectCheckedTransactions() {
-    var transactionRows = document.querySelectorAll('#transactions .grid-body .grid-row');
+    var rows = document.querySelectorAll('#transactions .grid-body .grid-row');
     var arr = [];
-    for (var i = 0; i < transactionRows.length; ++i) {
-        var row = transactionRows[i];
+    for (var i = 0; i < rows.length; ++i) {
+        var row = rows[i];
         var cb = row.querySelector('.grid-transaction-cb input');
         if (cb.checked) {
             arr.push(row);
         }
     }
     return arr;
+}
+
+function collectCheckedTransactionIds() {
+    var transactions = collectCheckedTransactions();
+    var ids = [];
+    for (var i = 0; i < transactions.length; ++i) {
+        var row = transactions[i];
+        var id = row.querySelector('.grid-transaction-id');
+        ids.push(id.innerHTML);
+    }
+    return ids;
+}
+
+function removeTransactionRows(ids) {
+    var setIds = new Set();
+    for (id of ids) {
+        setIds.add(id);
+    }
+    var rows = document.querySelectorAll('#transactions .grid-body .grid-row');
+    for (var i = 0; i < rows.length; ++i) {
+        var row = rows[i];
+        var id = row.querySelector('.grid-transaction-id').innerHTML;
+        if (setIds.has(id)) {
+            row.remove();
+        }
+    }
 }
 
 function beginEditTransactionRow(row) {

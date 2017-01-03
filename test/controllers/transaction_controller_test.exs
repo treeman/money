@@ -198,7 +198,7 @@ defmodule Money.TransactionControllerTest do
   end
 
   @tag login_as: "max"
-  test "deletes chosen resource", %{conn: conn, user: user} do
+  test "deletes transaction", %{conn: conn, user: user} do
     account = insert(:account, user: user)
     transaction = insert(:transaction, account: account)
 
@@ -207,6 +207,30 @@ defmodule Money.TransactionControllerTest do
     assert json["data"]["id"] == transaction.id
     assert json["data"]["transaction_balance"]
     refute Repo.get(Transaction, transaction.id)
+  end
+
+  @tag login_as: "max"
+  test "deletes several transactions", %{conn: conn, user: user} do
+    a1 = insert(:account, user: user)
+    t11 = insert(:transaction, account: a1)
+    t12 = insert(:transaction, account: a1)
+
+    a2 = insert(:account, user: user)
+    t21 = insert(:transaction, account: a2)
+    t22 = insert(:transaction, account: a2)
+
+    conn = delete conn, transaction_path(conn, :delete_transactions),
+                  transactions: %{ids: "#{t11.id},#{t21.id}"}
+
+    json = json_response(conn, 200)
+    assert json["data"]["ids"] == [t11.id, t21.id]
+    refute Repo.get(Transaction, t11.id)
+    assert Repo.get(Transaction, t12.id)
+    refute Repo.get(Transaction, t21.id)
+    assert Repo.get(Transaction, t22.id)
+    balance = json["data"]["transaction_balance"]
+    assert Map.fetch!(balance, Integer.to_string(t12.id)) == Decimal.to_string(t12.amount)
+    assert Map.fetch!(balance, Integer.to_string(t22.id)) == Decimal.to_string(t22.amount)
   end
 
   @tag login_as: "max"
@@ -224,6 +248,10 @@ defmodule Money.TransactionControllerTest do
     assert_error_sent :not_found, fn ->
       delete(conn, transaction_path(conn, :delete, transaction))
     end
+
+    delete(conn, transaction_path(conn, :delete_transactions),
+           transactions: %{ids: "#{transaction.id}"})
+    assert Repo.get(Transaction, transaction.id)
   end
 end
 

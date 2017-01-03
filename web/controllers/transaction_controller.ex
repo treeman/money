@@ -69,14 +69,35 @@ defmodule Money.TransactionController do
     transaction_balance = transaction_balance(account_id: transaction.account_id)
 
     conn
-    |> render(TransactionView, "delete.json", %{id: transaction.id,
-                                                transaction_balance: transaction_balance})
+    |> render(TransactionView, "delete.json",
+              %{id: transaction.id,
+                transaction_balance: transaction_balance})
   end
 
-  def delete(conn, %{"ids" => ids} = params, user) do
-    IO.puts("DELETING")
-    IO.inspect(params)
+  def delete_transactions(conn, %{"transactions" => %{"ids" => ids}}, user) do
+    ids = split_ids(ids)
+
+    transactions = from t in user_transactions(user),
+                   where: t.id in ^MapSet.to_list(ids)
+
+    {_, deleted} = Repo.delete_all(transactions, returning: [:account_id, :id])
+
+    account_ids = Enum.map(deleted, fn t -> t.account_id end)
+    transaction_balance = transaction_balance(account_ids: account_ids)
+
     conn
+    |> render(TransactionView, "delete.json",
+              %{ids: ids,
+               transaction_balance: transaction_balance})
+  end
+
+  defp split_ids(ids) do
+    ids
+    |> String.split(",")
+    |> Enum.reduce(%MapSet{}, fn(id, acc) ->
+      {id, ""} = Integer.parse(id)
+      MapSet.put(acc, id)
+    end)
   end
 
   defp transform_category(changeset, %{"category" => category_name}, user) do

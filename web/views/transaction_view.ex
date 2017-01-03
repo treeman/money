@@ -40,6 +40,12 @@ defmodule Money.TransactionView do
     %{data: %{id: id, transaction_balance: transaction_balance}}
   end
 
+  def render("delete.json", %{ids: ids, transaction_balance: transaction_balance}) do
+    transaction_balance = map_convert_keys transaction_balance
+
+    %{data: %{ids: ids, transaction_balance: transaction_balance}}
+  end
+
   def map_convert_keys(map) do
     map
     |> Enum.reduce(%{}, fn {id, v}, acc when is_integer(id) ->

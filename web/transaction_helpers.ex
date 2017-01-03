@@ -5,18 +5,33 @@ defmodule Money.TransactionHelpers do
   alias Money.Transaction
   alias Money.Repo
 
-  def rolling_balance(account: account) do
-    from t in Transaction,
-    select: %{transaction: t,
-              balance: fragment("SUM(amount) OVER(ORDER BY ?, ?)",
-                                t.when, t.id)},
-    preload: :category,
-    order_by: [desc: t.when, desc: t.id],
-    where: t.account_id == ^account.id
+  def rolling_balance(user: user) do
+    from(t in user_transactions(user))
+    |> rolling_balance
   end
 
-  def rolling_balance(user: user) do
-    from t in user_transactions(user),
+  def rolling_balance(account: account) do
+    from(t in Transaction, where: t.account_id == ^account.id)
+    |> rolling_balance
+  end
+
+  def rolling_balance(account_id: account_id) do
+    from(t in Transaction, where: t.account_id == ^account_id)
+    |> rolling_balance
+  end
+
+  def rolling_balance(account_ids: account_ids) do
+    from(t in Transaction, where: t.account_id in ^account_ids)
+    |> rolling_balance
+  end
+
+  def rolling_balance(transaction: transaction) do
+    from(t in Transaction, where: t.id == ^transaction.id)
+    |> rolling_balance
+  end
+
+  def rolling_balance(query) do
+    from t in query,
     order_by: [desc: t.when, desc: t.id],
     preload: :category,
     select: %{transaction: t,
@@ -24,19 +39,8 @@ defmodule Money.TransactionHelpers do
                                 t.account_id, t.when, t.id)}
   end
 
-  def rolling_balance(transaction: transaction) do
-    transaction = Money.Repo.preload(transaction, :account)
-    # Could not figure out a way to construct the query, this was easier...
-    transactions = Repo.all(rolling_balance(account: transaction.account))
-    %{balance: balance} = Enum.find(transactions, fn x -> x.transaction.id == transaction.id end)
-    balance
-  end
-
-  def transaction_balance(account_id: account_id) do
-    transaction_balance(account: Repo.get(Account, account_id))
-  end
-  def transaction_balance(account: account) do
-    balance = Repo.all(rolling_balance(account: account))
+  def transaction_balance(params) do
+    balance = Repo.all(rolling_balance(params))
     Enum.reduce(balance, %{}, fn %{balance: balance, transaction: t}, acc ->
       Map.put_new(acc, t.id, balance)
     end)

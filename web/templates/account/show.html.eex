@@ -11,9 +11,12 @@
       <li class="dropdown"><%= link "Edit", to: "#" %>
         <div class="edit-dropdown-content">
           <ol>
-            <li><%= link "Delete", to: transaction_path(@conn, :delete_transactions),
-                    method: :delete, data: [confirm: "Are you sure?"],
-                    id: "delete-transactions" %></li>
+            <li>
+              <%= form_for @conn, transaction_path(@conn, :delete_transactions), [as: :transactions, id: "delete-transactions"], fn f -> %>
+                <%= hidden_input f, :ids %>
+                <%= submit "Delete" %>
+              <% end %>
+            </li>
           </ol>
         </div>
       </li>
