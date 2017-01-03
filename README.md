@@ -27,10 +27,7 @@ C-t     Jump back
     outflow/inflow instead of amount
     'cleared'                           DONE
 1. Clicking on new account should insert a row into the table at the top instead
-    + Cancel when double clicking and start editing something else
     + Show explicit cancel button
-    + Finish form creation refactoring
-    + Submit a new transaction should close or reorder the form row
 1. Search/filter/sort
 1. Edit a transaction should reveal:
     clear/unclear
