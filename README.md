@@ -8,7 +8,9 @@ C-]     Jump to definition
 C-t     Jump back
 
 # TODO
-1. Categories
+1. Make delete work with checked transactions
+1. Give budget view a little love
+    1. Should be able to add categories and groups
 1. Finish swedbank transaction importer
 1. Minor stuff for account view
 1. Cleanup budget view
@@ -26,17 +28,26 @@ C-t     Jump back
     (account)                           DONE
     outflow/inflow instead of amount
     'cleared'                           DONE
-1. Clicking on new account should insert a row into the table at the top instead
-    + Show explicit cancel button
+1. Show explicit cancel button during insert
+    * Option to insert and continue to insert another transaction
 1. Search/filter/sort
+1. Checkbox handling
+    + alter appearance to be selected
+    + ability to delete all selected
+    + ability to change category for all selected
+    + ability to clear/unclear all selected
 1. Edit a transaction should reveal:
-    clear/unclear
-    categorize as
-    move to account
-    delete
-1. Make the all account view add/edit transactions work as intended
-    + Rewrite origin/show account title !! Add transaction will get the account title rendered.
+    + clear/unclear
+    + categorize as
+    + move to account
+    + delete
 1. Arrows on category/payees
+1. Client side validation for inputs
+    + Account matches existing accounts, not null
+    + Date matches YYYY-MM-DD
+    + Payee not null
+    + Category matches existing categories, not null
+    + Amount not null
 
 ## Transactions
 1. No good error message if category isn't select (also it should be possible to create)

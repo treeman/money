@@ -73,6 +73,12 @@ defmodule Money.TransactionController do
                                                 transaction_balance: transaction_balance})
   end
 
+  def delete(conn, %{"ids" => ids} = params, user) do
+    IO.puts("DELETING")
+    IO.inspect(params)
+    conn
+  end
+
   defp transform_category(changeset, %{"category" => category_name}, user) do
     %{changes: changes, errors: errors} = changeset
 

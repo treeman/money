@@ -8,6 +8,18 @@
   <nav>
     <ol>
       <li><%= link "New transaction", to: "#", id: "new-transaction-link" %></li>
+      <li class="dropdown"><%= link "Edit", to: "#" %>
+        <div class="edit-dropdown-content">
+          <ol>
+            <li><%= link "Delete", to: transaction_path(@conn, :delete_transactions),
+                    method: :delete, data: [confirm: "Are you sure?"],
+                    id: "delete-transactions" %></li>
+          </ol>
+        </div>
+      </li>
+
+      <!---
+      <li><%= link "New transaction", to: "#", id: "new-transaction-link" %></li>
 
       <li class="dropdown"><%= link "Edit", to: "#" %>
         <div class="edit-dropdown-content">
@@ -31,6 +43,7 @@
         <li><%= link "Delete all transactions", to: account_path(@conn, :delete_transactions, @account),
         method: :delete, data: [confirm: "Are you sure?"] %></li>
       <% end %>
+      -->
     </ol>
   </nav>
 </div>

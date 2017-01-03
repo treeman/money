@@ -1,6 +1,7 @@
 /*
  * Constant changes.
  */
+
 var newForm = document.querySelector('form#new-transaction');
 var editForm = document.querySelector('form#edit-transaction');
 
@@ -8,12 +9,37 @@ var activeAccountId = document.querySelector('#active-account-id');
 if (activeAccountId) activeAccountId = activeAccountId.innerHTML;
 
 // Change edit and functionality for all transactions.
+// NOTE if performance issues arise, just cache all transaction rows.
 var transactionRows = document.querySelectorAll('#transactions .grid-body .grid-row');
 for (var i = 0; i < transactionRows.length; ++i) {
     alterTransactionRow(transactionRows[i]);
 }
 
-// Awesomplete util for payees.
+var transactionHeader = document.querySelector('#transactions .grid-header');
+if (transactionHeader) {
+    alterTransactionHeader(transactionHeader);
+}
+
+/*
+var deleteTransactionsLink = document.querySelector('#delete-transactions');
+if (deleteTransactionsLink) {
+    var form = deleteTransactionsLink.parentNode;
+    deleteTransactionsLink.addEventListener('click', function(evt) {
+        evt.preventDefault();
+        if (window.confirm("Are you sure?")) {
+            var formData = new FormData(form);
+            jsonReq(form.action, formData, 200, true, 'DELETE').then(function(response) {
+                updateAccountBalance(response.data.transaction_balance)
+            }, function(error) {
+                console.error("Failed!", error);
+                setFlashError(error)
+            });
+        }
+    });
+}
+*/
+
+// Lists for awesomplete
 var payeeDatalist = document.getElementById('transaction_payee-list');
 var categoryDatalist = document.getElementById('transaction_category-list');
 var accountDatalist = document.getElementById('transaction_accounts-list');
@@ -93,8 +119,23 @@ function submitNewTransaction(evt) {
     });
 }
 
+function alterTransactionHeader(header) {
+    var cb = header.querySelector('.grid-transaction-cb input');
+
+    cb.onclick = function(evt) {
+        var cbs = document.querySelectorAll('#transactions .grid-body .grid-row .grid-transaction-cb input');
+        for (var i = 0; i < cbs.length; ++i) {
+            var cb = cbs[i];
+            // Maybe hacky? :) Who cares...
+            cb.checked = !this.checked;
+            cb.click();
+        }
+    }
+}
+
 function alterTransactionRow(row) {
     addEditAction(row);
+    alterCBAction(row);
 }
 function addEditAction(row) {
     row.ondblclick = function(evt) {
@@ -102,6 +143,35 @@ function addEditAction(row) {
         beginEditTransactionRow(row);
     }
 }
+function alterCBAction(row) {
+    var cb = row.querySelector('.grid-transaction-cb input');
+    updateTransactionCBState(row, cb.checked);
+
+    cb.onclick = function(evt) {
+        updateTransactionCBState(row, this.checked);
+    }
+}
+function updateTransactionCBState(row, checked) {
+    if (checked) {
+        row.classList.add("checked");
+    } else {
+        row.classList.remove("checked");
+    }
+}
+
+function collectCheckedTransactions() {
+    var transactionRows = document.querySelectorAll('#transactions .grid-body .grid-row');
+    var arr = [];
+    for (var i = 0; i < transactionRows.length; ++i) {
+        var row = transactionRows[i];
+        var cb = row.querySelector('.grid-transaction-cb input');
+        if (cb.checked) {
+            arr.push(row);
+        }
+    }
+    return arr;
+}
+
 function beginEditTransactionRow(row) {
     cancelTransactionInEdit();
 

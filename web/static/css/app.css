@@ -240,6 +240,15 @@ html {
 
 .hidden { display: none; }
 
+.grid-row.transaction.in-edit input {
+    width: 100%;
+}
+
+.grid-row.transaction.checked {
+    /*background-color: tomato;*/
+    background-color: #90C3D4
+}
+
 /*
  * Budget view
  */

@@ -33,7 +33,6 @@ defmodule Money.Router do
     pipe_through [:browser, :authenticate_user]
 
     resources "/accounts", AccountController
-    #resources "/transactions", TransactionController, except: [:index]
     get "/budget", BudgetController, :index
     get "/budget/:year/:month", BudgetController, :show
 
@@ -48,6 +47,7 @@ defmodule Money.Router do
 
     delete "/accounts/:id/transactions", AccountController, :delete_transactions
 
+    delete "/transactions", TransactionController, :delete_transactions
     resources "/transactions", TransactionController, only: [:create, :update, :delete]
     resources "/categories", CategoryController, only: [:create, :update, :delete]
     resources "/categories_groups", CategoryGroupController, only: [:create, :update, :delete]
