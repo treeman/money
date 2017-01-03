@@ -25,7 +25,7 @@ defmodule Money.BudgetController do
     render(conn, "show.html", year: year, month: month, budget: budget)
   end
 
-  defp monthly_budget(_user, year, month) do
+  defp monthly_budget(user, year, month) do
     # Select transactions during a single month.
     last_day = :calendar.last_day_of_the_month(year, month)
     {:ok, start_date} = Ecto.DateTime.cast({{year, month, 1}, {0, 0, 0}})
@@ -33,7 +33,6 @@ defmodule Money.BudgetController do
 
     # Find the amount budgeted and sum of transactions for that category.
     # All categories must be there, non-existing transactions/budgets should be 0.
-    # TODO limit categories for a user.
     budgeted = Ecto.Adapters.SQL.query!(Money.Repo, """
     SELECT c.id, COALESCE(SUM(t.amount), 0), COALESCE(bc.budgeted, 0), c.name
     FROM categories AS c
@@ -43,8 +42,11 @@ defmodule Money.BudgetController do
     LEFT JOIN budgeted_categories AS bc
       ON c.id = bc.category_id
       AND bc.year = $3 AND bc.month = $4
+    INNER JOIN category_groups AS cg
+      ON c.category_group_id = cg.id
+      AND cg.user_id = $5
     GROUP BY c.id, bc.id
-    """, [start_date, end_date, year, month])
+    """, [start_date, end_date, year, month, user.id])
 
     # We only construct a budget for a category if the user updates it,
     # transform to a map to keep a record of the existing ones.
@@ -57,8 +59,7 @@ defmodule Money.BudgetController do
       })
     end
 
-    # TODO categories/budgets only for a single user.
-    groups = from g in CategoryGroup, preload: :categories
+    groups = from g in user_category_groups(user), preload: :categories
 
     budget = Enum.map Repo.all(groups), fn g ->
       # Simultaneously sum and generate budgeted categories.

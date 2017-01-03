@@ -111,7 +111,6 @@ defmodule Money.BudgetControllerTest do
     assert food_budget["Budgeted"] == 99
     assert food_budget["Balance"] == -23
 
-
     fun_budget = find_category(table, "Fun")
     assert fun_budget["Activity"] == -10003
     assert fun_budget["Budgeted"] == 60
@@ -135,6 +134,58 @@ defmodule Money.BudgetControllerTest do
 
   defp find_category(table, category) do
     Enum.find(table, fn %{"Category" => c} -> c == category end)
+  end
+
+  @tag login_as: "max"
+  test "filter activity against other users", %{conn: conn, user: owner} do
+    account = insert(:account, user: owner)
+
+    essentials = insert(:category_group, user: owner, name: "Essentials")
+    rent = insert(:category, category_group: essentials, name: "Rent")
+    food = insert(:category, category_group: essentials, name: "Food")
+
+    insert(:budgeted_category, category: rent, year: 2016, month: 7, budgeted: 9999)
+
+    {:ok, dt} = DateTime.cast("2016-07-02 00:01:00")
+    insert(:transaction, account: account, category: rent, amount: -3570, payee: "Mr.T", when: dt)
+
+    # Some random seeding for other user which may interfere
+    alice = insert(:user, username: "alice")
+    alice_account = insert(:account, user: alice)
+
+    alice_essentials = insert(:category_group, user: alice, name: "Essentials")
+    alice_rent = insert(:category, category_group: alice_essentials, name: "Rent")
+    alice_food = insert(:category, category_group: alice_essentials, name: "Food")
+
+    insert(:budgeted_category, category: alice_rent, year: 2016, month: 7, budgeted: 1337)
+
+    {:ok, dt} = DateTime.cast("2016-07-01 00:01:00")
+    insert(:transaction, account: alice_account, category: alice_rent, amount: -100, payee: "John Doe", when: dt)
+    {:ok, dt} = DateTime.cast("2016-07-08 00:01:00")
+    insert(:transaction, account: alice_account, category: alice_food, amount: -20000, payee: "John's Pizza", when: dt)
+
+
+    conn = get conn, budget_path(conn, :show, 2016, 7)
+    html = html_response(conn, 200)
+
+    table = parse_grid(html, ".grid")
+    IO.inspect(table)
+    assert length(table) == 3
+
+    essentials_budget = find_category(table, "Essentials")
+    assert essentials_budget["Activity"] == -3570
+    assert essentials_budget["Budgeted"] == 9999
+    assert essentials_budget["Balance"] == 6429
+
+    rent_budget = find_category(table, "Rent")
+    assert rent_budget["Activity"] == -3570
+    assert rent_budget["Budgeted"] == 9999
+    assert rent_budget["Balance"] == 6429
+
+    food_budget = find_category(table, "Food")
+    assert food_budget["Activity"] == 0
+    assert food_budget["Budgeted"] == 0
+    assert food_budget["Balance"] == 0
   end
 end
 
