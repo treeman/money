@@ -184,7 +184,7 @@ html {
 }
 .grid-body {
     width: 100%;
-    min-height: 30em;
+    height: 100%;
     overflow: auto;
     flex: 1;
 }
@@ -283,6 +283,7 @@ html {
     font-size: 1.8em;
     padding: 10px;
     color: white;
+    height: 100%;
 }
 
 
