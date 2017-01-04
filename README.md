@@ -27,7 +27,6 @@ C-t     Jump back
 1. Support create/update
 1. JS enabled budget view
     + Everything should already be editable, just click and change.
-    + Minimize a group and categories below
     + Checkbox support
 1. Show info on the right side
 1. The budget shouldn't automatically operate on all accounts but should be configurable
