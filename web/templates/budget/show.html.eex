@@ -41,10 +41,16 @@
         <% end %>
       <% end %>
     </div>
+
   </div>
 
   <div id="budget-info">
     Some Info
+  </div>
+
+  <div class="hidden">
+    <%= form_tag(transaction_path(@conn, :create), id: "new-transaction") %></form>
+    <%= form_tag("#", id: "edit-transaction") %></form>
   </div>
 </div>
 
