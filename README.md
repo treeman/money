@@ -9,8 +9,9 @@ C-t     Jump back
 
 # TODO
 1. Give budget view a little love
-    1. Should be able to add/remove categories and groups
+    Should be able to add/remove categories and groups
 1. Minor stuff for account view
+    Should be able to delete transactions
 
 ## Categories
 1. UI for:
