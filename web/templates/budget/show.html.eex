@@ -44,26 +44,39 @@
 
   </div>
 
+  <!---
+        <%= form_for @conn, category_path(@conn, :delete, -1), [as: :category, id: "delete-category"], fn f -> %>
+          <%= submit "Delete" %>
+        <% end %>
+  -->
+
   <div id="budget-info">
     <div class="category">
-      Category Name
-      <div class="edit-category">
-        Edit
-      </div>
+      <span class="name">Category Name</span>
+      <%#<a href="#" class="edit-category">Edit</a>%>
+      <span class="right">
+        <%#<a href="#" class="hide-category">Hide</a>%>
+        <%#<a href="#" class="delete-category">Delete</a>%>
+
+        <%= link "Delete", to: category_path(@conn, :delete, -1),
+          method: :delete, data: [confirm: "Are you sure?"], class: "delete-category" %>
+      </span>
     </div>
 
     <div class="money-info">
+      <!---
       <span class="money-row">
         Cash Left Over From June
         <span class="amount">0.00</span>
       </span>
+      -->
 
-      <span class="money-row">
+      <span class="money-row budgeted-this-month">
         Budgeted This Month
         <span class="amount">+3,000.00</span>
       </span>
 
-      <span class="money-row">
+      <span class="money-row spending">
         Spending
         <span class="amount">0.00</span>
       </span>

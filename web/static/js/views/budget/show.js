@@ -5,14 +5,13 @@ import * as view from "../view_helpers"
 export default class View extends MainView {
   loaded() {
     super.loaded();
-    console.log('loaded');
 
-    registerArrowCB();
+    initBudget();
+    initBudgetInfo();
   }
 
   unloaded() {
     super.unloaded();
-    console.log('loaded');
   }
 
   //handleKeyPress(e) {
@@ -26,12 +25,121 @@ export default class View extends MainView {
   //}
 }
 
-function registerArrowCB() {
-  var divs = document.querySelectorAll('.grid-budget-arrow');
-  for (var div of divs) {
-      div.addEventListener('click', toggleGroupExpand);
+function initBudget() {
+  var rows = document.querySelectorAll('#budget .grid-body .grid-row');
+  for (var i = 0; i < rows.length; ++i) {
+    initRow(rows[i]);
   }
-  //console.log(divs);
+}
+
+function initRow(row) {
+  if (row.classList.contains("budgeted-group")) {
+    initBudgetGroupRow(row);
+  } else {
+    initBudgetRow(row);
+  }
+}
+
+function initBudgetGroupRow(row) {
+  registerArrowEvent(row);
+}
+
+function initBudgetRow(row) {
+  initCB(row);
+}
+
+function initCB(row) {
+  var cb = row.querySelector('.grid-budget-cb input');
+
+  cb.onclick = function(evt) {
+    updateTransactionCBState(row, this.checked);
+  }
+}
+
+function initBudgetInfo() {
+  var edit = document.querySelector('#budget-info a.delete-category');
+  edit.onclick = function(e) {
+    console.log('click');
+  }
+
+  // FIXME not sure if we should have an edit or just a delete?
+  // Delete is probably better.
+  /*
+  var edit = document.querySelector('#budget-info a.edit-category');
+  console.log(edit);
+  edit.onclick = function(e) {
+    console.log('click');
+  }
+  */
+}
+
+function updateTransactionCBState(row, checked) {
+  if (checked) {
+    row.classList.add("checked");
+  } else {
+    row.classList.remove("checked");
+  }
+  updateBudgetInfo();
+}
+
+function updateBudgetInfo() {
+  var checkedRows = collectCheckedCategories();
+  if (checkedRows.length > 1) {
+    showMultipleBudgetInfo(checkedRows);
+  } else if (checkedRows.length == 1) {
+    showSingleBudgetInfo(checkedRows[0]);
+  } else {
+    showDefaultBudgetInfo();
+  }
+}
+
+function showMultipleBudgetInfo(rows) {
+  console.log('Show combined info');
+  console.log(rows);
+}
+
+function showSingleBudgetInfo(row) {
+  console.log('Show info for a single category');
+  console.log(row);
+
+  var title = row.querySelector('.grid-budget-category').innerHTML;
+  var budgeted = row.querySelector('.grid-budget-budgeted').innerHTML;
+  var activity = row.querySelector('.grid-budget-activity').innerHTML;
+  var balance = row.querySelector('.grid-budget-balance').innerHTML;
+
+  var budgetInfo = document.querySelector('#budget-info');
+  var titleDiv = budgetInfo.querySelector('.category .name');
+  titleDiv.innerHTML = title;
+  var budgetedDiv = budgetInfo.querySelector('.money-row.budgeted-this-month .amount');
+  budgetedDiv.innerHTML = budgeted;
+  var spendingDiv = budgetInfo.querySelector('.money-row.spending .amount');
+  spendingDiv.innerHTML = activity;
+  var availableDiv = budgetInfo.querySelector('.available-money .amount');
+  availableDiv.innerHTML = balance;
+}
+
+function showDefaultBudgetInfo() {
+  console.log('Show default info');
+}
+
+
+function collectCheckedCategories() {
+  var rows = document.querySelectorAll('#budget .grid-body .grid-row.budgeted-category');
+  var res = [];
+  for (var i = 0; i < rows.length; ++i) {
+    var row = rows[i];
+    var cb = row.querySelector('.grid-budget-cb input');
+    if (cb.checked) {
+      res.push(row);
+    }
+  }
+  return res;
+}
+
+
+function registerArrowEvent(row) {
+  var div = row.querySelector('.grid-budget-arrow');
+  div.addEventListener('click', toggleGroupExpand);
 }
 
 function toggleGroupExpand(e) {

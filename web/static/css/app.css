@@ -272,6 +272,10 @@ html {
     cursor: pointer;
 }
 
+.grid-row.budgeted-category.checked {
+    background-color: #90C3D4;
+}
+
 #main-budget {
     overflow: auto;
     display: flex;
@@ -289,15 +293,50 @@ html {
     height: 100%;
 }
 
+#budget-info form {
+    margin: 0;
+    padding: 0;
+}
+
+
+/*
+form#delete-category {
+    margin: 0;
+}
+#delete-category input {
+    background: none!important;
+    color: inherit;
+    border: none;
+    font: inherit;
+    padding: 0;
+    margin: 0;
+}
+#delete-category input:hover {
+    text-decoration: underline;
+}
+*/
+
 #budget-info .category {
     font-size: 1.8em;
     border-bottom: 1px solid #dee3e8;
 }
 
+#budget-info .category .right {
+    float: right;
+    font-size: 0.6em;
+}
+#budget-info .category .right a {
+    color: white;
+}
+/*
 #budget-info .category .edit-category {
     float: right;
     font-size: 0.8em;
 }
+a.edit-category {
+    color: white;
+}
+*/
 
 #budget-info .money-info {
     border-bottom: 1px solid #dee3e8;

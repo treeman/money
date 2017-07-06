@@ -2,6 +2,7 @@ import MainView from '../main';
 import {get, jsonReq} from "../request_helpers"
 import * as view from "../view_helpers"
 
+// FIXME refactor the whole file...
 // Globals during refactoring...
 // Where to cache these?
 var newForm;
@@ -16,6 +17,7 @@ export default class View extends MainView {
   loaded() {
     super.loaded();
 
+    // FIXME move out functionality to functions
     newForm = document.querySelector('form#new-transaction');
     editForm = document.querySelector('form#edit-transaction');
 
@@ -73,15 +75,15 @@ export default class View extends MainView {
 
 function collectCheckedTransactions() {
   var rows = document.querySelectorAll('#transactions .grid-body .grid-row');
-  var arr = [];
+  var res = [];
   for (var i = 0; i < rows.length; ++i) {
     var row = rows[i];
     var cb = row.querySelector('.grid-transaction-cb input');
     if (cb.checked) {
-      arr.push(row);
+      res.push(row);
     }
   }
-  return arr;
+  return res;
 }
 
 function collectCheckedTransactionIds() {

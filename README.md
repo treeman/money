@@ -24,7 +24,7 @@ C-t     Jump back
 ## Budget view
 1. Should support adding/removing categories/groups
 1. Support create/update
-1. Alter budgeted amount
+1. UI: Alter budgeted amount
 1. JS enabled budget view
     + Everything should already be editable, just click and change.
     + Checkbox support
@@ -35,6 +35,7 @@ C-t     Jump back
 1. Ability to hide certain categories
     Hidden setting should be remembered for new months
     How to view all categories?
+1. Balance should be +/- sensitive
 
 ## Account view
 1. Add new fields for a transaction:
@@ -59,6 +60,7 @@ C-t     Jump back
     + Payee not null
     + Category matches existing categories, not null
     + Amount not null
+1. Make sure deleting transactions work
 
 ## Transactions
 1. Store payees and info about them. Last Category and amount and others?
