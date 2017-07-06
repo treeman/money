@@ -45,7 +45,60 @@
   </div>
 
   <div id="budget-info">
-    Some Info
+    <div class="category">
+      Category Name
+      <div class="edit-category">
+        Edit
+      </div>
+    </div>
+
+    <div class="money-info">
+      <span class="money-row">
+        Cash Left Over From June
+        <span class="amount">0.00</span>
+      </span>
+
+      <span class="money-row">
+        Budgeted This Month
+        <span class="amount">+3,000.00</span>
+      </span>
+
+      <span class="money-row">
+        Spending
+        <span class="amount">0.00</span>
+      </span>
+    </div>
+
+    <div class="available-money">
+      Available
+      <span class="amount">3000.00</span>
+    </div>
+
+    <!---
+    <div class="upcoming">
+      <span class="money-row">
+        1 Upcoming Transaction
+        <span class="amount">0.00</span>
+      </span>
+
+      <span class="money-row">
+        Available After Upcoming
+        <span class="amount">3000.00</span>
+      </span>
+    </div>
+    -->
+
+    <div class="quick-budget">
+      <div class="title">
+        Quick budget
+      </div>
+      <ul>
+        <li><a href="#">Budgeted Last Month: 0</a></li>
+        <li><a href="#">Spent Last Month: 0</a></li>
+        <li><a href="#">Average Budgeted: 0</a></li>
+        <li><a href="#">Average Spent: 0</a></li>
+      </ul>
+    </div>
   </div>
 
   <div class="hidden">

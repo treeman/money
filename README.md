@@ -9,15 +9,14 @@ C-t     Jump back
 
 # TODO
 1. Give budget view a little love
-    1. Should be able to add categories and groups
-1. Finish swedbank transaction importer
+    1. Should be able to add/remove categories and groups
 1. Minor stuff for account view
-1. Cleanup budget view
 
 ## Categories
 1. UI for:
     1. Need to be able to create a category and groups
     1. Need to be able to delete/rename a category and groups
+1. Should be able to create categories (and groups?) from the account view when adding transactions
 
 ## Import text
 * In the future import using the api of banks, now just make a simple parser...
@@ -25,6 +24,7 @@ C-t     Jump back
 ## Budget view
 1. Should support adding/removing categories/groups
 1. Support create/update
+1. Alter budgeted amount
 1. JS enabled budget view
     + Everything should already be editable, just click and change.
     + Checkbox support
@@ -32,6 +32,9 @@ C-t     Jump back
 1. The budget shouldn't automatically operate on all accounts but should be configurable
     Should be able to choose which categories/groups/accounts it's specific to
     Should be able to split the amount between budgets
+1. Ability to hide certain categories
+    Hidden setting should be remembered for new months
+    How to view all categories?
 
 ## Account view
 1. Add new fields for a transaction:

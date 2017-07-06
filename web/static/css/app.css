@@ -247,7 +247,11 @@ html {
 
 .grid-row.transaction.checked {
     /*background-color: tomato;*/
-    background-color: #90C3D4
+    background-color: #90C3D4;
+}
+
+#transactions {
+    height: 100%;
 }
 
 /*
@@ -280,10 +284,50 @@ html {
     background-color: #7887AB;
     overflow: auto;
     flex: 1;
-    font-size: 1.8em;
     padding: 10px;
     color: white;
     height: 100%;
+}
+
+#budget-info .category {
+    font-size: 1.8em;
+    border-bottom: 1px solid #dee3e8;
+}
+
+#budget-info .category .edit-category {
+    float: right;
+    font-size: 0.8em;
+}
+
+#budget-info .money-info {
+    border-bottom: 1px solid #dee3e8;
+    display: grid;
+}
+#budget-info .money-row {
+}
+#budget-info .money-row .amount,
+#budget-info .available-money .amount {
+    float: right;
+}
+
+#budget-info .upcoming {
+    /*background-color: tomato;*/
+    padding: 0.4em;
+}
+
+#budget-info .quick-budget {
+    margin-top: 0.8em;
+}
+#budget-info .quick-budget .title {
+    font-size: 1.6em;
+}
+#budget-info .quick-budget ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+#budget-info .quick-budget li a {
+    color: white;
 }
 
 
