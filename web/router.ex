@@ -48,9 +48,10 @@ defmodule Money.Router do
     delete "/accounts/:id/transactions", AccountController, :delete_transactions
 
     delete "/transactions", TransactionController, :delete_transactions
+    delete "/categories", CategoryController, :delete_categories
     resources "/transactions", TransactionController, only: [:create, :update, :delete]
     resources "/categories", CategoryController, only: [:create, :update, :delete]
-    resources "/categories_groups", CategoryGroupController, only: [:create, :update, :delete]
+    resources "/category_groups", CategoryGroupController, only: [:create, :update, :delete]
     resources "/budgeted_categories", BudgetedCategoryController, only: [:create, :update, :delete]
   end
 end

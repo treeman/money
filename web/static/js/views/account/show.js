@@ -156,12 +156,12 @@ function submitNewTransaction(evt) {
     var html = response.data.html_row;
     if (html) {
       // Create an element from the returned string.
-      var newTransaction = document.createElement("div");
-      newTransaction.innerHTML = html;
-      newTransaction = newTransaction.firstChild;
+      var row = document.createElement("div");
+      row.innerHTML = html;
+      row = row.firstChild;
 
-      insertTransaction(newTransaction);
-      alterTransactionRow(newTransaction);
+      insertTransaction(row);
+      alterTransactionRow(row);
     }
     updateAccountBalance(response.data.transaction_balance)
 

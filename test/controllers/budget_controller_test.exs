@@ -142,7 +142,7 @@ defmodule Money.BudgetControllerTest do
 
     essentials = insert(:category_group, user: owner, name: "Essentials")
     rent = insert(:category, category_group: essentials, name: "Rent")
-    food = insert(:category, category_group: essentials, name: "Food")
+    _food = insert(:category, category_group: essentials, name: "Food")
 
     insert(:budgeted_category, category: rent, year: 2016, month: 7, budgeted: 9999)
 

@@ -22,7 +22,7 @@ defmodule Money.Transaction do
     |> validate_required(@required_fields)
   end
 
-  defp transform_date(changeset, %{"when" => date_string} = params) when is_binary(date_string) do
+  defp transform_date(changeset, %{"when" => date_string}) when is_binary(date_string) do
     %{changes: changes, errors: errors} = changeset
     errors = Keyword.delete(errors, :when)
 
@@ -32,7 +32,7 @@ defmodule Money.Transaction do
         %{changeset | changes: Map.put_new(changes, :when, dt),
                       errors: errors,
                       valid?: length(errors) == 0}
-      {:error, reason} ->
+      {:error, _} ->
         %{changeset | errors: [{:when, {"does not match YYYY-MM-DD", []}} | errors],
                       valid?: false}
     end

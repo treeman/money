@@ -40,7 +40,8 @@ defmodule Money.Mixfile do
      {:cowboy, "~> 1.0"},
      {:comeonin, "~> 2.0"},
      {:floki, "~> 0.9.0"},
-     {:ex_machina, "~> 1.0.2"}]
+     {:ex_machina, "~> 1.0.2"},
+     {:poison, "~> 2.0"}]
   end
 
   # Aliases are shortcuts or tasks specific to the current project.

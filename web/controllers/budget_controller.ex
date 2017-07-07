@@ -3,7 +3,6 @@ defmodule Money.BudgetController do
   alias Money.Router.Helpers
   alias Money.BudgetedCategory
   alias Money.BudgetedCategoryGroup
-  alias Money.CategoryGroup
 
   def action(conn, _) do
     apply(__MODULE__, action_name(conn),

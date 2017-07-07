@@ -8,6 +8,8 @@ C-]     Jump to definition
 C-t     Jump back
 
 # TODO
+1. Mass delete of categories/groups
+    Start in category controller, mostly on Elixir side, add tests
 1. Give budget view a little love
     Should be able to add/remove categories and groups
 1. Minor stuff for account view

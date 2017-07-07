@@ -82,6 +82,22 @@ defmodule Money.CategoryControllerTest do
   end
 
   @tag login_as: "max"
+  test "deletes several categories", %{conn: conn, user: user} do
+    g1 = insert(:category_group, user: user)
+    c11 = insert(:category, category_group: g1)
+    c12 = insert(:category, category_group: g1)
+
+    g2 = insert(:category_group, user: user)
+    c21 = insert(:category, category_group: g2)
+    c22 = insert(:category, category_group: g2)
+
+    conn = delete conn, category_path(conn, :delete_categories),
+                  categories: %{ids: "#{c11.id},#{c21.id}"}
+    json = json_response(conn, 200)
+    IO.puts(json)
+  end
+
+  @tag login_as: "max"
   test "authorizes actions against access by other users", %{conn: conn, user: owner} do
     group = insert(:category_group, user: owner)
     category = insert(:category, category_group: group)

@@ -46,4 +46,19 @@ defmodule Money.CategoryController do
 
     send_resp(conn, :no_content, "")
   end
+
+  def delete_categories(conn, %{"data" => %{"groups" => groups, "categories" => categories}}, user) do
+    groups = Poison.decode!(groups)
+    categories = Poison.decode!(categories)
+
+    # FIXME delete categories here
+
+    send_resp(conn, :no_content, "")
+  end
+  #def delete_categories(conn, params, user) do
+    #IO.puts("params");
+    #IO.inspect(params)
+    #send_resp(conn, :no_content, "")
+  #end
 end
+

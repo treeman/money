@@ -1,7 +1,6 @@
 defmodule Money.TransactionHelpers do
   import Ecto.Query
   import Money.UserHelpers
-  alias Money.Account
   alias Money.Transaction
   alias Money.Repo
 

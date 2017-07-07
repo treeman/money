@@ -219,6 +219,7 @@ html {
     list-style-type: none;
     padding: 0;
     margin: 0;
+    /*width: 100%;*/
 }
 
 #budget-header nav ol li,
@@ -284,6 +285,12 @@ html {
 #budget {
     flex: 3;
 }
+
+#create-category-group {
+    padding: 0;
+    margin: 0;
+}
+
 #budget-info {
     background-color: #7887AB;
     overflow: auto;

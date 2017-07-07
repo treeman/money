@@ -1,0 +1,9 @@
+<div class="grid-row budgeted-group">
+  <div class="grid-cell grid-budget-cb"><input type="checkbox"></div>
+  <div class="grid-budget-arrow">▼</div>
+  <div class="grid-cell grid-budget-category"><%= @group.name %></div>
+  <div class="grid-cell grid-budget-budgeted"><%= @group.budgeted %></div>
+  <div class="grid-cell grid-budget-activity"><%= @group.activity %></div>
+  <div class="grid-cell grid-budget-balance"><%= Decimal.add(@group.budgeted, @group.activity) %></div>
+</div>
+

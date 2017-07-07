@@ -20,10 +20,14 @@ defmodule Money.CategoryGroupControllerTest do
 
   @tag login_as: "max"
   test "creates and renders resource when data is valid", %{conn: conn, user: user} do
-    attrs = Dict.merge(%{user_id: user.id}, @valid_attrs)
-    conn = post conn, category_group_path(conn, :create), category_group: attrs
-    assert json_response(conn, 201)["data"]["id"]
-    assert Repo.get_by(CategoryGroup, attrs)
+    #attrs = Dict.merge(%{user_id: user.id}, @valid_attrs)
+    conn = post conn, category_group_path(conn, :create), category_group: @valid_attrs
+    json = json_response(conn, 201)
+    assert json["data"]["id"]
+    assert json["data"]["html_row"]
+    group = Repo.get_by(CategoryGroup, @valid_attrs)
+    assert group
+    assert group.user_id == user.id
   end
 
   @tag login_as: "max"

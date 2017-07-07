@@ -10,6 +10,17 @@ defmodule Money.CategoryGroupView do
   end
 
   def render("category_group.json", %{category_group: category_group}) do
-    %{id: category_group.id}
+    # FIXME this is a bit strange: we're creating the html for a budgeted
+    # category group inside the category group view. Done here for simplicity...
+    html_row = render_to_string Money.BudgetedCategoryGroupView,
+                                    "row.html",
+                                    group: %Money.BudgetedCategoryGroup{
+                                      category_group_id: category_group.id,
+                                      name: category_group.name,
+                                    }
+
+    %{id: category_group.id,
+      html_row: html_row}
   end
 end
+

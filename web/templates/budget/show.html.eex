@@ -1,17 +1,30 @@
-<%= "year: #{@year} month: #{@month}" %>
 
-<div id="budget-header">
-  <nav>
-    <ol>
-      <li><%= link "Add category grop", to: "#" %></li>
-      <li><%= link "Undo", to: "#" %></li>
-      <li><%= link "Redo", to: "#" %></li>
-    </ol>
-  </nav>
-</div>
 
 <div id="main-budget">
+
   <div id="budget" class="grid">
+    <div id="budget-header">
+      <%# Display prettier %>
+      <%= "year: #{@year} month: #{@month}" %>
+      <nav>
+        <ol>
+          <li><%= link "Add category group", to: "#" %></li>
+          <li><%= link "Undo", to: "#" %></li>
+          <li><%= link "Redo", to: "#" %></li>
+          <li>
+            <%= form_for @conn, category_path(@conn, :delete_categories), [as: :data, id: "delete-selected"], fn f -> %>
+              <%= submit "Delete" %>
+            <% end %>
+          </li>
+        </ol>
+      </nav>
+    </div>
+
+    <%= form_for @conn, category_group_path(@conn, :create), [as: :category_group, id: "create-category-group"], fn f -> %>
+      <%= text_input f, :name, placeholder: "Category Group" %>
+      <%= submit "Add" %>
+    <% end %>
+
     <div class="grid-header">
       <div class="grid-header-cell grid-budget-cb"><input type="checkbox"></div>
       <div class="grid-header-cell grid-budget-category">Category</div>
@@ -22,22 +35,13 @@
 
     <div class="grid-body">
       <%= for group <- @budget do %>
-        <div class="grid-row budgeted-group">
-          <div class="grid-cell grid-budget-cb"><input type="checkbox"></div>
-          <div class="grid-budget-arrow">▼</div>
-          <div class="grid-cell grid-budget-category"><%= group.name %></div>
-          <div class="grid-cell grid-budget-budgeted"><%= group.budgeted %></div>
-          <div class="grid-cell grid-budget-activity"><%= group.activity %></div>
-          <div class="grid-cell grid-budget-balance"><%= Decimal.add(group.budgeted, group.activity) %></div>
-        </div>
+        <%= render Money.BudgetedCategoryGroupView, "row.html",
+                                                    group: group,
+                                                    conn: @conn %>
         <%= for c <- group.budgeted_categories do %>
-          <div class="grid-row budgeted-category">
-            <div class="grid-cell grid-budget-cb"><input type="checkbox"></div>
-            <div class="grid-cell grid-budget-category"><%= c.category.name %></div>
-            <div class="grid-cell grid-budget-budgeted"><%= c.budgeted %></div>
-            <div class="grid-cell grid-budget-activity"><%= c.activity %></div>
-            <div class="grid-cell grid-budget-balance"><%= Decimal.add(c.budgeted, c.activity) %></div>
-          </div>
+          <%= render Money.BudgetedCategoryView, "row.html",
+                                                 c: c,
+                                                 conn: @conn %>
         <% end %>
       <% end %>
     </div>
@@ -45,7 +49,7 @@
   </div>
 
   <!---
-        <%= form_for @conn, category_path(@conn, :delete, -1), [as: :category, id: "delete-category"], fn f -> %>
+        <%= form_for @conn, category_path(@conn, :delete, -1), [as: :category, id: "delete-category"], fn _ -> %>
           <%= submit "Delete" %>
         <% end %>
   -->

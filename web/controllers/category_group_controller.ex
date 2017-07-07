@@ -8,8 +8,8 @@ defmodule Money.CategoryGroupController do
      [conn, conn.params, conn.assigns.current_user])
   end
 
-  def create(conn, %{"category_group" => category_group_params}, _user) do
-    changeset = CategoryGroup.changeset(%CategoryGroup{}, category_group_params)
+  def create(conn, %{"category_group" => category_group_params}, user) do
+    changeset = CategoryGroup.changeset(%CategoryGroup{user_id: user.id}, category_group_params)
 
     case Repo.insert(changeset) do
       {:ok, category_group} ->
