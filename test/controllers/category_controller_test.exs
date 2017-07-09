@@ -2,6 +2,8 @@ defmodule Money.CategoryControllerTest do
   use Money.ConnCase
 
   alias Money.Category
+  alias Money.CategoryGroup
+  alias Money.BudgetedCategory
   @valid_attrs %{name: "Rent"}
   @invalid_attrs %{name: nil}
 
@@ -10,6 +12,7 @@ defmodule Money.CategoryControllerTest do
       put(conn, category_path(conn, :update, "123", %{})),
       post(conn, category_path(conn, :create, %{})),
       delete(conn, category_path(conn, :delete, "123")),
+      delete(conn, category_path(conn, :delete_categories)),
     ], fn conn ->
       assert html_response(conn, 302)
       assert conn.halted
@@ -83,18 +86,46 @@ defmodule Money.CategoryControllerTest do
 
   @tag login_as: "max"
   test "deletes several categories", %{conn: conn, user: user} do
+    account = insert(:account, user: user)
+
     g1 = insert(:category_group, user: user)
-    c11 = insert(:category, category_group: g1)
-    c12 = insert(:category, category_group: g1)
 
     g2 = insert(:category_group, user: user)
     c21 = insert(:category, category_group: g2)
-    c22 = insert(:category, category_group: g2)
+
+    g3 = insert(:category_group, user: user)
+    c31 = insert(:category, category_group: g3)
+
+    g4 = insert(:category_group, user: user)
+    c41 = insert(:category, category_group: g4)
+    bc41 = insert(:budgeted_category, category: c41, year: 2017, month: 1)
+    bc42 = insert(:budgeted_category, category: c41, year: 2017, month: 2)
+
+    # Ok, we don't allow deleting a category when transactions are there.
+    # But we need to handle errors gracefully (changelist?)
+    #g4 = insert(:category_group, user: user)
+    #c41 = insert(:category, category_group: g4)
+    #t41 = insert(:transaction, account: account, category: c41)
 
     conn = delete conn, category_path(conn, :delete_categories),
-                  categories: %{ids: "#{c11.id},#{c21.id}"}
-    json = json_response(conn, 200)
-    IO.puts(json)
+                  data: %{groups: Poison.encode!([g1.name, g2.name, g4.name]),
+                          categories: Poison.encode!([c31.name])}
+    #json = json_response(conn, 200)
+    #IO.puts(json)
+
+    # Delete a group without categories
+    refute Repo.get(CategoryGroup, g1.id)
+    # Delete a group with categories but without transactions
+    refute Repo.get(CategoryGroup, g2.id)
+    refute Repo.get(Category, c21.id)
+    # Delete categories keeps the group
+    assert Repo.get(CategoryGroup, g3.id)
+    refute Repo.get(CategoryGroup, c31.id)
+    # Delete category should delete all budgeted_categories as well
+    refute Repo.get(CategoryGroup, g4.id)
+    refute Repo.get(Category, c41.id)
+    refute Repo.get(BudgetedCategory, bc41.id)
+    refute Repo.get(BudgetedCategory, bc42.id)
   end
 
   @tag login_as: "max"
@@ -112,5 +143,11 @@ defmodule Money.CategoryControllerTest do
     assert_error_sent :not_found, fn ->
       delete(conn, category_path(conn, :delete, category))
     end
+
+    delete(conn, category_path(conn, :delete_categories),
+           data: %{groups: Poison.encode!([group.name]),
+                   categories: Poison.encode!([category.name])})
+    assert Repo.get(CategoryGroup, group.id)
+    assert Repo.get(Category, category.id)
   end
 end

@@ -17,6 +17,7 @@ defmodule Money.TransactionControllerTest do
       put(conn, transaction_path(conn, :update, "123", %{})),
       post(conn, transaction_path(conn, :create, %{})),
       delete(conn, transaction_path(conn, :delete, "123")),
+      delete(conn, transaction_path(conn, :delete_transactions)),
     ], fn conn ->
       assert html_response(conn, 302)
       assert conn.halted

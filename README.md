@@ -9,9 +9,10 @@ C-t     Jump back
 
 # TODO
 1. Mass delete of categories/groups
-    Start in category controller, mostly on Elixir side, add tests
+    Need to update page to reflect changes, js
+    Need to handle errors when trying to delete a category with transactions
 1. Give budget view a little love
-    Should be able to add/remove categories and groups
+    Should be able to add categories
 1. Minor stuff for account view
     Should be able to delete transactions
 

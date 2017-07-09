@@ -5,7 +5,7 @@ defmodule Money.Category do
     field :name, :string
     belongs_to :category_group, Money.CategoryGroup
     has_many :transactions, Money.Transaction
-    has_many :budgeted_category, Money.BudgetedCategory
+    has_many :budgeted_category, Money.BudgetedCategory, on_delete: :delete_all
 
     timestamps()
   end

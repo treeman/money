@@ -49,16 +49,18 @@ defmodule Money.CategoryController do
 
   def delete_categories(conn, %{"data" => %{"groups" => groups, "categories" => categories}}, user) do
     groups = Poison.decode!(groups)
-    categories = Poison.decode!(categories)
+    groups = from g in user_category_groups(user),
+             where: g.name in ^groups
+    {_, deleted_groups} = Repo.delete_all(groups, returning: [:name])
+    deleted_groups = Enum.map(deleted_groups, fn g -> g.name end)
 
-    # FIXME delete categories here
+    categories = Poison.decode!(categories)
+    categories = from c in user_categories(user),
+                 where: c.name in ^categories
+    {_, deleted_categories} = Repo.delete_all(categories, returning: [:name])
+    deleted_categories = Enum.map(deleted_categories, fn c -> c.name end)
 
     send_resp(conn, :no_content, "")
   end
-  #def delete_categories(conn, params, user) do
-    #IO.puts("params");
-    #IO.inspect(params)
-    #send_resp(conn, :no_content, "")
-  #end
 end
 
