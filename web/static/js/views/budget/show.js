@@ -8,7 +8,6 @@ export default class View extends MainView {
 
     initNav();
     initBudget();
-    initBudgetInfo();
   }
 
   unloaded() {
@@ -38,12 +37,10 @@ function initNewCategoryGroup() {
 
 function initDelete() {
   var deleteForm = document.querySelector('form#delete-selected'); 
-  console.log(deleteForm);
   deleteForm.addEventListener('submit', submitDeleteSelected);
 }
 
 function submitDeleteSelected(e) {
-  console.log('submit');
   e.preventDefault();
   var formData = new FormData(e.target);
 
@@ -51,17 +48,28 @@ function submitDeleteSelected(e) {
   formData.set("data[groups]", JSON.stringify(checked.groups));
   formData.set("data[categories]", JSON.stringify(checked.categories));
 
-  // Display the key/value pairs
-  //for (var pair of formData.entries()) {
-    //console.log(pair[0]+ ' = ' + pair[1]); 
-  //}
-
-  jsonReq(e.target.action, formData, 201, true, 'DELETE').then(function(response) {
-    console.log(response.data);
+  jsonReq(e.target.action, formData, 200, true, 'DELETE').then(function(response) {
+    // Ignore the return value here, should always be the checked ones.
+    removeCheckedRows();
   }, function(error) {
     console.error("Failed!", error);
     view.setFlashError(error)
   });
+}
+
+function removeCheckedRows() {
+  var rows = document.querySelectorAll('#budget .grid-body .grid-row');
+  var deleteInGroup = false;
+  for (var i = 0; i < rows.length; ++i) {
+    var row = rows[i];
+
+    var checked = row.querySelector('.grid-budget-cb input').checked;
+    var isGroupRow = row.classList.contains("budgeted-group");
+    if (isGroupRow) deleteInGroup = checked;
+    if (checked || deleteInGroup) {
+      row.remove();
+    }
+  }
 }
 
 function collectCheckedNames() {
@@ -88,13 +96,8 @@ function collectCheckedNames() {
 function submitNewCategoryGroup(e) {
   e.preventDefault();
   var formData = new FormData(e.target);
-  console.log('submit new category group');
-  console.log(e);
-  console.log(e.target);
-  console.log(formData);
 
   jsonReq(e.target.action, formData, 201, true, 'POST').then(function(response) {
-    console.log(response.data);
     var html = response.data.html_row;
     if (html) {
       // Create an element from the returned string.
@@ -149,35 +152,37 @@ function initRow(row) {
 
 function initBudgetGroupRow(row) {
   registerArrowEvent(row);
+  initGroupCB(row);
+}
+
+function initGroupCB(row) {
+  var cb = row.querySelector('.grid-budget-cb input');
+
+  cb.onclick = function(e) {
+    propagateGroupSelect(row.nextElementSibling, cb.checked);
+    updateBudgetInfo();
+  }
+}
+
+function propagateGroupSelect(row, checked) {
+  if (row.classList.contains("budgeted-group")) return;
+  var cb = row.querySelector('.grid-budget-cb input');
+  cb.checked = checked;
+  updateTransactionCBState(row, checked);
+  propagateGroupSelect(row.nextElementSibling, checked);
 }
 
 function initBudgetRow(row) {
-  initCB(row);
+  initCategoryCB(row);
 }
 
-function initCB(row) {
+function initCategoryCB(row) {
   var cb = row.querySelector('.grid-budget-cb input');
 
-  cb.onclick = function(evt) {
+  cb.onclick = function(e) {
     updateTransactionCBState(row, this.checked);
+    updateBudgetInfo();
   }
-}
-
-function initBudgetInfo() {
-  var edit = document.querySelector('#budget-info a.delete-category');
-  edit.onclick = function(e) {
-    console.log('click');
-  }
-
-  // FIXME not sure if we should have an edit or just a delete?
-  // Delete is probably better.
-  /*
-  var edit = document.querySelector('#budget-info a.edit-category');
-  console.log(edit);
-  edit.onclick = function(e) {
-    console.log('click');
-  }
-  */
 }
 
 function updateTransactionCBState(row, checked) {
@@ -186,7 +191,6 @@ function updateTransactionCBState(row, checked) {
   } else {
     row.classList.remove("checked");
   }
-  updateBudgetInfo();
 }
 
 function updateBudgetInfo() {
@@ -206,9 +210,6 @@ function showMultipleBudgetInfo(rows) {
 }
 
 function showSingleBudgetInfo(row) {
-  console.log('Show info for a single category');
-  console.log(row);
-
   var title = row.querySelector('.grid-budget-category').innerHTML;
   var budgeted = row.querySelector('.grid-budget-budgeted').innerHTML;
   var activity = row.querySelector('.grid-budget-activity').innerHTML;

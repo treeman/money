@@ -15,6 +15,8 @@ C-t     Jump back
     Should be able to add categories
 1. Minor stuff for account view
     Should be able to delete transactions
+1. Cleanup unnecessary delete entry points
+1. Use poison decode for `delete_transactions` as well
 
 ## Categories
 1. UI for:

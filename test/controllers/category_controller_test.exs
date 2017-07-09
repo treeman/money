@@ -86,8 +86,6 @@ defmodule Money.CategoryControllerTest do
 
   @tag login_as: "max"
   test "deletes several categories", %{conn: conn, user: user} do
-    account = insert(:account, user: user)
-
     g1 = insert(:category_group, user: user)
 
     g2 = insert(:category_group, user: user)
@@ -103,6 +101,7 @@ defmodule Money.CategoryControllerTest do
 
     # Ok, we don't allow deleting a category when transactions are there.
     # But we need to handle errors gracefully (changelist?)
+    #account = insert(:account, user: user)
     #g4 = insert(:category_group, user: user)
     #c41 = insert(:category, category_group: g4)
     #t41 = insert(:transaction, account: account, category: c41)
@@ -110,8 +109,9 @@ defmodule Money.CategoryControllerTest do
     conn = delete conn, category_path(conn, :delete_categories),
                   data: %{groups: Poison.encode!([g1.name, g2.name, g4.name]),
                           categories: Poison.encode!([c31.name])}
-    #json = json_response(conn, 200)
-    #IO.puts(json)
+    json = json_response(conn, 200)
+    assert json["data"]["groups"] == [g1.name, g2.name, g4.name]
+    assert json["data"]["categories"] == [c31.name]
 
     # Delete a group without categories
     refute Repo.get(CategoryGroup, g1.id)

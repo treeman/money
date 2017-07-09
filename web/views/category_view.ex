@@ -12,4 +12,8 @@ defmodule Money.CategoryView do
   def render("category.json", %{category: category}) do
     %{id: category.id}
   end
+
+  def render("delete.json", %{groups: groups, categories: categories}) do
+    %{data: %{groups: groups, categories: categories}}
+  end
 end

@@ -60,7 +60,10 @@ defmodule Money.CategoryController do
     {_, deleted_categories} = Repo.delete_all(categories, returning: [:name])
     deleted_categories = Enum.map(deleted_categories, fn c -> c.name end)
 
-    send_resp(conn, :no_content, "")
+    conn
+    |> render(Money.CategoryView, "delete.json",
+              %{groups: deleted_groups,
+                categories: deleted_categories})
   end
 end
 
