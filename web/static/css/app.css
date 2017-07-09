@@ -226,6 +226,10 @@ html {
 #transaction-header nav ol li {
     padding-right: 0.4em;
 }
+#budget-header a, form#delete-selected input
+{
+    color: #19599E;
+}
 
 /*
  * Account view
@@ -281,6 +285,7 @@ html {
     overflow: auto;
     display: flex;
     flex-direction: row;
+    min-height: 100%;
 }
 #budget {
     flex: 3;
@@ -289,6 +294,9 @@ html {
 #create-category-group {
     padding: 0;
     margin: 0;
+}
+.hidden {
+    display: none;
 }
 
 #budget-info {
@@ -303,6 +311,21 @@ html {
 #budget-info form {
     margin: 0;
     padding: 0;
+}
+
+form#delete-selected {
+    margin: 0;
+    padding: 0;
+}
+form#delete-selected input {
+    background: none!important;
+    border: none;
+    font: inherit;
+    padding: 0;
+    margin: 0;
+}
+form#delete-selected input:hover {
+    text-decoration: underline;
 }
 
 

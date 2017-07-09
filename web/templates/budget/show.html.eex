@@ -8,9 +8,11 @@
       <%= "year: #{@year} month: #{@month}" %>
       <nav>
         <ol>
-          <li><%= link "Add category group", to: "#" %></li>
+          <li><%= link "Add category group", to: "#", class: "add-category-group" %></li>
+          <!---
           <li><%= link "Undo", to: "#" %></li>
           <li><%= link "Redo", to: "#" %></li>
+          -->
           <li>
             <%= form_for @conn, category_path(@conn, :delete_categories), [as: :data, id: "delete-selected"], fn f -> %>
               <%= submit "Delete" %>

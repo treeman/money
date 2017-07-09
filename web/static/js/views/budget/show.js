@@ -33,6 +33,16 @@ function initNav() {
 function initNewCategoryGroup() {
   var newForm = document.querySelector('form#create-category-group');
   newForm.addEventListener('submit', submitNewCategoryGroup);
+
+  var addCategoryLink = document.querySelector('a.add-category-group');
+  addCategoryLink.onclick = function() {
+    // FIXME change text on link when changed
+    if (newForm.classList.contains("hidden")) {
+      newForm.classList.remove("hidden");
+    } else {
+      newForm.classList.add("hidden");
+    }
+  };
 }
 
 function initDelete() {
