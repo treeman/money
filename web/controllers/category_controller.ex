@@ -15,7 +15,8 @@ defmodule Money.CategoryController do
       {:ok, category} ->
         conn
         |> put_status(:created)
-        |> render("show.json", category: category)
+        |> render("show.json", category: category,
+                               conn: conn)
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)

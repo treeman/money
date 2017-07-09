@@ -53,6 +53,7 @@ defmodule Money.Router do
     resources "/categories", CategoryController, only: [:create, :update, :delete]
     resources "/category_groups", CategoryGroupController, only: [:create, :update, :delete]
     resources "/budgeted_categories", BudgetedCategoryController, only: [:create, :update, :delete]
+    post "/budgeted_categories/:year/:month", BudgetedCategoryController, :create
   end
 end
 

@@ -14,15 +14,15 @@ export default class View extends MainView {
     super.unloaded();
   }
 
-  //handleKeyPress(e) {
-    //super.handleKeyPress(e);
+  handleKeyPress(e) {
+    super.handleKeyPress(e);
 
-    //e = e || window.event;
-    //// Escape should cancel our current edit.
-    //if (e.keyCode == 27) {
-      //cancelTransactionInEdit();
-    //}
-  //}
+    e = e || window.event;
+    // Escape should cancel our current edit.
+    if (e.keyCode == 27) {
+      cancelCategoryInEdit();
+    }
+  }
 }
 
 function initNav() {
@@ -92,7 +92,7 @@ function collectCheckedNames() {
     var cb = row.querySelector('.grid-budget-cb input');
     if (!cb.checked) continue;
 
-    var name = row.querySelector('.grid-budget-category').innerHTML;
+    var name = row.querySelector('.grid-budget-category .name').innerHTML;
 
     if (row.classList.contains("budgeted-group")) {
       groups.push(name);
@@ -128,11 +128,11 @@ function insertCategoryGroup(newRow) {
   var rows = grid.querySelectorAll('.grid-row.budgeted-group');
   var inserted = false;
 
-  var newName = newRow.querySelector('.grid-budget-category').innerHTML;
+  var newName = newRow.querySelector('.grid-budget-category .name').innerHTML;
 
   for (var i = 0; i < rows.length; ++i) {
     var row = rows[i];
-    var name = row.querySelector('.grid-budget-category').innerHTML;
+    var name = row.querySelector('.grid-budget-category .name').innerHTML;
     if (newName < name) {
       row.parentNode.insertBefore(newRow, row);
       inserted = true;
@@ -150,6 +150,9 @@ function initBudget() {
   for (var i = 0; i < rows.length; ++i) {
     initRow(rows[i]);
   }
+
+  var newForm = document.querySelector('form#new-category');
+  newForm.addEventListener('submit', submitNewCategory);
 }
 
 function initRow(row) {
@@ -161,8 +164,20 @@ function initRow(row) {
 }
 
 function initBudgetGroupRow(row) {
+  registerGroupOverEvent(row);
   registerArrowEvent(row);
   initGroupCB(row);
+  registerNewCategoryEvent(row);
+}
+
+function registerGroupOverEvent(row) {
+  var a = row.querySelector('.add-category');
+  row.onmouseover = function() {
+    a.classList.remove("hidden");
+  }
+  row.onmouseout = function() {
+    a.classList.add("hidden");
+  }
 }
 
 function initGroupCB(row) {
@@ -172,6 +187,89 @@ function initGroupCB(row) {
     propagateGroupSelect(row.nextElementSibling, cb.checked);
     updateBudgetInfo();
   }
+}
+
+function registerNewCategoryEvent(row) {
+  var a = row.querySelector('.add-category');
+  var group_id = row.querySelector('.grid-category-group-id').innerHTML;
+  a.onclick = function() {
+    console.log('new?');
+    var newRow = createNewCategoryRow(group_id);
+    row.parentNode.insertBefore(newRow, row.nextSibling);
+  }
+}
+
+function createNewCategoryRow(group_id) {
+  var row = document.createElement("div");
+  row.setAttribute("class", "grid-row budgeted-category in-edit");
+  row.innerHTML = "<div class=\"grid-cell grid-budget-cb\">\
+  <input type=\"checkbox\">\
+</div>\
+<div class=\"grid-cell grid-budget-category\">\
+  <input name=\"category[name]\">\
+</div>\
+<div class=\"grid-category-group-id\">\
+  <input name=\"category[category_group_id]\" type=\"hidden\" value=\"" + group_id + "\">\
+</div>\
+<div class=\"grid-cell grid-budget-budgeted\">0</div>\
+<div class=\"grid-cell grid-budget-activity\">0</div>\
+<div class=\"grid-cell grid-budget-balance\">0</div>";
+
+  var inputs = row.querySelectorAll('input');
+  var form = document.querySelector('form#new-category');
+  for (var i = 0; i < inputs.length; ++i) {
+    inputs[i].setAttribute("form", form.id);
+  }
+
+  return row;
+}
+
+function cancelCategoryInEdit() {
+  var formEditRows = document.querySelectorAll('.grid-row.budgeted-category.in-edit');
+  for (var i = 0; i < formEditRows.length; ++i) {
+    var editRow = formEditRows[i];
+    var hiddenRow = editRow.nextSibling;
+    if (hiddenRow.nodeType == Node.ELEMENT_NODE) {
+      cancelEditCategory(hiddenRow, editRow);
+    } else {
+      cancelEditCategory(null, editRow);
+    }
+  }
+}
+
+function cancelEditCategory(hiddenRow, editRow) {
+  if (hiddenRow) {
+    hiddenRow.style.display = editRow.style.display;
+  }
+  editRow.parentNode.removeChild(editRow);
+}
+
+function submitNewCategory(e) {
+  e.preventDefault();
+
+  var formData = new FormData(e.target);
+
+  jsonReq(e.target.action, formData, 201, true, 'POST').then(function(response) {
+    console.log(response.data);
+    var html = response.data.html_row;
+    if (html) {
+      // Create an element from the returned string.
+      var row = document.createElement("div");
+      row.innerHTML = html;
+      row = row.firstChild;
+
+      // FIXME next find group id the category belongs to (found from category)
+      // then search up the row and insert sorted under there.
+      insertCategory(row, e.target.nextElementSibling);
+    }
+  }, function(error) {
+    console.error("Failed!", error);
+    view.setFlashError(error)
+  });
+}
+
+function insertCategory(newRow, start) {
+  console.log(start);
 }
 
 function propagateGroupSelect(row, checked) {
@@ -220,7 +318,7 @@ function showMultipleBudgetInfo(rows) {
 }
 
 function showSingleBudgetInfo(row) {
-  var title = row.querySelector('.grid-budget-category').innerHTML;
+  var title = row.querySelector('.grid-budget-category .name').innerHTML;
   var budgeted = row.querySelector('.grid-budget-budgeted').innerHTML;
   var activity = row.querySelector('.grid-budget-activity').innerHTML;
   var balance = row.querySelector('.grid-budget-balance').innerHTML;

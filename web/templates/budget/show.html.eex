@@ -22,7 +22,7 @@
       </nav>
     </div>
 
-    <%= form_for @conn, category_group_path(@conn, :create), [as: :category_group, id: "create-category-group"], fn f -> %>
+    <%= form_for @conn, category_group_path(@conn, :create), [as: :category_group, id: "create-category-group", class: "hidden"], fn f -> %>
       <%= text_input f, :name, placeholder: "Category Group" %>
       <%= submit "Add" %>
     <% end %>
@@ -50,23 +50,9 @@
 
   </div>
 
-  <!---
-        <%= form_for @conn, category_path(@conn, :delete, -1), [as: :category, id: "delete-category"], fn _ -> %>
-          <%= submit "Delete" %>
-        <% end %>
-  -->
-
   <div id="budget-info">
     <div class="category">
       <span class="name">Category Name</span>
-      <%#<a href="#" class="edit-category">Edit</a>%>
-      <span class="right">
-        <%#<a href="#" class="hide-category">Hide</a>%>
-        <%#<a href="#" class="delete-category">Delete</a>%>
-
-        <%= link "Delete", to: category_path(@conn, :delete, -1),
-          method: :delete, data: [confirm: "Are you sure?"], class: "delete-category" %>
-      </span>
     </div>
 
     <div class="money-info">
@@ -121,10 +107,7 @@
   </div>
 
   <div class="hidden">
-    <%#= form_tag(transaction_path(@conn, :create), id: "new-category-budget") %></form>
-    <%#= form_tag(transaction_path(@conn, :create), id: "new-category") %></form>
-    <%#= form_tag("#", id: "edit-category-budget") %></form>
-    <%#= form_tag("#", id: "edit-category") %></form>
+    <%= form_tag(budgeted_category_path(@conn, :create, year: @year, month: @month), id: "new-category") %></form>
   </div>
 </div>
 

@@ -10,6 +10,15 @@ defmodule Money.BudgetedCategoryView do
   end
 
   def render("budgeted_category.json", %{budgeted_category: budgeted_category}) do
-    %{id: budgeted_category.id}
+    html_row = render_to_string Money.BudgetedCategoryView, "row.html",
+                                c: budgeted_category
+
+    %{id: budgeted_category.id,
+      budgeted: budgeted_category.budgeted,
+      activity: budgeted_category.activity,
+      year: budgeted_category.year,
+      month: budgeted_category.month,
+      html_row: html_row}
   end
 end
+

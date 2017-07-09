@@ -8,6 +8,8 @@ C-]     Jump to definition
 C-t     Jump back
 
 # TODO
+1. Insert returned row when creating a new category
+1. Add tests to budgeted category controller (does not care about user for instance)
 1. Mass delete of categories/groups
     Need to update page to reflect changes, js
     Need to handle errors when trying to delete a category with transactions
