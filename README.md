@@ -8,6 +8,10 @@ C-]     Jump to definition
 C-t     Jump back
 
 # TODO
+1. More tests are broken!
+1. Edit category name + budgeted
+    Update on success. Also update other rows.
+1. Edit category group name
 1. Add tests to budgeted category controller (does not care about user for instance)
 1. Mass delete of categories/groups
     Need to update page to reflect changes, js

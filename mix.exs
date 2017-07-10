@@ -39,7 +39,7 @@ defmodule Money.Mixfile do
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"},
      {:comeonin, "~> 2.0"},
-     {:floki, "~> 0.9.0"},
+     {:floki, "~> 0.17.0"},
      {:ex_machina, "~> 1.0.2"},
      {:poison, "~> 2.0"}]
   end
