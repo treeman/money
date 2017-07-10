@@ -37,21 +37,23 @@ defmodule Money.UserController do
 
   def seed_categories(user) do
     groups = [
-      %{name: "Immediate Obligations",
-        categories: ["Rent", "Mortgage", "Electric", "Water", "Internet",
-                     "Transportation", "Telephone", "Subscriptions"]},
-      %{name: "Debt Payments",
-        categories: ["Student Loan"]},
       %{name: "Savings",
-        categories: ["Emergency Expenses"]},
-      %{name: "Life Investments",
-        categories: ["Vacation", "Fitness", "Education"]},
-      %{name: "Fun",
-        categories: ["Dining", "Gaming", "Music", "Entertainment", "Fun Money"]},
-      %{name: "Unknown",
-        categories: ["Medical", "Clothing", "Home Maintenance", "Auto Maintenance",
-                     "Insurance", "Gifts", "Giving", "Computer Replacement",
-                     "Forgotten Stuff"]}
+        categories: ["Buffer", "Investment"]},
+      %{name: "Debt",
+        categories: ["Student Loan", "Mortgage"]},
+      %{name: "Housing",
+        categories: ["Electricity", "Rent", "Internet", "Maintenance", "Home Insurance"]},
+      %{name: "Food",
+        categories: ["Groceries", "Restaurants"]},
+      %{name: "Transportation",
+        categories: ["Gas", "Maintenance", "Car Insurance"]},
+      %{name: "Health",
+        categories: ["Life Insurance", "Medical", "Fitness"]},
+      %{name: "Other Passive Expenses",
+        categories: ["Software Subscriptions", "Phone"]},
+      %{name: "Other Active Expenses",
+        categories: ["Clothing", "Education", "Fun Money", "Gaming", "Giving",
+                     "Music", "Unbudgeted", "Vacation"]}
     ]
 
     for %{name: name, categories: categories} <- groups do

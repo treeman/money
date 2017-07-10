@@ -275,7 +275,13 @@ function insertCategory(newRow, row, newName) {
   if (newName < name || row.classList.contains("budgeted-group")) {
     row.parentNode.insertBefore(newRow, row);
   } else {
-    insertCategory(newRow, row.nextElementSibling, newName);
+    var next = row.nextElementSibling;
+    if (next) {
+      insertCategory(newRow, next, newName);
+    } else {
+      // Handles insert last
+      row.parentNode.insertBefore(newRow, null);
+    }
   }
 }
 
