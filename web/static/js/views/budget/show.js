@@ -227,13 +227,16 @@ function createNewCategoryRow(group_id) {
 function cancelCategoryInEdit() {
   var formEditRows = document.querySelectorAll('.grid-row.budgeted-category.in-edit');
   for (var i = 0; i < formEditRows.length; ++i) {
-    var editRow = formEditRows[i];
-    var hiddenRow = editRow.nextSibling;
-    if (hiddenRow.nodeType == Node.ELEMENT_NODE) {
-      cancelEditCategory(hiddenRow, editRow);
-    } else {
-      cancelEditCategory(null, editRow);
-    }
+    cancelEditRow(formEditRows[i]);
+  }
+}
+
+function cancelEditRow(editRow) {
+  var hiddenRow = editRow.nextSibling;
+  if (hiddenRow.nodeType == Node.ELEMENT_NODE) {
+    cancelEditCategory(hiddenRow, editRow);
+  } else {
+    cancelEditCategory(null, editRow);
   }
 }
 
@@ -250,7 +253,6 @@ function submitNewCategory(e) {
   var formData = new FormData(e.target);
 
   jsonReq(e.target.action, formData, 201, true, 'POST').then(function(response) {
-    console.log(response.data);
     var html = response.data.html_row;
     if (html) {
       // Create an element from the returned string.
@@ -258,9 +260,11 @@ function submitNewCategory(e) {
       row.innerHTML = html;
       row = row.firstChild;
 
-      // FIXME next find group id the category belongs to (found from category)
-      // then search up the row and insert sorted under there.
-      insertCategory(row, e.target.nextElementSibling);
+      // Insert and cancel edit for the row.
+      var formEditRow = document.querySelector('.grid-row.budgeted-category.in-edit');
+      var name = row.querySelector('.grid-budget-category .name').innerHTML;
+      insertCategory(row, formEditRow.nextElementSibling, name);
+      cancelEditRow(formEditRow);
     }
   }, function(error) {
     console.error("Failed!", error);
@@ -268,8 +272,13 @@ function submitNewCategory(e) {
   });
 }
 
-function insertCategory(newRow, start) {
-  console.log(start);
+function insertCategory(newRow, row, newName) {
+  var name = row.querySelector('.grid-budget-category .name').innerHTML;
+  if (newName < name || row.classList.contains("budgeted-group")) {
+    row.parentNode.insertBefore(newRow, row);
+  } else {
+    insertCategory(newRow, row.nextElementSibling, newName);
+  }
 }
 
 function propagateGroupSelect(row, checked) {
