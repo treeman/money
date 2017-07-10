@@ -221,7 +221,7 @@ defmodule Money.TransactionControllerTest do
     t22 = insert(:transaction, account: a2)
 
     conn = delete conn, transaction_path(conn, :delete_transactions),
-                  transactions: %{ids: "#{t11.id},#{t21.id}"}
+                  data: %{ids: Poison.encode!([t11.id, t21.id])}
 
     json = json_response(conn, 200)
     assert json["data"]["ids"] == [t11.id, t21.id]
@@ -251,7 +251,7 @@ defmodule Money.TransactionControllerTest do
     end
 
     delete(conn, transaction_path(conn, :delete_transactions),
-           transactions: %{ids: "#{transaction.id}"})
+           data: %{ids: Poison.encode!([transaction.id])})
     assert Repo.get(Transaction, transaction.id)
   end
 end

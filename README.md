@@ -8,20 +8,9 @@ C-]     Jump to definition
 C-t     Jump back
 
 # TODO
-1. Cannot change budget for categories without a budgeted category
-1. Edit category name + budgeted
-    Also update other rows.
-1. Edit category group name
-1. Add tests to budgeted category controller (does not care about user for instance)
-1. Mass delete of categories/groups
-    Need to update page to reflect changes, js
-    Need to handle errors when trying to delete a category with transactions
-1. Give budget view a little love
-    Should be able to add categories
 1. Minor stuff for account view
-    Should be able to delete transactions
-1. Cleanup unnecessary delete entry points
-1. Use poison decode for `delete_transactions` as well
+    When going into edit/create form, should be preselected
+1. Cleanup js for budget + account view. Horrible.
 
 ## Categories
 1. UI for:
@@ -33,13 +22,10 @@ C-t     Jump back
 * In the future import using the api of banks, now just make a simple parser...
 
 ## Budget view
-1. Should support adding/removing categories/groups
-1. Support create/update
-1. UI: Alter budgeted amount
-1. JS enabled budget view
-    + Everything should already be editable, just click and change.
-    + Checkbox support
+1. Edit category/category group name
 1. Show info on the right side
+    1. Quick budget should be workable
+    1. Update info for 0 and > 1 selected
 1. The budget shouldn't automatically operate on all accounts but should be configurable
     Should be able to choose which categories/groups/accounts it's specific to
     Should be able to split the amount between budgets
@@ -47,6 +33,8 @@ C-t     Jump back
     Hidden setting should be remembered for new months
     How to view all categories?
 1. Balance should be +/- sensitive
+1. Need to handle errors when trying to delete a category with transactions
+1. Add tests to budgeted category controller (does not care about user for instance)
 
 ## Account view
 1. Add new fields for a transaction:

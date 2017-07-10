@@ -37,8 +37,9 @@ defmodule Money.Web do
       import Money.Router.Helpers
       import Money.Gettext
       import Money.Auth, only: [authenticate_user: 2]
-      import Money.UserHelpers
+      import Money.BudgetHelpers
       import Money.TransactionHelpers
+      import Money.UserHelpers
     end
   end
 

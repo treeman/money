@@ -52,6 +52,8 @@ function initDelete() {
 
 function submitDeleteSelected(e) {
   e.preventDefault();
+  if (!window.confirm("Are you sure?")) return;
+
   var formData = new FormData(e.target);
 
   var checked = collectCheckedNames();
@@ -374,10 +376,8 @@ function submitUpdateCategory(e) {
       var hiddenRow = formEditRow.nextElementSibling;
       if (hiddenRow.classList.contains("hidden")) { // Should always succeed!
         const prevBudgeted = +hiddenRow.querySelector('.grid-budget-budgeted').innerHTML;
-        const prevBalance = +hiddenRow.querySelector('.grid-budget-balance').innerHTML;
         const budgeted = response.data.budgeted;
-        const balance = budgeted - response.data.activity;
-        updateBudgetGroup(formEditRow, budgeted - prevBudgeted, balance - prevBalance);
+        updateBudgetGroup(formEditRow, budgeted - prevBudgeted);
 
         hiddenRow.remove();
       }
@@ -390,13 +390,13 @@ function submitUpdateCategory(e) {
   });
 }
 
-function updateBudgetGroup(row, dBudget, dBalance) {
+function updateBudgetGroup(row, change) {
   var groupRow = findBudgetGroup(row);
   var budgetDiv = groupRow.querySelector('.grid-budget-budgeted');
   var balanceDiv = groupRow.querySelector('.grid-budget-balance');
 
-  const newBudget = +budgetDiv.innerHTML + dBudget;
-  const newBalance = +balanceDiv.innerHTML + dBalance;
+  const newBudget = +budgetDiv.innerHTML + change;
+  const newBalance = +balanceDiv.innerHTML + change;
   budgetDiv.innerHTML = newBudget;
   balanceDiv.innerHTML = newBalance;
 }

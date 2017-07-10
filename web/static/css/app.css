@@ -226,8 +226,8 @@ html {
 #transaction-header nav ol li {
     padding-right: 0.4em;
 }
-#budget-header a, form#delete-selected input
-{
+#budget-header a, form#delete-selected input, 
+#transaction-header a, form#delete-transactions {
     color: #19599E;
 }
 
@@ -257,6 +257,17 @@ html {
 
 #transactions {
     height: 100%;
+}
+
+form#delete-transactions input {
+    background: none!important;
+    border: none;
+    font: inherit;
+    padding: 0;
+    margin: 0;
+}
+form#delete-transactions input:hover {
+    text-decoration: underline;
 }
 
 /*

@@ -103,6 +103,7 @@ function updateAccountBalance(balances) {
 
   for (var i = 0; i < rows.length; ++i) {
     var row = rows[i];
+    if (row.classList.contains("in-edit")) continue;
     var id = row.querySelector('.grid-transaction-id').innerHTML;
     var newBalance = balances[id];
     if (newBalance) {
@@ -324,9 +325,8 @@ function alterDeleteTransactionsLink(link) {
     evt.preventDefault();
     if (window.confirm("Are you sure?")) {
       var ids = collectCheckedTransactionIds();
-      var idsInput = form.querySelector('#transactions_ids');
-      idsInput.setAttribute("value", ids);
       var formData = new FormData(form);
+      formData.set("data[ids]", JSON.stringify(ids));
       jsonReq(form.action, formData, 200, true, 'DELETE').then(function(response) {
         removeTransactionRows(ids);
         updateAccountBalance(response.data.transaction_balance);

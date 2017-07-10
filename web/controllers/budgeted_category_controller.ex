@@ -43,7 +43,7 @@ defmodule Money.BudgetedCategoryController do
                                     year: year,
                                     month: month)
     if budgeted_category do
-      updateChange(conn, BudgetedCategory.changeset(budgeted_category, params))
+      updateChange(conn, BudgetedCategory.changeset(budgeted_category, params), user)
     else
       params = Map.merge(params, %{"year" => year,
                                    "month" => month});
@@ -53,10 +53,13 @@ defmodule Money.BudgetedCategoryController do
     end
   end
 
-  defp updateChange(conn, changeset) do
+  defp updateChange(conn, changeset, user) do
     case Repo.update(changeset) do
       {:ok, budgeted_category} ->
-        budgeted_category = Repo.preload(budgeted_category, [:category])
+        budgeted_category = budgeted_category
+                            |> Repo.preload([:category])
+                            |> load_activity(user)
+
         render(conn, "show.json", budgeted_category: budgeted_category)
       {:error, changeset} ->
         conn
