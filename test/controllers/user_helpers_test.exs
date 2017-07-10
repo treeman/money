@@ -45,5 +45,19 @@ defmodule Money.UserHelpersTest do
 
     assert Kernel.length(Repo.all(user_categories(user))) == 3
   end
+
+  @tag login_as: "max"
+  test "user budgeted categories", %{user: user} do
+    g1 = insert(:category_group, user: user, name: "g1")
+    c1 = insert(:category, category_group: g1, name: "c1")
+    insert(:budgeted_category, category: c1)
+
+    other_user = insert(:user, username: "alice")
+    other_g = insert(:category_group, user: other_user, name: "g1")
+    other_c = insert(:category, category_group: other_g, name: "c1")
+    insert(:budgeted_category, category: other_c)
+
+    assert Kernel.length(Repo.all(user_budgeted_categories(user))) == 1
+  end
 end
 

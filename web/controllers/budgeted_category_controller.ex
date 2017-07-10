@@ -22,14 +22,42 @@ defmodule Money.BudgetedCategoryController do
 
   def create(conn, %{"budgeted_category" => params}, _user) do
     changeset = BudgetedCategory.changeset(%BudgetedCategory{}, params)
+    insert(conn, changeset)
+  end
 
-    case Repo.insert(changeset) do
+  defp grab_category(%{"name" => name, "category_group_id" => group_id}, user) do
+    Repo.one(from c in user_categories(user),
+               join: cg in assoc(c, :category_group),
+               where: c.name == ^name,
+               where: cg.id == ^group_id) ||
+    # FIXME this allows us to insert a category for a group_id not belonging to user
+      Repo.insert!(%Category{name: name,
+                             category_group_id: String.to_integer(group_id)})
+  end
+
+  def save(conn, %{"year" => year, "month" => month, "budgeted_category" => params}, user) do
+    category = Repo.get!(user_categories(user), params["category_id"])
+
+    budgeted_category = Repo.get_by(BudgetedCategory,
+                                    category_id: category.id,
+                                    year: year,
+                                    month: month)
+    if budgeted_category do
+      updateChange(conn, BudgetedCategory.changeset(budgeted_category, params))
+    else
+      params = Map.merge(params, %{"year" => year,
+                                   "month" => month});
+      insert(conn, BudgetedCategory.changeset(
+                    %BudgetedCategory{category_id: category.id},
+                    params))
+    end
+  end
+
+  defp updateChange(conn, changeset) do
+    case Repo.update(changeset) do
       {:ok, budgeted_category} ->
         budgeted_category = Repo.preload(budgeted_category, [:category])
-
-        conn
-        |> put_status(:created)
-        |> render("show.json", budgeted_category: budgeted_category)
+        render(conn, "show.json", budgeted_category: budgeted_category)
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -37,20 +65,14 @@ defmodule Money.BudgetedCategoryController do
     end
   end
 
-  defp grab_category(%{"name" => name, "category_group_id" => group_id}, user) do
-    # FIXME this allows us to insert a category for a group_id not belonging to user
-    Repo.get_by(user_categories(user), name: name) ||
-      Repo.insert!(%Category{name: name, category_group_id: String.to_integer(group_id)})
-  end
-
-  def update(conn, %{"id" => id, "budgeted_category" => budgeted_category_params}, _user) do
-    budgeted_category = Repo.get!(BudgetedCategory, id)
-    changeset = BudgetedCategory.changeset(budgeted_category, budgeted_category_params)
-
-    case Repo.update(changeset) do
+  defp insert(conn, changeset) do
+    case Repo.insert(changeset) do
       {:ok, budgeted_category} ->
         budgeted_category = Repo.preload(budgeted_category, [:category])
-        render(conn, "show.json", budgeted_category: budgeted_category)
+
+        conn
+        |> put_status(:created)
+        |> render("show.json", budgeted_category: budgeted_category)
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)

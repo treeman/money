@@ -5,6 +5,7 @@ defmodule Money.UserHelpers do
   alias Money.Repo
   alias Money.Category
   alias Money.CategoryGroup
+  alias Money.BudgetedCategory
 
   def preload_user_data(conn, opts) do
     repo = Keyword.fetch!(opts, :repo)
@@ -23,22 +24,30 @@ defmodule Money.UserHelpers do
 
   def user_transactions(user) do
     from t in Money.Transaction,
-    join: a in assoc(t, :account),
-    join: u in assoc(a, :user),
-    where: u.id == ^user.id
+      join: a in assoc(t, :account),
+      join: u in assoc(a, :user),
+      where: u.id == ^user.id
   end
 
   def user_category_groups(user) do
     from g in CategoryGroup,
-    join: u in assoc(g, :user),
-    where: u.id == ^user.id
+      join: u in assoc(g, :user),
+      where: u.id == ^user.id
   end
 
   def user_categories(user) do
     from c in Category,
-    join: g in assoc(c, :category_group),
-    join: u in assoc(g, :user),
-    where: u.id == ^user.id
+      join: g in assoc(c, :category_group),
+      join: u in assoc(g, :user),
+      where: u.id == ^user.id
+  end
+
+  def user_budgeted_categories(user) do
+    from bc in BudgetedCategory,
+      join: c in assoc(bc, :category),
+      join: g in assoc(c, :category_group),
+      join: u in assoc(g, :user),
+      where: u.id == ^user.id
   end
 
   def load_categories(conn, _) do

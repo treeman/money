@@ -114,6 +114,7 @@ function submitNewCategoryGroup(e) {
       var row = document.createElement("div");
       row.innerHTML = html;
       row = row.firstChild;
+      initRow(row);
 
       insertCategoryGroup(row);
     }
@@ -153,6 +154,9 @@ function initBudget() {
 
   var newForm = document.querySelector('form#new-category');
   newForm.addEventListener('submit', submitNewCategory);
+  
+  var editForm = document.querySelector('form#update-category');
+  editForm.addEventListener('submit', submitUpdateCategory);
 }
 
 function initRow(row) {
@@ -191,15 +195,14 @@ function initGroupCB(row) {
 
 function registerNewCategoryEvent(row) {
   var a = row.querySelector('.add-category');
-  var group_id = row.querySelector('.grid-category-group-id').innerHTML;
+  var groupId = row.querySelector('.grid-category-group-id').innerHTML;
   a.onclick = function() {
-    console.log('new?');
-    var newRow = createNewCategoryRow(group_id);
+    var newRow = createNewCategoryRow(groupId);
     row.parentNode.insertBefore(newRow, row.nextSibling);
   }
 }
 
-function createNewCategoryRow(group_id) {
+function createNewCategoryRow(groupId) {
   var row = document.createElement("div");
   row.setAttribute("class", "grid-row budgeted-category in-edit");
   row.innerHTML = "<div class=\"grid-cell grid-budget-cb\">\
@@ -209,7 +212,7 @@ function createNewCategoryRow(group_id) {
   <input name=\"category[name]\">\
 </div>\
 <div class=\"grid-category-group-id\">\
-  <input name=\"category[category_group_id]\" type=\"hidden\" value=\"" + group_id + "\">\
+  <input name=\"category[category_group_id]\" type=\"hidden\" value=\"" + groupId + "\">\
 </div>\
 <div class=\"grid-cell grid-budget-budgeted\">0</div>\
 <div class=\"grid-cell grid-budget-activity\">0</div>\
@@ -232,19 +235,11 @@ function cancelCategoryInEdit() {
 }
 
 function cancelEditRow(editRow) {
-  var hiddenRow = editRow.nextSibling;
-  if (hiddenRow.nodeType == Node.ELEMENT_NODE) {
-    cancelEditCategory(hiddenRow, editRow);
-  } else {
-    cancelEditCategory(null, editRow);
+  var hiddenRow = editRow.nextElementSibling;
+  if (hiddenRow.classList.contains("hidden")) {
+    hiddenRow.classList.remove("hidden");
   }
-}
-
-function cancelEditCategory(hiddenRow, editRow) {
-  if (hiddenRow) {
-    hiddenRow.style.display = editRow.style.display;
-  }
-  editRow.parentNode.removeChild(editRow);
+  editRow.remove();
 }
 
 function submitNewCategory(e) {
@@ -259,6 +254,7 @@ function submitNewCategory(e) {
       var row = document.createElement("div");
       row.innerHTML = html;
       row = row.firstChild;
+      initRow(row);
 
       // Insert and cancel edit for the row.
       var formEditRow = document.querySelector('.grid-row.budgeted-category.in-edit');
@@ -291,6 +287,7 @@ function propagateGroupSelect(row, checked) {
 
 function initBudgetRow(row) {
   initCategoryCB(row);
+  registerCategoryEditAction(row);
 }
 
 function initCategoryCB(row) {
@@ -308,6 +305,83 @@ function updateTransactionCBState(row, checked) {
   } else {
     row.classList.remove("checked");
   }
+}
+
+function registerCategoryEditAction(row) {
+  var budgeted = row.querySelector('.grid-budget-budgeted');
+  budgeted.ondblclick = function(e) {
+    e.preventDefault();
+    beginEditBudgetAmount(row);
+  }
+}
+
+function beginEditBudgetAmount(row) {
+  cancelCategoryInEdit();
+
+  var editRow = createEditBudgetRow(row);
+  row.parentNode.insertBefore(editRow, row);
+  row.classList.add("hidden");
+
+  var budgetedInput = editRow.querySelector('.grid-budget-budgeted input');
+  budgetedInput.focus();
+  budgetedInput.select();
+}
+
+function createEditBudgetRow(refRow) {
+  var row = refRow.cloneNode(true);
+  row.classList.add("in-edit");
+
+  var categoryIdDiv = row.querySelector('.grid-category-id');
+  var categoryIdInput = document.createElement("input");
+  categoryIdInput.setAttribute("name", "budgeted_category[category_id]");
+  categoryIdInput.setAttribute("value", categoryIdDiv.innerHTML);
+  categoryIdInput.setAttribute("type", "hidden");
+  categoryIdDiv.appendChild(categoryIdInput);
+
+  var budgetedDiv = row.querySelector('.grid-budget-budgeted');
+  var budgetedInput = document.createElement("input");
+  budgetedInput.setAttribute("name", "budgeted_category[budgeted]");
+  budgetedInput.setAttribute("value", budgetedDiv.innerHTML);
+  budgetedDiv.innerHTML = "";
+  budgetedDiv.appendChild(budgetedInput);
+
+  var inputs = row.querySelectorAll('input');
+  var form = document.querySelector('form#update-category');
+  for (var i = 0; i < inputs.length; ++i) {
+    inputs[i].setAttribute("form", form.id);
+  }
+
+  return row;
+}
+
+function submitUpdateCategory(e) {
+  e.preventDefault();
+  var formData = new FormData(e.target);
+
+  jsonReq(e.target.action, formData, [200, 201], true, 'PUT').then(function(response) {
+    var html = response.data.html_row;
+    if (html) {
+      // Create an element from the returned string.
+      var row = document.createElement("div");
+      row.innerHTML = html;
+      row = row.firstChild;
+      initRow(row);
+
+      // Insert.
+      var formEditRow = document.querySelector('.grid-row.budgeted-category.in-edit');
+      formEditRow.parentNode.insertBefore(row, formEditRow);
+      // Remove the now hidden old row.
+      var hiddenRow = formEditRow.nextElementSibling;
+      if (hiddenRow.classList.contains("hidden")) {
+        hiddenRow.remove();
+      }
+      // Cancel the edit.
+      cancelEditRow(formEditRow);
+    }
+  }, function(error) {
+    console.error("Failed!", error);
+    view.setFlashError(error)
+  });
 }
 
 function updateBudgetInfo() {

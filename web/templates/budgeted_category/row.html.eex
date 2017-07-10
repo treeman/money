@@ -1,5 +1,6 @@
 <div class="grid-row budgeted-category">
   <div class="grid-cell grid-budget-cb"><input type="checkbox"></div>
+  <div class="grid-category-id"><%= @c.category.id %></div>
   <div class="grid-cell grid-budget-category">
     <span class="name"><%= @c.category.name %></span>
   </div>

@@ -24,30 +24,36 @@ export function get(url) {
 }
 
 export function jsonReq(url, params, successStatus = 200, binary = false, type = 'POST') {
-    return new Promise(function(resolve, reject) {
-        var req = new XMLHttpRequest();
-        req.open(type, url);
-        if (!binary) {
-            req.setRequestHeader("Content-type", "application/json; charset=utf-8");
-            req.setRequestHeader("Content-length", params.length);
-            req.setRequestHeader("Connection", "close");
+  return new Promise(function(resolve, reject) {
+    var req = new XMLHttpRequest();
+    req.open(type, url);
+    if (!binary) {
+      req.setRequestHeader("Content-type", "application/json; charset=utf-8");
+      req.setRequestHeader("Content-length", params.length);
+      req.setRequestHeader("Connection", "close");
+    }
+    req.responseType = "json";
+
+    req.onload = function() {
+      if (successStatus instanceof Array) {
+        if (successStatus.includes(req.status)) {
+          resolve(req.response)
+          return;
         }
-        req.responseType = "json";
+      }
+      if (req.status == successStatus) {
+        resolve(req.response)
+      } else {
+        reject(formatJsonError(req.response, req.statusText));
+      }
+    };
 
-        req.onload = function() {
-            if (req.status == successStatus) {
-                resolve(req.response)
-            } else {
-                reject(formatJsonError(req.response, req.statusText));
-            }
-        };
+    req.onerror = function() {
+      reject(Error("Network Error"));
+    };
 
-        req.onerror = function() {
-            reject(Error("Network Error"));
-        };
-
-        req.send(params);
-    });
+    req.send(params);
+  });
 }
 
 var humanErrors = new Map([

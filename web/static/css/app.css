@@ -265,7 +265,7 @@ html {
 .grid-row.budgeted-group { background-color: #D5DAE7; }
 .grid-row.budgeted-category { }
 .grid-budget-cb { flex: 0; }
-.grid-category-group-id { display: none; }
+/*.grid-category-group-id, .grid-category-id { display: none; }*/
 .grid-budget-category {
     flex: 2;
 }

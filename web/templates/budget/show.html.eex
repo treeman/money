@@ -107,7 +107,8 @@
   </div>
 
   <div class="hidden">
-    <%= form_tag(budgeted_category_path(@conn, :create, year: @year, month: @month), id: "new-category") %></form>
+    <%= form_tag(budgeted_category_path(@conn, :create, @year, @month), id: "new-category") %></form>
+    <%= form_tag(budgeted_category_path(@conn, :save, @year, @month), id: "update-category") %></form>
   </div>
 </div>
 
