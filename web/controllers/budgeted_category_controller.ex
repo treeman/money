@@ -22,13 +22,10 @@ defmodule Money.BudgetedCategoryController do
 
   def create(conn, %{"budgeted_category" => params}, _user) do
     changeset = BudgetedCategory.changeset(%BudgetedCategory{}, params)
-    IO.inspect(changeset)
 
     case Repo.insert(changeset) do
       {:ok, budgeted_category} ->
         budgeted_category = Repo.preload(budgeted_category, [:category])
-
-        IO.inspect(budgeted_category)
 
         conn
         |> put_status(:created)
@@ -52,6 +49,7 @@ defmodule Money.BudgetedCategoryController do
 
     case Repo.update(changeset) do
       {:ok, budgeted_category} ->
+        budgeted_category = Repo.preload(budgeted_category, [:category])
         render(conn, "show.json", budgeted_category: budgeted_category)
       {:error, changeset} ->
         conn
@@ -59,14 +57,5 @@ defmodule Money.BudgetedCategoryController do
         |> render(Money.ChangesetView, "error.json", changeset: changeset)
     end
   end
-
-  def delete(conn, %{"id" => id}, _user) do
-    budgeted_category = Repo.get!(BudgetedCategory, id)
-
-    # Here we use delete! (with a bang) because we expect
-    # it to always work (and if it does not, it will raise).
-    Repo.delete!(budgeted_category)
-
-    send_resp(conn, :no_content, "")
-  end
 end
+

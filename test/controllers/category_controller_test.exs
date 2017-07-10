@@ -11,7 +11,6 @@ defmodule Money.CategoryControllerTest do
     Enum.each([
       put(conn, category_path(conn, :update, "123", %{})),
       post(conn, category_path(conn, :create, %{})),
-      delete(conn, category_path(conn, :delete, "123")),
       delete(conn, category_path(conn, :delete_categories)),
     ], fn conn ->
       assert html_response(conn, 302)
@@ -76,15 +75,6 @@ defmodule Money.CategoryControllerTest do
   end
 
   @tag login_as: "max"
-  test "deletes chosen resource", %{conn: conn, user: user} do
-    category_group = insert(:category_group, user: user)
-    category = insert(:category, category_group: category_group)
-    conn = delete conn, category_path(conn, :delete, category)
-    assert response(conn, 204)
-    refute Repo.get(Category, category.id)
-  end
-
-  @tag login_as: "max"
   test "deletes several categories", %{conn: conn, user: user} do
     g1 = insert(:category_group, user: user)
 
@@ -139,9 +129,6 @@ defmodule Money.CategoryControllerTest do
     assert_error_sent :not_found, fn ->
       attrs = Dict.merge(%{category_id: category.id}, @valid_attrs)
       put(conn, category_path(conn, :update, category), category: attrs)
-    end
-    assert_error_sent :not_found, fn ->
-      delete(conn, category_path(conn, :delete, category))
     end
 
     delete(conn, category_path(conn, :delete_categories),

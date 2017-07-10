@@ -30,26 +30,41 @@ defmodule Money.HtmlParsers do
     Enum.map(trs, fn {_, _, cols} ->
       cols = cols |> Floki.find(".grid-cell")
       {_, mapped} = Enum.reduce(cols, {0, %{}}, fn
-        {_, _, [val]}, {i, map} when is_binary(val) ->
+        x, {i, map} ->
           head = Map.get(index2head, i)
+          val = cellVal(head, x)
 
-          if Kernel.is_nil(head) do
+          if Kernel.is_nil(val) do
             {i + 1, map}
           else
-            # Just a convenience conversion.
-            val = case Float.parse(val) do
-              {v, ""} -> v
-              _ -> val
-            end
-
             {i + 1, Map.put(map, head, val)}
           end
-        {_, _, _}, {i, map} ->
-          {i + 1, map}
       end)
 
       mapped
     end)
+  end
+
+  defp cellVal(header, x) when is_binary(header) do
+    x
+    |> Floki.filter_out(".hidden")
+    |> Floki.text
+    |> formatText
+  end
+  defp cellVal(_, _) do
+    nil
+  end
+
+  # Ignore empty cells, avoids cluttered tests
+  defp formatText("") do
+    nil
+  end
+  defp formatText(val) do
+    # Just a convenience conversion.
+    case Float.parse(val) do
+      {v, ""} -> v
+      _ -> val
+    end
   end
 end
 

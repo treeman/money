@@ -45,14 +45,16 @@ defmodule Money.Router do
   scope "/api/v1", Money do
     pipe_through [:api, :authenticate_user]
 
+    resources "/transactions", TransactionController, only: [:create, :update, :delete]
+    delete "/transactions", TransactionController, :delete_transactions
     delete "/accounts/:id/transactions", AccountController, :delete_transactions
 
-    delete "/transactions", TransactionController, :delete_transactions
+    resources "/categories", CategoryController, only: [:create, :update]
     delete "/categories", CategoryController, :delete_categories
-    resources "/transactions", TransactionController, only: [:create, :update, :delete]
-    resources "/categories", CategoryController, only: [:create, :update, :delete]
-    resources "/category_groups", CategoryGroupController, only: [:create, :update, :delete]
-    resources "/budgeted_categories", BudgetedCategoryController, only: [:create, :update, :delete]
+
+    resources "/category_groups", CategoryGroupController, only: [:create, :update]
+
+    resources "/budgeted_categories", BudgetedCategoryController, only: [:create, :update]
     post "/budgeted_categories/:year/:month", BudgetedCategoryController, :create
   end
 end

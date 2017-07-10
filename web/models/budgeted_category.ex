@@ -6,7 +6,7 @@ defmodule Money.BudgetedCategory do
     field :year, :integer
     field :month, :integer
     belongs_to :category, Money.Category
-    field :activity, :decimal, virtual: true
+    field :activity, :decimal, virtual: true, default: Decimal.new(0)
 
     timestamps()
   end

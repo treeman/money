@@ -2,13 +2,23 @@ defmodule Money.BudgetedCategoryControllerTest do
   use Money.ConnCase
 
   alias Money.BudgetedCategory
-  @valid_attrs %{budgeted: 2,
+  @valid_attrs %{budgeted: Decimal.new(2),
                  year: 2017,
                  month: 4}
-  @invalid_attrs %{budgeted: -3}
+  @invalid_attrs %{budgeted: Decimal.new(-3)}
 
   setup %{conn: conn} = config do
     %{config | conn: put_req_header(conn, "accept", "application/json")}
+  end
+
+  test "requries user authentication on all actions", %{conn: conn} do
+    Enum.each([
+      put(conn, budgeted_category_path(conn, :update, "123", %{})),
+      post(conn, budgeted_category_path(conn, :create, %{})),
+    ], fn conn ->
+      assert html_response(conn, 302)
+      assert conn.halted
+    end)
   end
 
   @tag login_as: "max"
@@ -33,13 +43,5 @@ defmodule Money.BudgetedCategoryControllerTest do
     budgeted_category = insert(:budgeted_category)
     conn = put conn, budgeted_category_path(conn, :update, budgeted_category), budgeted_category: @invalid_attrs
     assert json_response(conn, 422)["errors"] != %{}
-  end
-
-  @tag login_as: "max"
-  test "deletes chosen resource", %{conn: conn} do
-    budgeted_category = insert(:budgeted_category)
-    conn = delete conn, budgeted_category_path(conn, :delete, budgeted_category)
-    assert response(conn, 204)
-    refute Repo.get(BudgetedCategory, budgeted_category.id)
   end
 end

@@ -38,16 +38,6 @@ defmodule Money.CategoryController do
     end
   end
 
-  def delete(conn, %{"id" => id}, user) do
-    category = Repo.get!(user_categories(user), id)
-
-    # Here we use delete! (with a bang) because we expect
-    # it to always work (and if it does not, it will raise).
-    Repo.delete!(category)
-
-    send_resp(conn, :no_content, "")
-  end
-
   def delete_categories(conn, %{"data" => %{"groups" => groups, "categories" => categories}}, user) do
     groups = Poison.decode!(groups)
     groups = from g in user_category_groups(user),

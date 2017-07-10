@@ -1,7 +1,6 @@
 defmodule Money.CategoryGroupControllerTest do
   use Money.ConnCase
   alias Money.CategoryGroup
-  alias Money.Category
   import Money.UserHelpers
 
   @valid_attrs %{name: "Fun"}
@@ -11,7 +10,6 @@ defmodule Money.CategoryGroupControllerTest do
     Enum.each([
       put(conn, category_group_path(conn, :update, "123", %{})),
       post(conn, category_group_path(conn, :create, %{})),
-      delete(conn, category_group_path(conn, :delete, "123")),
     ], fn conn ->
       assert html_response(conn, 302)
       assert conn.halted
@@ -77,17 +75,6 @@ defmodule Money.CategoryGroupControllerTest do
   end
 
   @tag login_as: "max"
-  test "deletes chosen resource", %{conn: conn, user: user} do
-    category_group = insert(:category_group, user: user)
-    insert(:category, category_group: category_group, name: "c1")
-    insert(:category, category_group: category_group, name: "c2")
-    conn = delete conn, category_group_path(conn, :delete, category_group)
-    assert response(conn, 204)
-    refute Repo.get(CategoryGroup, category_group.id)
-    assert length(Repo.all(Category)) == 0
-  end
-
-  @tag login_as: "max"
   test "authorizes actions against access by other users", %{conn: conn, user: owner} do
     group = insert(:category_group, user: owner)
 
@@ -97,9 +84,6 @@ defmodule Money.CategoryGroupControllerTest do
     assert_error_sent :not_found, fn ->
       attrs = Dict.merge(%{category_group_id: group.id}, @valid_attrs)
       put(conn, category_group_path(conn, :update, group), category_group: attrs)
-    end
-    assert_error_sent :not_found, fn ->
-      delete(conn, category_group_path(conn, :delete, group))
     end
   end
 end
