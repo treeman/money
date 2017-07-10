@@ -372,7 +372,13 @@ function submitUpdateCategory(e) {
       formEditRow.parentNode.insertBefore(row, formEditRow);
       // Remove the now hidden old row.
       var hiddenRow = formEditRow.nextElementSibling;
-      if (hiddenRow.classList.contains("hidden")) {
+      if (hiddenRow.classList.contains("hidden")) { // Should always succeed!
+        const prevBudgeted = +hiddenRow.querySelector('.grid-budget-budgeted').innerHTML;
+        const prevBalance = +hiddenRow.querySelector('.grid-budget-balance').innerHTML;
+        const budgeted = response.data.budgeted;
+        const balance = budgeted - response.data.activity;
+        updateBudgetGroup(formEditRow, budgeted - prevBudgeted, balance - prevBalance);
+
         hiddenRow.remove();
       }
       // Cancel the edit.
@@ -382,6 +388,22 @@ function submitUpdateCategory(e) {
     console.error("Failed!", error);
     view.setFlashError(error)
   });
+}
+
+function updateBudgetGroup(row, dBudget, dBalance) {
+  var groupRow = findBudgetGroup(row);
+  var budgetDiv = groupRow.querySelector('.grid-budget-budgeted');
+  var balanceDiv = groupRow.querySelector('.grid-budget-balance');
+
+  const newBudget = +budgetDiv.innerHTML + dBudget;
+  const newBalance = +balanceDiv.innerHTML + dBalance;
+  budgetDiv.innerHTML = newBudget;
+  balanceDiv.innerHTML = newBalance;
+}
+
+function findBudgetGroup(row) {
+  if (row.classList.contains("budgeted-group")) return row;
+  return findBudgetGroup(row.previousElementSibling);
 }
 
 function updateBudgetInfo() {
