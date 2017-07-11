@@ -8,20 +8,23 @@ C-]     Jump to definition
 C-t     Jump back
 
 # TODO
+1. Cleanup js for budget + account view. Horrible.
+1. Make tests for budgeted controller
+1. Need transfers between accounts
 1. Minor stuff for account view
     When going into edit/create form, should be preselected
-1. Cleanup js for budget + account view. Horrible.
 
 ## Categories
 1. UI for:
-    1. Need to be able to create a category and groups
-    1. Need to be able to delete/rename a category and groups
+    1. Need to be able to rename a category and groups
 1. Should be able to create categories (and groups?) from the account view when adding transactions
 
 ## Import text
 * In the future import using the api of banks, now just make a simple parser...
 
 ## Budget view
+1. Remember collapsed categories
+1. Ability to reorder groups/categories
 1. Edit category/category group name
 1. Show info on the right side
     1. Quick budget should be workable
@@ -37,29 +40,27 @@ C-t     Jump back
 1. Add tests to budgeted category controller (does not care about user for instance)
 
 ## Account view
-1. Add new fields for a transaction:
-    (account)                           DONE
-    outflow/inflow instead of amount
-    'cleared'                           DONE
+1. Move new transaction form out of transactions, avoid scroll effect
+1. Filter
+    + Between dates
+1. Add outflow/inflow instead of amount
+1. Confirmation upon successful transaction insert
 1. Show explicit cancel button during insert
     * Option to insert and continue to insert another transaction
+1. Support addition and subtraction in fields
 1. Search/filter/sort
 1. Checkbox handling
     + ability to change category for all selected
     + ability to clear/unclear all selected
-1. Edit a transaction should reveal:
-    + clear/unclear
-    + categorize as
     + move to account
-    + delete
 1. Arrows on category/payees
+    Need to display the groups above categories, duplicates may exist!
 1. Client side validation for inputs
     + Account matches existing accounts, not null
     + Date matches YYYY-MM-DD
     + Payee not null
     + Category matches existing categories, not null
     + Amount not null
-1. Make sure deleting transactions work
 
 ## Transactions
 1. Store payees and info about them. Last Category and amount and others?

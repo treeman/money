@@ -25,3 +25,5 @@ erl_crash.dump
 
 *.bak
 *.beam
+between-accounts
+categories
