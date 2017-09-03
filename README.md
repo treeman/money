@@ -2,6 +2,17 @@
 
 I want to track my budget including investments and expenses. Instead of using any of the many already existing ones I figured I'd build my own, go figure. It's also an excuse for me to learn web dev with Elixir and Phoenix.
 
+# Essential features
+* Different types of transactions
+    Transfers between accounts
+    Transactions in unbudgeted accounts (no category needed)
+* Several budgets
+* Split transaction to categories
+* Recurring transactions
+* Reconcile transactions (after clearing)
+* View 1-3 budgets at once
+* See YNAB Toolkit for other minor settings
+
 # Vim
 
 C-]     Jump to definition
